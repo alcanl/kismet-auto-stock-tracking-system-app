@@ -1,6 +1,6 @@
-package com.alcanl.app.ui.controller;
+package com.alcanl.app.application.ui.controller;
 
-import com.alcanl.app.ui.view.LoginForm;
+import com.alcanl.app.application.ui.view.LoginForm;
 import org.springframework.stereotype.Controller;
 
 import javax.swing.*;

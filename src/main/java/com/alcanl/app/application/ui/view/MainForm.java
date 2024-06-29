@@ -1,4 +1,4 @@
-package com.alcanl.app.ui.view;
+package com.alcanl.app.application.ui.view;
 
 import javax.swing.*;
 

@@ -1,6 +1,6 @@
-package com.alcanl.app.runner;
+package com.alcanl.app.application.runner;
 
-import com.alcanl.app.ui.controller.MainController;
+import com.alcanl.app.application.ui.controller.MainController;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
