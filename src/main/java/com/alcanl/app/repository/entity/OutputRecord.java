@@ -13,8 +13,15 @@ public class OutputRecord {
     @Column(name = "output_record_id")
     public long outputRecordId;
 
+    @Column(name = "input_amount", nullable = false)
+    public int amount;
+
     @Column(name = "record_date", nullable = false)
     public LocalDate recordDate = LocalDate.now();
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId", nullable = false)
+    public User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "stockId", nullable = false)

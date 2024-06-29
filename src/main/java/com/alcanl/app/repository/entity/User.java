@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Table(name = "user_info")
 @Entity
@@ -13,7 +14,7 @@ public class User {
     @Id()
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
-    public long id;
+    public long userId;
 
     @Column(name = "user_name", nullable = false)
     public String username;
@@ -34,4 +35,10 @@ public class User {
     public LocalDate dateOfRegister = LocalDate.now();
 
     public String description;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    public Set<InputRecord> inputRecord;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    public Set<OutputRecord> outputRecord;
 }

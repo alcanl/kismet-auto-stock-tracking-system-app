@@ -18,6 +18,12 @@ public class Stock {
     @Column(name = "stock_amount", nullable = false)
     public int amount;
 
+    @Column(name = "shelf_no", nullable = false)
+    public String shelfNumber;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "stock", cascade = CascadeType.ALL)
+    public Product product;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "stock", cascade = CascadeType.ALL)
     public Set<InputRecord> inputRecords;
 

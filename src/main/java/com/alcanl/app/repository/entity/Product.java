@@ -24,6 +24,10 @@ public class Product {
     @Column(name = "product_image")
     public File imageFile;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "stockId", nullable = false)
+    public Stock stock;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     public Set<InputRecord> inputRecords;
 
