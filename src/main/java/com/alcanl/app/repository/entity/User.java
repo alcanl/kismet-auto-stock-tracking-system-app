@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Table(name = "user_info")
 @Entity
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id()
@@ -18,6 +18,10 @@ public class User {
 
     @Column(name = "user_name", nullable = false)
     public String username;
+
+    @EqualsAndHashCode.Include
+    @Column(name = "e_mail")
+    public String eMail;
 
     @Column(name = "first_name", nullable = false)
     public String firstName;

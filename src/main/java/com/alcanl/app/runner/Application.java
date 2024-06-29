@@ -1,4 +1,4 @@
-package com.alcanl.app.application.runner;
+package com.alcanl.app.runner;
 
 import com.alcanl.app.application.ui.controller.MainController;
 import org.springframework.boot.ApplicationArguments;

@@ -1,11 +1,13 @@
 package com.alcanl.app.repository.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "stock_output_record_info")
+@EqualsAndHashCode
 public class OutputRecord {
 
     @Id

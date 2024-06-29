@@ -1,12 +1,14 @@
 package com.alcanl.app.application.ui.view;
 
-import org.springframework.stereotype.Component;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
-@Component
+@Configuration
 public class LoginForm extends JFrame{
     private JPanel panelMain;
     private JLabel labelHeader;
@@ -35,5 +37,18 @@ public class LoginForm extends JFrame{
                 ApplicationService.ms_threadPool.shutdown();
             }
         });*/
+
+        textFieldUserName.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    System.out.println("TEST");
+                }
+            }
+        });
+    }
+    @Bean
+    public LoginForm of()
+    {
+        return this;
     }
 }
