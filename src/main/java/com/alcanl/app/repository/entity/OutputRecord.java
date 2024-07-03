@@ -29,7 +29,4 @@ public class OutputRecord {
     @JoinColumn(name = "stockId", nullable = false)
     public Stock stock;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "originalCode", nullable = false)
-    public Product product;
 }

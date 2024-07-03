@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
 import java.io.File;
-import java.util.Set;
 
 @Entity
 @Table(name = "product_info")
@@ -27,11 +26,5 @@ public class Product {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "stockId", nullable = false)
     public Stock stock;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
-    public Set<InputRecord> inputRecords;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
-    public Set<OutputRecord> outputRecords;
 
 }
