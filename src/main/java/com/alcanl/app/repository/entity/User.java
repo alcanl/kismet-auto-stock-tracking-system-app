@@ -11,11 +11,12 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
-    @Id()
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
     public long userId;
 
+    @EqualsAndHashCode.Include
     @Column(name = "user_name", nullable = false)
     public String username;
 
@@ -26,6 +27,7 @@ public class User {
     @Column(name = "first_name", nullable = false)
     public String firstName;
 
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     public String password;
 
@@ -40,9 +42,9 @@ public class User {
 
     public String description;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     public Set<InputRecord> inputRecord;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     public Set<OutputRecord> outputRecord;
 }
