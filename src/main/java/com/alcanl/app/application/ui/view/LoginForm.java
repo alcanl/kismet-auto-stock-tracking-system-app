@@ -11,11 +11,15 @@ import java.awt.event.KeyEvent;
 @Configuration
 public class LoginForm extends JFrame{
     private JPanel panelMain;
-    private JLabel labelHeader;
+    private JLabel labelLogo;
     private JLabel labelUserName;
     private JTextField textFieldUserName;
     private JLabel labelPassword;
     private JPasswordField fieldPassword;
+    private JPanel panelLogo;
+    private JPanel panelUser;
+    private JButton buttonLogin;
+    private JPanel panelLogin;
 
     public LoginForm()
     {

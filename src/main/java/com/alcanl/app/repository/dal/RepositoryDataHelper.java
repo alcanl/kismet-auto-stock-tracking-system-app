@@ -3,6 +3,7 @@ package com.alcanl.app.repository.dal;
 import com.alcanl.app.repository.*;
 import com.alcanl.app.repository.entity.*;
 import com.alcanl.app.repository.exception.RepositoryException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,25 +12,13 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class RepositoryDataHelper {
     private final IInputRecordRepository m_inputRecordRepository;
     private final IOutputRecordRepository m_outputRecordRepository;
     private final IStockRepository m_stockRepository;
     private final IProductRepository m_productRepository;
     private final IUserRepository m_userRepository;
-
-    public RepositoryDataHelper(IInputRecordRepository inputRecordRepository,
-                                IOutputRecordRepository outputRecordRepository,
-                                IStockRepository stockRepository,
-                                IProductRepository productRepository,
-                                IUserRepository userRepository)
-    {
-        m_inputRecordRepository = inputRecordRepository;
-        m_outputRecordRepository = outputRecordRepository;
-        m_stockRepository = stockRepository;
-        m_productRepository = productRepository;
-        m_userRepository = userRepository;
-    }
 
     public Optional<Stock > findProductStock(Product product)
     {
@@ -61,7 +50,7 @@ public class RepositoryDataHelper {
     public boolean existByEmail(String eMail)
     {
         try {
-            return m_userRepository.existsByEmail(eMail);
+            return m_userRepository.existsByeMail(eMail);
         } catch (Throwable ex) {
             log.error("Error while existing user by user email", ex);
             return false;
@@ -70,7 +59,10 @@ public class RepositoryDataHelper {
     public Iterable<InputRecord> findByUserAndDate(User user, LocalDate start, LocalDate end)
     {
         try {
-            return m_inputRecordRepository.findInputRecordsByUserAndDate(user, start, end);
+            return m_inputRecordRepository.findInputRecordsByUserAndDate(
+                    start.getDayOfMonth(), start.getMonthValue(), start.getYear(),
+                    end.getDayOfMonth(), end.getMonthValue(), end.getYear(), user.userId);
+
         } catch (Throwable ex) {
             log.error("Error while finding input records by user and date ", ex);
             throw new RepositoryException(ex);

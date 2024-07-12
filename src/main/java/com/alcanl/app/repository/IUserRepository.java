@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface IUserRepository extends CrudRepository<User, Long> {
     Optional<User> findByUsernameAndPassword(String username, String password);
     boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
+    boolean existsByeMail(String email);
     boolean existsByUsernameAndPassword(String username, String password);
 }
