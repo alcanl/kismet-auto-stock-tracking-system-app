@@ -1,23 +1,22 @@
 package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.view.LoginForm;
+import com.alcanl.app.helper.Resources;
 import org.springframework.stereotype.Controller;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Controller
-public class MainController extends JFrame {
+public class LoginController extends JFrame {
     private final LoginForm m_loginForm;
 
-    public MainController(LoginForm loginForm)
+    public LoginController()
     {
-
-        m_loginForm = loginForm;
+        m_loginForm = new LoginForm();
         setContentPane(m_loginForm.getContentPane());
-        setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(300, 100));
-        setSize(300, 100);
+        setMinimumSize(new Dimension(600, 400));
+        Resources.centerFrame(this);
         setTitle("Kısmet Oto Kaporta");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();

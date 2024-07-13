@@ -1,19 +1,20 @@
 package com.alcanl.app.runner;
 
-import com.alcanl.app.application.ui.controller.MainController;
+import com.alcanl.app.application.ui.controller.LoginController;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
-
+@Order(1)
 @Component
-public class Application implements ApplicationRunner
+public class LoginControllerRunner implements ApplicationRunner
 {
-    private final MainController m_controller;
+    private final LoginController m_controller;
 
-    public Application(MainController controller)
+    public LoginControllerRunner(LoginController controller)
     {
         m_controller = controller;
     }

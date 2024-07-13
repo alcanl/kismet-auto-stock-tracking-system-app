@@ -2,13 +2,16 @@ package com.alcanl.app.application.ui.view;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-
-@Configuration
+@Component
+@Scope("lazy")
 public class LoginForm extends JFrame{
     private JPanel panelMain;
     private JLabel labelLogo;
@@ -20,6 +23,8 @@ public class LoginForm extends JFrame{
     private JPanel panelUser;
     private JButton buttonLogin;
     private JPanel panelLogin;
+    private JLabel labelVersion;
+    private JLabel labelRights;
 
     public LoginForm()
     {
@@ -38,7 +43,7 @@ public class LoginForm extends JFrame{
             {
                 super.windowClosed(e);
                 executorService.shutdown();
-                ApplicationService.ms_threadPool.shutdown();
+                UserService.ms_threadPool.shutdown();
             }
         });*/
 
@@ -49,10 +54,5 @@ public class LoginForm extends JFrame{
                 }
             }
         });
-    }
-    @Bean
-    public LoginForm of()
-    {
-        return this;
     }
 }

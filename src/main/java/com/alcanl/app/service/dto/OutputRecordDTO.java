@@ -22,7 +22,7 @@ public class OutputRecordDTO {
     private int m_amount;
 
     @ToString.Include
-    private LocalDate m_recordDate;
+    private LocalDate m_recordDate = LocalDate.now();
 
     private User m_user;
 

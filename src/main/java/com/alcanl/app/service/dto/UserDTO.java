@@ -35,7 +35,7 @@ public class UserDTO {
 
     private boolean m_isAdmin;
 
-    private LocalDate m_dateOfRegister;
+    private LocalDate m_dateOfRegister = LocalDate.now();
 
     private String m_description;
 

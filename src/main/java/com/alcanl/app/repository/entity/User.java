@@ -38,7 +38,7 @@ public class User {
     public boolean isAdmin;
 
     @Column(name = "register_date", nullable = false)
-    public LocalDate dateOfRegister = LocalDate.now();
+    public LocalDate dateOfRegister;
 
     public String description;
 

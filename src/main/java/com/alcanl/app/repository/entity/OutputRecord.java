@@ -19,7 +19,7 @@ public class OutputRecord {
     public int amount;
 
     @Column(name = "record_date", nullable = false)
-    public LocalDate recordDate = LocalDate.now();
+    public LocalDate recordDate;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "userId", nullable = false)
