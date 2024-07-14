@@ -1,36 +1,77 @@
 package com.alcanl.app.helper;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+@Component
 public final class Resources {
-    public static final double DOUBLE_THRESHOLD = 0.00005;
-    public static final String NIMBUS_THEME = "Nimbus";
-    public static final String DEFAULT_ICON = "icon.png";
-    public static final String DEFAULT_LOGO = "logo.png";
-    public static final String ERROR_MESSAGE = "Bilinmeyen bir hata oluştu.";
-    public static final String ERROR_TITLE = "Hata";
-    public static final String WARNING_TITLE = "Uyarı";
-    public static final String ERROR_UNSUPPORTED_FORMAT = "Bu işlem için desteklenmeyen formatta bir değer girdiniz!";
-    public static final String WARNING_EMPTY_SEARCH_LIST = "Aratılan değere ilişkin ürün bulunmamaktadır.";
-    private static final String ERROR_MESSAGE_EMPTY_NAME = "Ürün isim bilgisi boş bırakılamaz";
-    private static final String ERROR_MESSAGE_EMPTY_UNIT_PRICE = "Ürün birim fiyat bilgisi boş bırakılamaz";
-    private static final String DIALOG_AMOUNT_INPUT_TEXT = "Lütfen Ürün Miktarını Giriniz : ";
-    private static final String DIALOG_RATIO_INPUT_TEXT = "Lütfen Tüm Ürünlere Uygulanacak Zam Oranını Giriniz : ";
-    private static final String WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT = "Seçili Ürün Bulunmamaktadır.";
-    private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
-    private static final String WARNING_UPDATE_RATIO_TEXT = "Tüm Boru Tipi Ürünlere %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
-    private static final String WARNING_UPDATE_SINGLE__RATIO_TEXT = "Seçili Ürüne %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
-    private static final String WARNING_EMPTY_CART_MESSAGE = "Sepette Ürün Bulunmamaktadır.";
-    private static final String AMOUNT_TITLE = "Adet Bilgisi";
-    private static final String RATIO_TITLE = "Artış Oran Bilgisi";
 
-    private static ApplicationContext m_applicationContext;
-    private Resources() {}
-    public static void setLayout(String theme) {
+    @Value("${kismet.auto.stock.tracking.system.double.threshold}")
+    public double doubleThreshold;
+
+    @Value("${kismet.auto.stock.tracking.system.nimbus.theme}")
+    public String nimbusTheme;
+
+    @Value("${kismet.auto.stock.tracking.system.default.icon}")
+    public String defaultIconPath;
+
+    @Value("${kismet.auto.stock.tracking.system.default.logo}")
+    public String defaultLogoPath;
+
+    @Value("${kismet.auto.stock.tracking.system.error.message.unknown}")
+    public String m_errorMessageUnknown;
+
+    @Value("${kismet.auto.stock.tracking.system.error.title}")
+    public String m_errorMessageTitle;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.title}")
+    public String m_warningTitle;
+
+    @Value("${kismet.auto.stock.tracking.system.error.message.unsupported.format}")
+    public String errorUnsupportedFormat;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.empty.search.list}")
+    public String warningEmptySearchList;
+
+    @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
+    private String errorMessageEmptyName;
+
+    @Value("${kismet.auto.stock.tracking.system.dialog.message.stock.amount}")
+    private String m_dialogStockInputText;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.no.selected.item}")
+    private String m_warningNoSelectedItemText;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.delete.item}")
+    private String m_warningDeleteItemText;
+
+    @Value("${kismet.auto.stock.tracking.system.title.amount}")
+    private String m_warningTitleAmount;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.wrong.username.or.password}")
+    private String m_warningWrongUsernameOrPasswordText;
+
+    private final ApplicationContext m_applicationContext;
+    public Resources(ApplicationContext applicationContext)
+    {
+        m_applicationContext = applicationContext;
+    }
+    @PostConstruct
+    public void initializeDialogLanguage()
+    {
+        UIManager.put("OptionPane.okButtonText", "Tamam");
+        UIManager.put("OptionPane.cancelButtonText", "İptal");
+        UIManager.put("OptionPane.yesButtonText", "Evet");
+        UIManager.put("OptionPane.noButtonText", "Hayır");
+    }
+
+    public void setLayout(String theme) {
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
             if (theme.equals(info.getName()))
                 try {
@@ -38,74 +79,52 @@ public final class Resources {
                     break;
                 } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
                          IllegalAccessException ex) {
-                    JOptionPane.showMessageDialog(null, ERROR_MESSAGE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, m_errorMessageUnknown, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
                 }
-
         }
     }
-    public static void centerFrame(JFrame frame)
+    public void centerFrame(JFrame frame)
     {
         var x = Toolkit.getDefaultToolkit().getScreenSize().width / 2 - frame.getSize().width / 2;
         var y = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - frame.getSize().height / 2;
         frame.setLocation(x, y);
     }
-    public static void initializeLogo(JLabel label) throws IOException {
-        var icon  = new ImageIcon(m_applicationContext.getResource (DEFAULT_LOGO).getURL());
+    public void initializeLogo(JLabel label) throws IOException {
+        var icon  = new ImageIcon(m_applicationContext.getResource (defaultLogoPath).getURL());
         var image = icon.getImage();
         var imageScale = image.getScaledInstance(250, 140, Image.SCALE_SMOOTH);
         var scaledIcon = new ImageIcon(imageScale);
         label.setIcon(scaledIcon);
     }
-    private static void setOkButtonTR()
+
+    public void showUnsupportedFormatWarningMessageDialog()
     {
-        UIManager.put("OptionPane.okButtonText", "Tamam");
-    }
-    private static void setCancelButtonTR() {UIManager.put("OptionPane.cancelButtonText", "İptal");}
-    private static void setYesNoButtonTR()
-    {
-        UIManager.put("OptionPane.yesButtonText", "Evet");
-        UIManager.put("OptionPane.noButtonText", "Hayır");
-    }
-    public static void showUnsupportedFormatWarningMessageDialog()
-    {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, ERROR_UNSUPPORTED_FORMAT, ERROR_TITLE,
+        JOptionPane.showMessageDialog(null, errorUnsupportedFormat, m_errorMessageTitle,
                 JOptionPane.ERROR_MESSAGE);
     }
-    public static void showEmptyListWarningMessageDialog()
+    public void showEmptyListWarningMessageDialog()
     {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, WARNING_EMPTY_SEARCH_LIST, WARNING_TITLE,
+        JOptionPane.showMessageDialog(null, warningEmptySearchList, m_warningTitle,
                 JOptionPane.INFORMATION_MESSAGE);
 
     }
-    public static int showEnsureWarningMessageDialog()
+    public int showEnsureWarningMessageDialog()
     {
-        setYesNoButtonTR();
-        return JOptionPane.showConfirmDialog(null, WARNING_MESSAGE_DELETE_ITEM, WARNING_TITLE,
+        return JOptionPane.showConfirmDialog(null, m_warningDeleteItemText, m_warningTitle,
                 JOptionPane.YES_NO_OPTION);
     }
-    public static void showEmptyNameTextErrorMessageDialog()
+    public void showEmptyNameTextErrorMessageDialog()
     {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_NAME, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, errorMessageEmptyName, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
-    public static void showEmptyUnitPriceTextErrorMessageDialog()
+    public void showUnknownErrorMessageDialog(String errMessage)
     {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_UNIT_PRICE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, m_errorMessageUnknown + "\n" + errMessage,
+                m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
-    public static void showUnknownErrorMessageDialog(String errMessage)
+    public int showAmountInputDialog()
     {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, ERROR_MESSAGE + "\n" + errMessage,
-                ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
-    }
-    public static int showAmountInputDialog()
-    {
-        setOkButtonTR();
-        setCancelButtonTR();
-        var amount = JOptionPane.showInputDialog(null,DIALOG_AMOUNT_INPUT_TEXT, AMOUNT_TITLE,
+        var amount = JOptionPane.showInputDialog(null,m_dialogStockInputText, m_warningTitleAmount,
                 JOptionPane.PLAIN_MESSAGE, null, null, 1);
         if (amount == null)
             return -1;
@@ -122,55 +141,26 @@ public final class Resources {
             return -1;
         }
     }
-    public static double showUpdatePriceRatioInputDialog()
+
+    public void showNoSelectedMaterialMessage()
     {
-        setOkButtonTR();
-        setCancelButtonTR();
-
-        var ratio = JOptionPane.showInputDialog(null, DIALOG_RATIO_INPUT_TEXT,
-                RATIO_TITLE, JOptionPane.PLAIN_MESSAGE);
-
-        if (ratio == null)
-            return -1D;
-
-        try {
-            var ratioDouble = Double.parseDouble(ratio);
-            if (ratioDouble <= DOUBLE_THRESHOLD) {
-                showUnsupportedFormatWarningMessageDialog();
-                return -1D;
-            }
-            else
-                return ratioDouble;
-
-        } catch (NumberFormatException ignore)
-        {
-            showUnsupportedFormatWarningMessageDialog();
-            return -1D;
-        }
-    }
-    public static void showNoSelectedMaterialMessage()
-    {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT, WARNING_TITLE,
+        JOptionPane.showMessageDialog(null, m_warningNoSelectedItemText, m_warningTitle,
                 JOptionPane.WARNING_MESSAGE);
     }
-    public static int showUpdatePriceByRatioMessage(double ratio)
+    public void showCustomWarningDialog(String message)
     {
-        setYesNoButtonTR();
-        return JOptionPane.showConfirmDialog(null,
-                String.format(WARNING_UPDATE_RATIO_TEXT, ratio), WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+        JOptionPane.showMessageDialog(null, message, m_warningTitle, JOptionPane.WARNING_MESSAGE);
     }
-    public static int showSingleMaterialUpdatePriceByRatioMessage(double ratio)
+    public void showCustomErrorDialog(String message)
     {
-
-        setYesNoButtonTR();
-        return JOptionPane.showConfirmDialog(null,
-                String.format(WARNING_UPDATE_SINGLE__RATIO_TEXT, ratio), WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+        JOptionPane.showMessageDialog(null, message, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
-
-    public static void showWarningEmptyCartMessage()
+    public String showCustomInputWarningDialog(String message)
     {
-        setOkButtonTR();
-        JOptionPane.showMessageDialog(null, WARNING_EMPTY_CART_MESSAGE, WARNING_TITLE, JOptionPane.INFORMATION_MESSAGE);
+        return JOptionPane.showInputDialog(null, message, m_warningTitle, JOptionPane.WARNING_MESSAGE);
+    }
+    public void showNoSuchUserWarningDialog()
+    {
+        JOptionPane.showMessageDialog(null, m_warningWrongUsernameOrPasswordText, m_warningTitle, JOptionPane.WARNING_MESSAGE);
     }
 }

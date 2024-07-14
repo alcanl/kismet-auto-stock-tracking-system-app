@@ -17,11 +17,11 @@ public class User {
     public long userId;
 
     @EqualsAndHashCode.Include
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name", nullable = false, unique = true)
     public String username;
 
     @EqualsAndHashCode.Include
-    @Column(name = "e_mail")
+    @Column(name = "e_mail", unique = true)
     public String eMail;
 
     @Column(name = "first_name", nullable = false)

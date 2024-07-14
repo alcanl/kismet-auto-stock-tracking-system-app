@@ -47,6 +47,24 @@ public class RepositoryDataHelper {
             return false;
         }
     }
+    public Optional<User> findUserByUsernameAndPassword(String username, String password)
+    {
+        try {
+            return m_userRepository.findByUsernameAndPassword(username, password);
+        } catch (Throwable ex) {
+            log.error("Error while finding user by username and password", ex);
+            return Optional.empty();
+        }
+    }
+    public Optional<User> findUserByUsername(String username)
+    {
+        try {
+            return m_userRepository.findByUsername(username);
+        } catch (Throwable ex) {
+            log.error("Error while finding user by username", ex);
+            return Optional.empty();
+        }
+    }
     public boolean existByEmail(String eMail)
     {
         try {
@@ -56,7 +74,7 @@ public class RepositoryDataHelper {
             return false;
         }
     }
-    public Iterable<InputRecord> findByUserAndDate(User user, LocalDate start, LocalDate end)
+    public Iterable<InputRecord> findInputRecordsByUserAndDate(User user, LocalDate start, LocalDate end)
     {
         try {
             return m_inputRecordRepository.findInputRecordsByUserAndDate(
