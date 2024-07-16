@@ -82,6 +82,7 @@ public class LoginController extends JFrame {
                 m_usernameField.setText("");
                 m_passwordField.setText("");
                 m_resources.showNoSuchUserWarningDialog();
+                m_usernameField.requestFocus();
             }
             else {
                 this.setVisible(false);
