@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,8 +78,11 @@ public class LoginController extends JFrame {
                     () -> m_userService.findUserByUsernameAndPassword(username, password))
                     .get(5, TimeUnit.SECONDS);
 
-            if (userDtoOpt.isEmpty())
+            if (userDtoOpt.isEmpty()) {
+                m_usernameField.setText("");
+                m_passwordField.setText("");
                 m_resources.showNoSuchUserWarningDialog();
+            }
             else {
                 this.setVisible(false);
                 new MainForm();
@@ -90,8 +91,26 @@ public class LoginController extends JFrame {
             m_resources.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
+    private void textFieldsOnEnterKeyClicked(KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+            m_loginButton.doClick();
+    }
+
     private void setOnViewListeners()
     {
         m_loginButton.addActionListener(this::buttonLoginOnClickListenerCallback);
+        m_passwordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                textFieldsOnEnterKeyClicked(e);
+            }
+        });
+        m_usernameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                textFieldsOnEnterKeyClicked(e);
+            }
+        });
     }
 }
