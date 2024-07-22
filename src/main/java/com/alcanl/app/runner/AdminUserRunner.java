@@ -5,12 +5,14 @@ import com.alcanl.app.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Order(2)
 @Component
+@PropertySource(value = "classpath:values.properties", encoding = "UTF-8")
 public class AdminUserRunner implements ApplicationRunner {
 
     private final UserService m_userService;

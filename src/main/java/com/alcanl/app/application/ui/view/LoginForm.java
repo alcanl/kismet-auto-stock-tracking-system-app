@@ -6,9 +6,11 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("ALL")
 @Component
 @Order(0)
 public class LoginForm extends JFrame{
+    @Getter
     private JPanel panelMain;
     private JLabel labelLogo;
     private JLabel labelUserName;
@@ -24,12 +26,13 @@ public class LoginForm extends JFrame{
     private JPanel panelLogin;
     private JLabel labelVersion;
     private JLabel labelRights;
+    @Getter
+    private JLabel labelVisibility;
+    private JLabel labelBalance;
 
     public LoginForm()
     {
-        setContentPane(panelMain);
         setSize(1400, 800);
-        setTitle("Kısmet Oto Kaporta");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(1400, 800));
     }

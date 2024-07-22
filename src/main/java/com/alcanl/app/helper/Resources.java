@@ -1,43 +1,49 @@
 package com.alcanl.app.helper;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+@Slf4j
 @Component
+@Lazy
+@PropertySource(value = "classpath:values.properties", encoding = "UTF-8")
 public final class Resources {
 
     @Value("${kismet.auto.stock.tracking.system.double.threshold}")
-    public double doubleThreshold;
+    private double doubleThreshold;
 
     @Value("${kismet.auto.stock.tracking.system.nimbus.theme}")
-    public String nimbusTheme;
+    private String nimbusTheme;
 
     @Value("${kismet.auto.stock.tracking.system.default.icon}")
-    public String defaultIconPath;
+    private String defaultIconPath;
 
     @Value("${kismet.auto.stock.tracking.system.default.logo}")
-    public String defaultLogoPath;
+    private String defaultLogoPath;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.unknown}")
-    public String m_errorMessageUnknown;
+    private String m_errorMessageUnknown;
 
     @Value("${kismet.auto.stock.tracking.system.error.title}")
-    public String m_errorMessageTitle;
+    private String m_errorMessageTitle;
 
     @Value("${kismet.auto.stock.tracking.system.warning.title}")
-    public String m_warningTitle;
+    private String m_warningTitle;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.unsupported.format}")
-    public String errorUnsupportedFormat;
+    private String errorUnsupportedFormat;
 
     @Value("${kismet.auto.stock.tracking.system.warning.message.empty.search.list}")
-    public String warningEmptySearchList;
+    private String warningEmptySearchList;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
     private String errorMessageEmptyName;
@@ -57,6 +63,8 @@ public final class Resources {
     @Value("${kismet.auto.stock.tracking.system.warning.message.wrong.username.or.password}")
     private String m_warningWrongUsernameOrPasswordText;
 
+    public static final String EMPTY_STRING = "";
+
     private final ApplicationContext m_applicationContext;
     public Resources(ApplicationContext applicationContext)
     {
@@ -71,9 +79,10 @@ public final class Resources {
         UIManager.put("OptionPane.noButtonText", "Hayır");
     }
 
-    public void setLayout(String theme) {
+    public void setLayout()
+    {
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if (theme.equals(info.getName()))
+            if (nimbusTheme.equals(info.getName()))
                 try {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -89,12 +98,14 @@ public final class Resources {
         var y = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - frame.getSize().height / 2;
         frame.setLocation(x, y);
     }
-    public void initializeLogo(JLabel label) throws IOException {
-        var icon  = new ImageIcon(m_applicationContext.getResource (defaultLogoPath).getURL());
-        var image = icon.getImage();
-        var imageScale = image.getScaledInstance(250, 140, Image.SCALE_SMOOTH);
-        var scaledIcon = new ImageIcon(imageScale);
-        label.setIcon(scaledIcon);
+    public void initializeLogo(JFrame frame)
+    {
+        try {
+            var icon = new ImageIcon(m_applicationContext.getResource(defaultLogoPath).getContentAsByteArray());
+            frame.setIconImage(icon.getImage());
+        } catch (IOException ex) {
+            log.error("Resources::initializeLogo: {}", ex.getMessage());
+        }
     }
 
     public void showUnsupportedFormatWarningMessageDialog()
