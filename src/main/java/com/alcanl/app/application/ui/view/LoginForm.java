@@ -1,14 +1,12 @@
 package com.alcanl.app.application.ui.view;
 
 import lombok.Getter;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 
 @SuppressWarnings("ALL")
 @Component
-@Order(0)
 public class LoginForm extends JFrame{
     @Getter
     private JPanel panelMain;

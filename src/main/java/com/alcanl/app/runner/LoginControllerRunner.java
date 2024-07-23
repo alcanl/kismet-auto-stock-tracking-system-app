@@ -12,16 +12,16 @@ import java.awt.*;
 @Component
 public class LoginControllerRunner implements ApplicationRunner
 {
-    private final LoginController m_controller;
+    private final LoginController m_loginController;
 
-    public LoginControllerRunner(LoginController controller)
+    public LoginControllerRunner(LoginController loginController)
     {
-        m_controller = controller;
+        m_loginController = loginController;
     }
 
     @Override
     public void run(ApplicationArguments args)
     {
-        EventQueue.invokeLater(() -> m_controller.setVisible(true));
+        EventQueue.invokeLater(() -> m_loginController.setVisible(true));
     }
 }

@@ -1,7 +1,6 @@
 package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.view.LoginForm;
-import com.alcanl.app.application.ui.view.MainForm;
 import static com.alcanl.app.helper.Resources.*;
 import com.alcanl.app.helper.Resources;
 import com.alcanl.app.service.UserService;
@@ -26,10 +25,10 @@ public class LoginController extends JFrame {
     @Value("${kismet.auto.stock.tracking.system.app.title}")
     private String m_appTitle;
 
-    @Value("${kismet.auto.stock.tracking.system.app.frame.dimension.x}")
+    @Value("${kismet.auto.stock.tracking.system.app.frame.login.dimension.x}")
     private int m_frameStartDimensionX;
 
-    @Value("${kismet.auto.stock.tracking.system.app.frame.dimension.y}")
+    @Value("${kismet.auto.stock.tracking.system.app.frame.login.dimension.y}")
     private int m_frameStartDimensionY;
 
     @Value("${kismet.auto.stock.tracking.system.app.icon.visible.path}")
@@ -43,15 +42,17 @@ public class LoginController extends JFrame {
     private final ExecutorService m_threadPool;
     private final UserService m_userService;
     private final ApplicationContext m_applicationContext;
+    private final MainFrameController m_mainFrameController;
 
     public LoginController(Resources resources, ExecutorService threadPool, UserService userService,
-                           ApplicationContext applicationContext)
+                           ApplicationContext applicationContext, LoginForm loginForm, MainFrameController mainFrameController)
     {
-        m_loginForm = new LoginForm();
+        m_loginForm = loginForm;
         m_resources = resources;
         m_threadPool = threadPool;
         m_userService = userService;
         m_applicationContext = applicationContext;
+        m_mainFrameController = mainFrameController;
         initializeFrame();
         setOnViewListeners();
     }
@@ -101,7 +102,8 @@ public class LoginController extends JFrame {
             }
             else {
                 this.setVisible(false);
-                new MainForm();
+                m_mainFrameController.setVisible(true);
+
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
             m_resources.showUnknownErrorMessageDialog(ex.getMessage());
