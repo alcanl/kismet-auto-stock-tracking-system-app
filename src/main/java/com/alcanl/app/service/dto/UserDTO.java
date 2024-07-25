@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Accessors(prefix = "m_")
-@ToString(onlyExplicitlyIncluded = true)
 public class UserDTO {
     private long m_userId;
 
@@ -24,13 +23,11 @@ public class UserDTO {
     @EqualsAndHashCode.Include
     private String m_eMail;
 
-    @ToString.Include
     private String m_firstName;
 
     @EqualsAndHashCode.Include
     private String m_password;
 
-    @ToString.Include
     private String m_lastName;
 
     private boolean m_isAdmin;
@@ -42,5 +39,11 @@ public class UserDTO {
     private Set<InputRecord> m_inputRecord;
 
     private Set<OutputRecord> m_outputRecord;
+
+    @Override
+    public String toString()
+    {
+        return m_firstName + " " + m_lastName;
+    }
 
 }

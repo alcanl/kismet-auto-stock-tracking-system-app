@@ -2,6 +2,8 @@ package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.view.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
+
+import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
 import com.alcanl.app.service.UserService;
 import jakarta.annotation.PostConstruct;
@@ -43,9 +45,11 @@ public class LoginController extends JFrame {
     private final UserService m_userService;
     private final ApplicationContext m_applicationContext;
     private final MainFrameController m_mainFrameController;
+    private final CurrentUserConfig m_currentUserConfig;
 
     public LoginController(Resources resources, ExecutorService threadPool, UserService userService,
-                           ApplicationContext applicationContext, LoginForm loginForm, MainFrameController mainFrameController)
+                           ApplicationContext applicationContext, LoginForm loginForm, MainFrameController mainFrameController,
+                           CurrentUserConfig currentUserConfig)
     {
         m_loginForm = loginForm;
         m_resources = resources;
@@ -53,6 +57,7 @@ public class LoginController extends JFrame {
         m_userService = userService;
         m_applicationContext = applicationContext;
         m_mainFrameController = mainFrameController;
+        m_currentUserConfig = currentUserConfig;
         initializeFrame();
         setOnViewListeners();
     }
@@ -102,8 +107,8 @@ public class LoginController extends JFrame {
             }
             else {
                 this.setVisible(false);
+                m_currentUserConfig.setUser(userDtoOpt.get());
                 m_mainFrameController.setVisible(true);
-
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
             m_resources.showUnknownErrorMessageDialog(ex.getMessage());

@@ -50,7 +50,7 @@
                 <properties>
                   <font name="Segoe UI" size="16" style="1"/>
                   <horizontalTextPosition value="10"/>
-                  <icon value="icon_user.png"/>
+                  <icon value="icons/icon_user.png"/>
                   <text value="Kullanıcı Adı"/>
                 </properties>
               </component>
@@ -70,7 +70,7 @@
                   <font name="Segoe UI" size="16" style="1"/>
                   <horizontalAlignment value="10"/>
                   <horizontalTextPosition value="10"/>
-                  <icon value="icon_password.png"/>
+                  <icon value="icons/icon_password.png"/>
                   <text value="  Şifre"/>
                   <verticalTextPosition value="0"/>
                 </properties>
@@ -90,7 +90,7 @@
                 <properties>
                   <font name="Segoe UI" size="14"/>
                   <horizontalTextPosition value="0"/>
-                  <icon value="icon_login.png"/>
+                  <icon value="icons/icon_login.png"/>
                   <text value="Giriş"/>
                   <verticalAlignment value="0"/>
                   <verticalTextPosition value="3"/>
@@ -108,7 +108,7 @@
                   <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="icon_hidden.png"/>
+                  <icon value="icons/icon_hidden.png"/>
                   <text value=""/>
                 </properties>
               </component>

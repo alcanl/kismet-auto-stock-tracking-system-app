@@ -6,25 +6,29 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(onlyExplicitlyIncluded = true)
 @Accessors(prefix = "m_")
 public class InputRecordDTO {
 
     private long m_inputRecordId;
 
-    @ToString.Include
     private int m_amount;
 
-    @ToString.Include
     private LocalDate m_recordDate = LocalDate.now();
 
     private User m_user;
 
     private Stock m_stock;
+
+    @Override
+    public String toString()
+    {
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(m_recordDate);
+    }
 }

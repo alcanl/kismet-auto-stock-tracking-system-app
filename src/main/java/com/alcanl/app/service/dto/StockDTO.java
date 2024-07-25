@@ -14,13 +14,11 @@ import java.util.Set;
 @Setter
 @Accessors(prefix = "m_")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
 public class StockDTO {
 
     @EqualsAndHashCode.Include
     private long m_stockId;
 
-    @ToString.Include
     private int m_amount;
 
     @EqualsAndHashCode.Include
@@ -32,4 +30,10 @@ public class StockDTO {
     private Set<InputRecord> m_inputRecords;
 
     private Set<OutputRecord> m_outputRecords;
+
+    @Override
+    public String toString()
+    {
+        return "%d".formatted(m_amount);
+    }
 }

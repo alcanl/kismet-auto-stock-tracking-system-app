@@ -14,5 +14,11 @@ public class MainForm extends JFrame {
     @Getter
     private JLabel labelWelcomeUser;
     private JPanel panelTopBar;
+    @Getter
+    private JPanel buttonExit;
+    @Getter
+    private JPanel buttonMaximize;
+    @Getter
+    private JPanel buttonMinimize;
 
 }

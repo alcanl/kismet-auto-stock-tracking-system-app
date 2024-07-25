@@ -33,6 +33,9 @@ public final class Resources {
     @Value("${kismet.auto.stock.tracking.system.error.message.unknown}")
     private String m_errorMessageUnknown;
 
+    @Value("${kismet.auto.stock.tracking.system.warning.message.sure.to.exit}")
+    private String m_warningMessageSureToExit;
+
     @Value("${kismet.auto.stock.tracking.system.error.title}")
     private String m_errorMessageTitle;
 
@@ -122,6 +125,11 @@ public final class Resources {
     public int showEnsureWarningMessageDialog()
     {
         return JOptionPane.showConfirmDialog(null, m_warningDeleteItemText, m_warningTitle,
+                JOptionPane.YES_NO_OPTION);
+    }
+    public int showEnsureExitMessageDialog()
+    {
+        return JOptionPane.showConfirmDialog(null, m_warningMessageSureToExit, m_warningTitle,
                 JOptionPane.YES_NO_OPTION);
     }
     public void showEmptyNameTextErrorMessageDialog()
