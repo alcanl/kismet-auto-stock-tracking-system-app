@@ -32,6 +32,11 @@ public class MainForm extends JFrame {
     private JScrollPane paneMid;
     private JPanel panelContainer;
     private JPanel panelStockState;
+    private JPanel panelLesserThan;
+    private JPanel panelStockOut;
+    private JTable tableLesserThanThreshold;
     private JTable tableStockOut;
+    private JScrollPane scrollPaneStockOut;
+    private JScrollPane scrollPaneLesserThan;
 
 }

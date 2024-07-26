@@ -5,7 +5,9 @@ import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.view.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
+import com.alcanl.app.service.ProductService;
 import com.alcanl.app.service.UserService;
+import com.alcanl.app.service.dto.ProductDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +15,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
+import javax.swing.plaf.synth.SynthTableUI;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -27,28 +33,36 @@ public class MainFrameController extends JFrame {
 
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.y}")
     private int m_mainFrameStartDimensionY;
-
+    private final DefaultTableModel m_defaultTableModel;
     private final MainForm m_mainForm;
     private final Resources m_resources;
     private final ExecutorService m_threadPool;
     private final CurrentUserConfig m_currentUserConfig;
     private final UserService m_userService;
+    private final ProductService m_productService;
     private final ApplicationContext m_applicationContext;
     private final ApplicationEventPublisher m_applicationEventPublisher;
+    private static final String TABLE_STOCK_OUT_PRODUCT_NAME = "ÜRÜN ADI";
+    private static final String TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
+    private static final String TABLE_STOCK_OUT_STOCK = "STOK";
 
     public MainFrameController(Resources resources, ExecutorService threadPool, UserService userService,
                                ApplicationContext applicationContext, MainForm mainForm, CurrentUserConfig currentUserConfig,
-                               ApplicationEventPublisher applicationEventPublisher)
+                               ApplicationEventPublisher applicationEventPublisher, ProductService productService,
+                               DefaultTableModel defaultTableModel)
     {
         m_mainForm = mainForm;
         m_resources = resources;
         m_threadPool = threadPool;
         m_userService = userService;
+        m_productService = productService;
         m_applicationContext = applicationContext;
         m_currentUserConfig = currentUserConfig;
         m_applicationEventPublisher = applicationEventPublisher;
+        m_defaultTableModel = defaultTableModel;
         initializeFrame();
         initializeTopBar();
+        initializeTables();
     }
 
     @PostConstruct
@@ -202,5 +216,66 @@ public class MainFrameController extends JFrame {
                 jPanel.setBackground((Color)m_applicationContext.getBean("bean.color.default"));
             }
         });
+    }
+
+    private void initializeTables()
+    {
+        initializeTableModel();
+        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
+        m_mainForm.getTableStockOut().setUI(new SynthTableUI());
+        m_mainForm.getTableStockOut().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        m_mainForm.getTableStockOut().getTableHeader().setBackground(Color.WHITE);
+        m_mainForm.getTableStockOut().getTableHeader().setReorderingAllowed(false);
+        m_mainForm.getTableStockOut().getTableHeader().setResizingAllowed(false);
+        m_mainForm.getTableStockOut().getTableHeader().setUpdateTableInRealTime(true);
+        m_mainForm.getTableStockOut().getTableHeader().setFont(new Font("segoe ui semibold", Font.BOLD, 13));
+        m_mainForm.getTableStockOut().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point point = e.getPoint();
+                int currentRow = m_mainForm.getTableStockOut().rowAtPoint(point);
+                m_mainForm.getTableStockOut().setRowSelectionInterval(currentRow, currentRow);
+
+                if (SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
+                {
+
+                }
+
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
+                {
+
+                }
+            }
+        });
+
+        try {
+            fillTable(m_threadPool.submit(m_productService::getAllStockOutProducts).get());
+        } catch (ExecutionException | InterruptedException ex) {
+            log.error("MainFrameController::initializeTables: {}", ex.getMessage());
+        }
+
+    }
+    private void fillTable(List<ProductDTO> list)
+    {
+        var testStock = 0;
+        var testProduct = "testName";
+        var testProductCode = "testCode";
+        Object[] dataTest = {testProduct, testProductCode, testStock};
+        m_defaultTableModel.addRow(dataTest);
+        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
+        list.forEach(this::fillTableCallback);
+        m_resources.setCellsAlignment(m_mainForm.getTableStockOut(), SwingConstants.CENTER);
+
+    }
+    private void fillTableCallback(ProductDTO productDTO)
+    {
+        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().amount};
+        m_defaultTableModel.addRow(data);
+        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
+    }
+    private void initializeTableModel()
+    {
+        Object[] tableHeaders = {TABLE_STOCK_OUT_PRODUCT_NAME, TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE, TABLE_STOCK_OUT_STOCK};
+        m_defaultTableModel.setColumnIdentifiers(tableHeaders);
     }
 }

@@ -264,7 +264,7 @@
           <horizontalScrollBarPolicy value="31"/>
           <verticalScrollBarPolicy value="21"/>
         </properties>
-        <border type="none"/>
+        <border type="empty"/>
         <children>
           <grid id="d1d9b" binding="panelContainer" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
             <margin top="5" left="5" bottom="5" right="15"/>
@@ -277,32 +277,95 @@
               <title-color color="-4473925"/>
             </border>
             <children>
-              <grid id="d1158" binding="panelStockState" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+              <grid id="d1158" binding="panelStockState" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="0" vgap="0">
                 <margin top="5" left="10" bottom="5" right="10"/>
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false">
+                    <minimum-size width="300" height="-1"/>
+                    <maximum-size width="300" height="-1"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <background color="-1"/>
                 </properties>
                 <border type="etched" title="Stoğu Azalan Ürünler" title-justification="1" title-position="2">
-                  <font name="Segoe UI Semibold" size="16" style="1"/>
+                  <font name="Segoe UI Semibold" size="18" style="1"/>
                   <title-color color="-10721681"/>
                 </border>
                 <children>
-                  <component id="7c5aa" class="javax.swing.JTable" binding="tableStockOut">
+                  <grid id="a0168" binding="panelStockOut" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                    <margin top="0" left="0" bottom="10" right="0"/>
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="50"/>
-                      </grid>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
-                  </component>
-                  <vspacer id="7bb6c">
+                    <properties>
+                      <background color="-1"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <scrollpane id="c9bb9" binding="scrollPaneStockOut">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <background color="-1"/>
+                        </properties>
+                        <border type="empty" title="Stokta Bulunmayan Ürünler" title-justification="1" title-position="2">
+                          <font name="Segoe UI Semibold" size="11"/>
+                          <title-color color="-8682312"/>
+                        </border>
+                        <children>
+                          <component id="2faf1" class="javax.swing.JTable" binding="tableStockOut">
+                            <constraints/>
+                            <properties>
+                              <autoCreateRowSorter value="false"/>
+                              <autoResizeMode value="2"/>
+                              <cellSelectionEnabled value="false"/>
+                              <columnSelectionAllowed value="false"/>
+                              <fillsViewportHeight value="true"/>
+                              <foreground color="-4520667"/>
+                              <preferredScrollableViewportSize width="-1" height="-1"/>
+                              <preferredSize width="-1" height="-1"/>
+                              <rowSelectionAllowed value="true"/>
+                              <selectionBackground color="-2826266"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </scrollpane>
+                    </children>
+                  </grid>
+                  <grid id="fcd20" binding="panelLesserThan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                    <margin top="10" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                  </vspacer>
+                    <properties>
+                      <background color="-1"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <scrollpane id="e4b7a" binding="scrollPaneLesserThan">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <background color="-1"/>
+                        </properties>
+                        <border type="empty" title="Stoğu Eşik Birimden Düşük Ürünler" title-justification="1" title-position="2">
+                          <font name="Segoe UI Semibold" size="11"/>
+                          <title-color color="-8682312"/>
+                        </border>
+                        <children>
+                          <component id="19055" class="javax.swing.JTable" binding="tableLesserThanThreshold">
+                            <constraints/>
+                            <properties>
+                              <preferredScrollableViewportSize width="-1" height="-1"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </scrollpane>
+                    </children>
+                  </grid>
                 </children>
               </grid>
               <hspacer id="412f6">
