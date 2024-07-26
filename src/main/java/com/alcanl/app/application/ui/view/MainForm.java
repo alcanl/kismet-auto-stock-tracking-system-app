@@ -5,20 +5,26 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 
+@Getter
 @Component
 public class MainForm extends JFrame {
-    @Getter
     private JPanel panelMain;
     private JPanel panelBottomBar;
     private JLabel labelVersion;
-    @Getter
     private JLabel labelWelcomeUser;
     private JPanel panelTopBar;
-    @Getter
     private JPanel buttonExit;
-    @Getter
     private JPanel buttonMaximize;
-    @Getter
     private JPanel buttonMinimize;
+    private JLabel labelNew;
+    private JPanel buttonNew;
+    private JPanel buttonEdit;
+    private JLabel labelEdit;
+    private JLabel labelSettings;
+    private JPanel buttonSettings;
+    private JLabel labelLogout;
+    private JPanel buttonLogout;
+    private JLabel imageViewLogo;
+    private JPanel panelLogo;
 
 }

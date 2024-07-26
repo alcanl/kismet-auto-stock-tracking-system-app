@@ -25,7 +25,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findByProduct(product);
         } catch (Throwable ex) {
-            log.error("Error while finding product stock", ex);
+            log.error("Error while finding product stock: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -34,7 +34,7 @@ public class RepositoryDataHelper {
         try {
             return m_inputRecordRepository.findInputRecordsByUserId(user.userId);
         } catch (Throwable ex) {
-            log.error("Error while finding input records by user", ex);
+            log.error("Error while finding input records by user: {}", ex.getMessage(), ex);
             throw new RepositoryException(ex);
         }
     }
@@ -43,7 +43,7 @@ public class RepositoryDataHelper {
         try {
             return m_userRepository.existsByUsernameAndPassword(username, password);
         } catch (Throwable ex) {
-            log.error("Error while existing user by username and password", ex);
+            log.error("Error while existing user by username and password: {}", ex.getMessage());
             return false;
         }
     }
@@ -52,7 +52,7 @@ public class RepositoryDataHelper {
         try {
             return m_userRepository.findByUsernameAndPassword(username, password);
         } catch (Throwable ex) {
-            log.error("Error while finding user by username and password", ex);
+            log.error("Error while finding user by username and password: {}", ex.getMessage());
             return Optional.empty();
         }
     }
@@ -61,7 +61,7 @@ public class RepositoryDataHelper {
         try {
             return m_userRepository.findByUsername(username);
         } catch (Throwable ex) {
-            log.error("Error while finding user by username", ex);
+            log.error("Error while finding user by username: {}", ex.getMessage());
             return Optional.empty();
         }
     }
@@ -70,7 +70,7 @@ public class RepositoryDataHelper {
         try {
             return m_userRepository.existsByeMail(eMail);
         } catch (Throwable ex) {
-            log.error("Error while existing user by user email", ex);
+            log.error("Error while existing user by user email: {}", ex.getMessage());
             return false;
         }
     }
@@ -82,7 +82,7 @@ public class RepositoryDataHelper {
                     end.getDayOfMonth(), end.getMonthValue(), end.getYear(), user.userId);
 
         } catch (Throwable ex) {
-            log.error("Error while finding input records by user and date ", ex);
+            log.error("Error while finding input records by user and date: {} ", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -91,7 +91,7 @@ public class RepositoryDataHelper {
         try {
             return m_productRepository.findById(id);
         } catch (Throwable ex) {
-            log.error("Error while finding product by id", ex);
+            log.error("Error while finding product by id: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -100,7 +100,7 @@ public class RepositoryDataHelper {
         try {
             return m_productRepository.findAll();
         } catch (Throwable ex) {
-            log.error("Error while finding all products", ex);
+            log.error("Error while finding all products: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -109,7 +109,7 @@ public class RepositoryDataHelper {
         try {
             return m_userRepository.findAll();
         } catch (Throwable ex) {
-            log.error("Error while finding all products", ex);
+            log.error("Error while finding all users: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -118,7 +118,7 @@ public class RepositoryDataHelper {
         try {
             return m_productRepository.findByProductName(productName);
         } catch (Throwable ex) {
-            log.error("Error while finding product by name", ex);
+            log.error("Error while finding product by name: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -128,7 +128,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findAllByLesserThan(lesser);
         } catch (Throwable ex) {
-            log.error("Error while finding stock by lesser", ex);
+            log.error("Error while finding stock by lesser: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -138,7 +138,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findAllByGreaterThan(greater);
         } catch (Throwable ex) {
-            log.error("Error while finding stock by greater", ex);
+            log.error("Error while finding stock by greater: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -147,7 +147,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findById(id);
         } catch (Throwable ex) {
-            log.error("Error while finding stock by id", ex);
+            log.error("Error while finding stock by id: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -157,7 +157,7 @@ public class RepositoryDataHelper {
             m_userRepository.save(user);
 
         } catch (Throwable ex) {
-            log.error("Error while saving user", ex);
+            log.error("Error while saving user: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -166,7 +166,7 @@ public class RepositoryDataHelper {
         try {
             m_userRepository.delete(user);
         } catch (Throwable ex) {
-            log.error("Error while deleting user", ex);
+            log.error("Error while deleting user: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -175,7 +175,7 @@ public class RepositoryDataHelper {
         try {
             m_productRepository.save(product);
         } catch (Throwable ex) {
-            log.error("Error while saving product", ex);
+            log.error("Error while saving product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -184,7 +184,7 @@ public class RepositoryDataHelper {
         try {
             return m_productRepository.existsById(originalCode);
         } catch (Throwable ex) {
-            log.error("Error while existing product by id", ex);
+            log.error("Error while existing product by id: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -193,7 +193,7 @@ public class RepositoryDataHelper {
         try {
             m_productRepository.delete(product);
         } catch (Throwable ex) {
-            log.error("Error while deleting product", ex);
+            log.error("Error while deleting product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -202,7 +202,7 @@ public class RepositoryDataHelper {
         try {
             m_stockRepository.save(stock);
         } catch (Throwable ex) {
-            log.error("Error while saving stock", ex);
+            log.error("Error while saving stock: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -211,7 +211,7 @@ public class RepositoryDataHelper {
         try {
             m_inputRecordRepository.save(inputRecord);
         } catch (Throwable ex) {
-            log.error("Error while saving input record", ex);
+            log.error("Error while saving input record: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -220,7 +220,7 @@ public class RepositoryDataHelper {
         try {
             m_outputRecordRepository.save(outputRecord);
         } catch (Throwable ex) {
-            log.error("Error while saving output record", ex);
+            log.error("Error while saving output record: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }

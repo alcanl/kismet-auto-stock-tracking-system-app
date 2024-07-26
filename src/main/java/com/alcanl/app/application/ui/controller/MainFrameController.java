@@ -41,9 +41,7 @@ public class MainFrameController extends JFrame {
         m_applicationContext = applicationContext;
         m_currentUserConfig = currentUserConfig;
         initializeFrame();
-        initializeExitButton();
-        initializeMinimizeButton();
-        initializeMaximizeButton();
+        initializeTopBar();
     }
 
     @PostConstruct
@@ -52,6 +50,7 @@ public class MainFrameController extends JFrame {
         setMinimumSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         setSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         m_resources.centerFrame(this);
+        setResizable(true);
     }
 
 
@@ -106,14 +105,6 @@ public class MainFrameController extends JFrame {
     private void initializeMinimizeButton()
     {
         m_mainForm.getButtonMinimize().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                m_mainForm.getButtonMinimize().setBackground(Color.LIGHT_GRAY);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                m_mainForm.getButtonMinimize().setBackground((Color)m_applicationContext.getBean("bean.color.default"));
-            }
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -125,30 +116,78 @@ public class MainFrameController extends JFrame {
     private void initializeMaximizeButton()
     {
         m_mainForm.getButtonMaximize().addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                maximizeButtonOnClickedCallback(e);
+            }
+        });
+    }
+    private void maximizeButtonOnClickedCallback(MouseEvent e)
+    {
+        if (SwingUtilities.isLeftMouseButton(e) && MainFrameController.this.getExtendedState() == Frame.MAXIMIZED_BOTH) {
+            MainFrameController.this.setExtendedState(Frame.NORMAL);
+            ((JLabel)(m_mainForm.getButtonMaximize().getComponent(0))).setIcon(
+                    (Icon) m_applicationContext.getBean("bean.image.icon.maximize.partial.window")
+            );
+        }
+        else if (SwingUtilities.isLeftMouseButton(e) && MainFrameController.this.getExtendedState() == Frame.NORMAL) {
+            MainFrameController.this.setExtendedState(Frame.MAXIMIZED_BOTH);
+            ((JLabel)(m_mainForm.getButtonMaximize().getComponent(0))).setIcon(
+                    (Icon) m_applicationContext.getBean("bean.image.icon.maximize.full.window")
+            );
+        }
+    }
+    private void initializeLeftTopBarButtonNew()
+    {
+        m_mainForm.getButtonNew().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+        });
+    }
+    private void initializeTopBar()
+    {
+        for (Component component: m_mainForm.getPanelTopBar().getComponents())
+            if (component instanceof JPanel jpanel) {
+                if (jpanel.getName().equals("panelLogo") || jpanel.getName().equals("button.exit"))
+                    continue;
+
+                initializeTopBar(jpanel);
+            }
+
+        initializeExitButton();
+        initializeMaximizeButton();
+        initializeMinimizeButton();
+        initializeLeftTopBarButtonNew();
+        initializeTopBarClickListener();
+
+
+    }
+    private void initializeTopBarClickListener()
+    {
+        m_mainForm.getPanelTopBar().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
+                   maximizeButtonOnClickedCallback(e);
+
+            }
+        } );
+    }
+    private void initializeTopBar(JPanel jPanel)
+    {
+        jPanel.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseEntered(MouseEvent e) {
-                m_mainForm.getButtonMaximize().setBackground(Color.LIGHT_GRAY);
+                jPanel.setBackground(Color.LIGHT_GRAY);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                m_mainForm.getButtonMaximize().setBackground((Color)m_applicationContext.getBean("bean.color.default"));
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e) && MainFrameController.this.getExtendedState() == Frame.MAXIMIZED_BOTH) {
-                    MainFrameController.this.setExtendedState(Frame.NORMAL);
-                    ((JLabel)(m_mainForm.getButtonMaximize().getComponent(0))).setIcon(
-                            (Icon) m_applicationContext.getBean("bean.image.icon.maximize.partial.window")
-                    );
-                }
-                else if (SwingUtilities.isLeftMouseButton(e) && MainFrameController.this.getExtendedState() == Frame.NORMAL) {
-                    MainFrameController.this.setExtendedState(Frame.MAXIMIZED_BOTH);
-                    ((JLabel)(m_mainForm.getButtonMaximize().getComponent(0))).setIcon(
-                            (Icon) m_applicationContext.getBean("bean.image.icon.maximize.full.window")
-                    );
-                }
+                jPanel.setBackground((Color)m_applicationContext.getBean("bean.color.default"));
             }
         });
     }
