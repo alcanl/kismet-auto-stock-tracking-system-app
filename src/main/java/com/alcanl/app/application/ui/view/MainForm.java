@@ -24,7 +24,14 @@ public class MainForm extends JFrame {
     private JPanel buttonSettings;
     private JLabel labelLogout;
     private JPanel buttonLogout;
-    private JLabel imageViewLogo;
+    private JLabel iconLogo;
     private JPanel panelLogo;
+    private JLabel iconExit;
+    private JLabel iconMaximize;
+    private JLabel iconMinimize;
+    private JScrollPane paneMid;
+    private JPanel panelContainer;
+    private JPanel panelStockState;
+    private JTable tableStockOut;
 
 }

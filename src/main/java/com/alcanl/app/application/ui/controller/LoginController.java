@@ -1,5 +1,7 @@
 package com.alcanl.app.application.ui.controller;
 
+import com.alcanl.app.application.ui.event.DisposeEvent;
+import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.view.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
 
@@ -10,6 +12,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
 import java.awt.*;
@@ -68,6 +72,13 @@ public class LoginController extends JFrame {
         setTitle(m_appTitle);
     }
 
+    private void clearEditTexts()
+    {
+        m_loginForm.getTextFieldUserName().setText(EMPTY_STRING);
+        m_loginForm.getFieldPassword().setText(EMPTY_STRING);
+        m_loginForm.getTextFieldUserName().requestFocus();
+    }
+
     private void initializeWindowListener()
     {
         addWindowListener(new WindowAdapter() {
@@ -75,7 +86,7 @@ public class LoginController extends JFrame {
             public void windowClosed(WindowEvent e)
             {
                 super.windowClosed(e);
-                m_threadPool.shutdown();
+                m_threadPool.shutdownNow();
             }
         });
     }
@@ -100,12 +111,11 @@ public class LoginController extends JFrame {
                     .get(5, TimeUnit.SECONDS);
 
             if (userDtoOpt.isEmpty()) {
-                m_loginForm.getTextFieldUserName().setText(EMPTY_STRING);
-                m_loginForm.getFieldPassword().setText(EMPTY_STRING);
                 m_resources.showNoSuchUserWarningDialog();
-                m_loginForm.getTextFieldUserName().requestFocus();
+                clearEditTexts();
             }
             else {
+                clearEditTexts();
                 this.setVisible(false);
                 m_currentUserConfig.setUser(userDtoOpt.get());
                 m_mainFrameController.setVisible(true);
@@ -161,5 +171,17 @@ public class LoginController extends JFrame {
             m_resources.showUnknownErrorMessageDialog(ex.getMessage());
         }
 
+    }
+    @EventListener
+    @Async
+    public void onApplicationShowFormEvent(ShowFormEvent ignoredEvent)
+    {
+        m_currentUserConfig.setUser(null);
+        setVisible(true);
+    }
+    @EventListener
+    public void onApplicationDisposeEvent(DisposeEvent ignoredEvent)
+    {
+        this.dispose();
     }
 }

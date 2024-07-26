@@ -19,16 +19,19 @@ import java.io.IOException;
 public final class Resources {
 
     @Value("${kismet.auto.stock.tracking.system.double.threshold}")
-    private double doubleThreshold;
+    private double m_doubleThreshold;
 
     @Value("${kismet.auto.stock.tracking.system.nimbus.theme}")
-    private String nimbusTheme;
+    private String m_nimbusTheme;
 
     @Value("${kismet.auto.stock.tracking.system.default.icon}")
-    private String defaultIconPath;
+    private String m_defaultIconPath;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.sure.to.logout}")
+    private String m_warningMessageSureToLogout;
 
     @Value("${kismet.auto.stock.tracking.system.default.logo}")
-    private String defaultLogoPath;
+    private String m_defaultLogoPath;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.unknown}")
     private String m_errorMessageUnknown;
@@ -43,13 +46,13 @@ public final class Resources {
     private String m_warningTitle;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.unsupported.format}")
-    private String errorUnsupportedFormat;
+    private String m_errorUnsupportedFormat;
 
     @Value("${kismet.auto.stock.tracking.system.warning.message.empty.search.list}")
-    private String warningEmptySearchList;
+    private String m_warningEmptySearchList;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
-    private String errorMessageEmptyName;
+    private String m_errorMessageEmptyName;
 
     @Value("${kismet.auto.stock.tracking.system.dialog.message.stock.amount}")
     private String m_dialogStockInputText;
@@ -85,7 +88,7 @@ public final class Resources {
     public void setLayout()
     {
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if (nimbusTheme.equals(info.getName()))
+            if (m_nimbusTheme.equals(info.getName()))
                 try {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -104,7 +107,7 @@ public final class Resources {
     public void initializeLogo(JFrame frame)
     {
         try {
-            var icon = new ImageIcon(m_applicationContext.getResource(defaultLogoPath).getContentAsByteArray());
+            var icon = new ImageIcon(m_applicationContext.getResource(m_defaultLogoPath).getContentAsByteArray());
             frame.setIconImage(icon.getImage());
         } catch (IOException ex) {
             log.error("Resources::initializeLogo: {}", ex.getMessage());
@@ -113,12 +116,12 @@ public final class Resources {
 
     public void showUnsupportedFormatWarningMessageDialog()
     {
-        JOptionPane.showMessageDialog(null, errorUnsupportedFormat, m_errorMessageTitle,
+        JOptionPane.showMessageDialog(null, m_errorUnsupportedFormat, m_errorMessageTitle,
                 JOptionPane.ERROR_MESSAGE);
     }
     public void showEmptyListWarningMessageDialog()
     {
-        JOptionPane.showMessageDialog(null, warningEmptySearchList, m_warningTitle,
+        JOptionPane.showMessageDialog(null, m_warningEmptySearchList, m_warningTitle,
                 JOptionPane.INFORMATION_MESSAGE);
 
     }
@@ -132,9 +135,15 @@ public final class Resources {
         return JOptionPane.showConfirmDialog(null, m_warningMessageSureToExit, m_warningTitle,
                 JOptionPane.YES_NO_OPTION);
     }
+    public int showEnsureLogoutMessageDialog(String userInfo)
+    {
+        return JOptionPane.showConfirmDialog(null,
+                String.format(m_warningMessageSureToLogout, userInfo), m_warningTitle,
+                JOptionPane.YES_NO_OPTION);
+    }
     public void showEmptyNameTextErrorMessageDialog()
     {
-        JOptionPane.showMessageDialog(null, errorMessageEmptyName, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, m_errorMessageEmptyName, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
     public void showUnknownErrorMessageDialog(String errMessage)
     {

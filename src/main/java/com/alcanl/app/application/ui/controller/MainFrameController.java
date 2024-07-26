@@ -1,5 +1,7 @@
 package com.alcanl.app.application.ui.controller;
 
+import com.alcanl.app.application.ui.event.DisposeEvent;
+import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.view.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
@@ -8,11 +10,13 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 @Slf4j
 @Controller
@@ -30,9 +34,11 @@ public class MainFrameController extends JFrame {
     private final CurrentUserConfig m_currentUserConfig;
     private final UserService m_userService;
     private final ApplicationContext m_applicationContext;
+    private final ApplicationEventPublisher m_applicationEventPublisher;
 
     public MainFrameController(Resources resources, ExecutorService threadPool, UserService userService,
-                               ApplicationContext applicationContext, MainForm mainForm, CurrentUserConfig currentUserConfig)
+                               ApplicationContext applicationContext, MainForm mainForm, CurrentUserConfig currentUserConfig,
+                               ApplicationEventPublisher applicationEventPublisher)
     {
         m_mainForm = mainForm;
         m_resources = resources;
@@ -40,6 +46,7 @@ public class MainFrameController extends JFrame {
         m_userService = userService;
         m_applicationContext = applicationContext;
         m_currentUserConfig = currentUserConfig;
+        m_applicationEventPublisher = applicationEventPublisher;
         initializeFrame();
         initializeTopBar();
     }
@@ -57,17 +64,9 @@ public class MainFrameController extends JFrame {
     private void initializeWindowListener()
     {
         addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e)
-            {
-                super.windowClosed(e);
-                m_threadPool.shutdown();
-                System.exit(0);
-            }
 
             @Override
             public void windowOpened(WindowEvent e) {
-                super.windowOpened(e);
                 var text = m_mainForm.getLabelWelcomeUser().getText();
                 m_mainForm.getLabelWelcomeUser().setText(String.format(text, m_currentUserConfig.getUser().toString()));
             }
@@ -97,8 +96,10 @@ public class MainFrameController extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e) &&
-                        m_resources.showEnsureExitMessageDialog() == JOptionPane.YES_OPTION)
+                        m_resources.showEnsureExitMessageDialog() == JOptionPane.YES_OPTION) {
                     MainFrameController.this.dispose();
+                    m_applicationEventPublisher.publishEvent(new DisposeEvent(this));
+                }
             }
         });
     }
@@ -140,18 +141,31 @@ public class MainFrameController extends JFrame {
     }
     private void initializeLeftTopBarButtonNew()
     {
-        m_mainForm.getButtonNew().addMouseListener(new MouseAdapter() {
+        setOnPanelButtonClickListener(m_mainForm.getButtonNew(), null);
+    }
+    private void setOnPanelButtonClickListener(JPanel panel, Consumer<MouseEvent> consumer)
+    {
+        panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                consumer.accept(e);
             }
+        });
+    }
+    private void initializeButtonLogout()
+    {
+        setOnPanelButtonClickListener(m_mainForm.getButtonLogout(), event -> {
+           if (m_resources.showEnsureLogoutMessageDialog(m_currentUserConfig.getUser().toString()) == JOptionPane.YES_OPTION) {
+               this.dispose();
+               m_applicationEventPublisher.publishEvent(new ShowFormEvent(this));
+           }
         });
     }
     private void initializeTopBar()
     {
         for (Component component: m_mainForm.getPanelTopBar().getComponents())
             if (component instanceof JPanel jpanel) {
-                if (jpanel.getName().equals("panelLogo") || jpanel.getName().equals("button.exit"))
+                if (jpanel.equals(m_mainForm.getPanelLogo()) || jpanel.equals(m_mainForm.getButtonExit()))
                     continue;
 
                 initializeTopBar(jpanel);
@@ -162,19 +176,17 @@ public class MainFrameController extends JFrame {
         initializeMinimizeButton();
         initializeLeftTopBarButtonNew();
         initializeTopBarClickListener();
+        initializeButtonLogout();
 
 
     }
     private void initializeTopBarClickListener()
     {
-        m_mainForm.getPanelTopBar().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
-                   maximizeButtonOnClickedCallback(e);
+        setOnPanelButtonClickListener(m_mainForm.getPanelTopBar(), e -> {
+            if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
+                maximizeButtonOnClickedCallback(e);
+            });
 
-            }
-        } );
     }
     private void initializeTopBar(JPanel jPanel)
     {
