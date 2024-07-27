@@ -170,10 +170,10 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public void saveProduct(Product product)
+    public Product saveProduct(Product product)
     {
         try {
-            m_productRepository.save(product);
+            return m_productRepository.save(product);
         } catch (Throwable ex) {
             log.error("Error while saving product: {}", ex.getMessage());
             throw new RepositoryException(ex);

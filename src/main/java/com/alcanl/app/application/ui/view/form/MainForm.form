@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.alcanl.app.application.ui.view.MainForm">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.alcanl.app.application.ui.view.form.MainForm">
   <grid id="27dc6" binding="panelMain" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
@@ -153,7 +153,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <font name="Segoe UI" size="10"/>
+                  <font name="Segoe UI Semibold" size="11"/>
                   <text value="Yeni"/>
                 </properties>
               </component>
@@ -266,8 +266,8 @@
         </properties>
         <border type="empty"/>
         <children>
-          <grid id="d1d9b" binding="panelContainer" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
-            <margin top="5" left="5" bottom="5" right="15"/>
+          <grid id="d1d9b" binding="panelContainer" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties>
               <background color="-1840404"/>
@@ -280,7 +280,7 @@
               <grid id="d1158" binding="panelStockState" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="0" vgap="0">
                 <margin top="5" left="10" bottom="5" right="10"/>
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false">
+                  <grid row="0" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false">
                     <minimum-size width="300" height="-1"/>
                     <maximum-size width="300" height="-1"/>
                   </grid>
@@ -288,13 +288,13 @@
                 <properties>
                   <background color="-1"/>
                 </properties>
-                <border type="etched" title="Stoğu Azalan Ürünler" title-justification="1" title-position="2">
+                <border type="empty" title="Stoğu Azalan Ürünler" title-justification="1" title-position="2">
                   <font name="Segoe UI Semibold" size="18" style="1"/>
                   <title-color color="-10721681"/>
                 </border>
                 <children>
                   <grid id="a0168" binding="panelStockOut" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
-                    <margin top="0" left="0" bottom="10" right="0"/>
+                    <margin top="10" left="0" bottom="10" right="0"/>
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -310,7 +310,7 @@
                         <properties>
                           <background color="-1"/>
                         </properties>
-                        <border type="empty" title="Stokta Bulunmayan Ürünler" title-justification="1" title-position="2">
+                        <border type="empty" title="Stokta Bulunmayan Ürünler" title-justification="2" title-position="2">
                           <font name="Segoe UI Semibold" size="11"/>
                           <title-color color="-8682312"/>
                         </border>
@@ -327,7 +327,8 @@
                               <preferredScrollableViewportSize width="-1" height="-1"/>
                               <preferredSize width="-1" height="-1"/>
                               <rowSelectionAllowed value="true"/>
-                              <selectionBackground color="-2826266"/>
+                              <selectionBackground color="-8682348"/>
+                              <selectionForeground color="-4520667"/>
                             </properties>
                           </component>
                         </children>
@@ -335,7 +336,7 @@
                     </children>
                   </grid>
                   <grid id="fcd20" binding="panelLesserThan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
-                    <margin top="10" left="0" bottom="0" right="0"/>
+                    <margin top="10" left="0" bottom="10" right="0"/>
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -351,7 +352,7 @@
                         <properties>
                           <background color="-1"/>
                         </properties>
-                        <border type="empty" title="Stoğu Eşik Birimden Düşük Ürünler" title-justification="1" title-position="2">
+                        <border type="empty" title="Stoğu Eşik Birimden Düşük Ürünler" title-justification="2" title-position="2">
                           <font name="Segoe UI Semibold" size="11"/>
                           <title-color color="-8682312"/>
                         </border>
@@ -360,6 +361,8 @@
                             <constraints/>
                             <properties>
                               <preferredScrollableViewportSize width="-1" height="-1"/>
+                              <selectionBackground color="-8682348"/>
+                              <selectionForeground color="-4520667"/>
                             </properties>
                           </component>
                         </children>
@@ -373,6 +376,121 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
+              <grid id="3e261" binding="panelRight" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="0" column="2" row-span="2" col-span="1" vsize-policy="3" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false">
+                    <minimum-size width="30" height="-1"/>
+                    <maximum-size width="30" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <background color="-8682348"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <grid id="f040a" binding="buttonRightBar" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                    <margin top="0" left="0" bottom="14" right="0"/>
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="25" height="72"/>
+                        <maximum-size width="25" height="72"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-8682348"/>
+                      <toolTipText value="Kritik Stok"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="96cac" class="javax.swing.JLabel" binding="labelCount">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font name="Calibri" size="14" style="1"/>
+                          <foreground color="-4520667"/>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                      <component id="d4dd7" class="javax.swing.JLabel" binding="iconBar">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="icons/icon_open_right_bar.png"/>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                      <vspacer id="cfe0">
+                        <constraints>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </vspacer>
+                      <vspacer id="50b9f">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </vspacer>
+                    </children>
+                  </grid>
+                  <vspacer id="b2612">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </vspacer>
+                  <grid id="65a57" binding="buttonAddStock" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="25" height="72"/>
+                        <maximum-size width="25" height="72"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-8682348"/>
+                      <toolTipText value="Hızlı Stok Ekle"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="2c378" class="javax.swing.JLabel" binding="iconAdd">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="icons/icon_add.png"/>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="215b2" binding="buttonReleaseStock" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
+                        <minimum-size width="25" height="72"/>
+                        <maximum-size width="25" height="72"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <background color="-8682348"/>
+                      <toolTipText value="Hızlı Stok Düş"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="c706" class="javax.swing.JLabel" binding="iconRelease">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="icons/icon_release.png"/>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </grid>
             </children>
           </grid>
         </children>

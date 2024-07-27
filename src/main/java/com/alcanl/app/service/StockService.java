@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class StockService {
+class StockService {
     private final IStockMapper m_stockMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
 }

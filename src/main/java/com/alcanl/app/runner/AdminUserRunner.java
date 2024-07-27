@@ -1,6 +1,6 @@
 package com.alcanl.app.runner;
 
-import com.alcanl.app.service.UserService;
+import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @PropertySource(value = "classpath:values.properties", encoding = "UTF-8")
 public class AdminUserRunner implements ApplicationRunner {
 
-    private final UserService m_userService;
+    private final ApplicationService m_applicationService;
     private final PasswordEncoder m_passwordEncoder;
 
     @Value("${kismet.auto.stock.tracking.system.admin.username}")
@@ -31,15 +31,15 @@ public class AdminUserRunner implements ApplicationRunner {
     @Value("${kismet.auto.stock.tracking.system.admin.description}")
     private String adminDescription;
 
-    public AdminUserRunner(UserService userService, PasswordEncoder passwordEncoder)
+    public AdminUserRunner(ApplicationService applicationService, PasswordEncoder passwordEncoder)
     {
-        m_userService = userService;
+        m_applicationService = applicationService;
         m_passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        if (!m_userService.isUserExist(adminUserName, adminPassword)) {
+        if (!m_applicationService.isUserExist(adminUserName, adminPassword)) {
             var userDTO = new UserDTO();
             userDTO.setFirstName(adminFirstName);
             userDTO.setLastName(adminLastName);
@@ -48,7 +48,7 @@ public class AdminUserRunner implements ApplicationRunner {
             userDTO.setEMail(adminEmail);
             userDTO.setPassword(m_passwordEncoder.encode(adminPassword));
             userDTO.setUsername(adminUserName);
-            m_userService.saveUser(userDTO);
+            m_applicationService.saveUser(userDTO);
         }
     }
 }

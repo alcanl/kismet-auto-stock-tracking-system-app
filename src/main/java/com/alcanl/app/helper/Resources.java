@@ -1,5 +1,6 @@
 package com.alcanl.app.helper;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +23,6 @@ public final class Resources {
 
     @Value("${kismet.auto.stock.tracking.system.double.threshold}")
     private double m_doubleThreshold;
-
-    @Value("${kismet.auto.stock.tracking.system.nimbus.theme}")
-    private String m_nimbusTheme;
 
     @Value("${kismet.auto.stock.tracking.system.default.icon}")
     private String m_defaultIconPath;
@@ -54,7 +52,7 @@ public final class Resources {
     private String m_warningEmptySearchList;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
-    private String m_errorMessageEmptyName;
+    private String m_errorMessageEmptyEntry;
 
     @Value("${kismet.auto.stock.tracking.system.dialog.message.stock.amount}")
     private String m_dialogStockInputText;
@@ -67,6 +65,9 @@ public final class Resources {
 
     @Value("${kismet.auto.stock.tracking.system.title.amount}")
     private String m_warningTitleAmount;
+
+    @Value("${kismet.auto.stock.tracking.system.info.title}")
+    private String m_infoMessageTitle;
 
     @Value("${kismet.auto.stock.tracking.system.warning.message.wrong.username.or.password}")
     private String m_warningWrongUsernameOrPasswordText;
@@ -85,33 +86,15 @@ public final class Resources {
         UIManager.put("OptionPane.cancelButtonText", "İptal");
         UIManager.put("OptionPane.yesButtonText", "Evet");
         UIManager.put("OptionPane.noButtonText", "Hayır");
-        UIManager.put("control", new Color(255, 255, 255));
-        UIManager.put("info", new Color(255, 255, 255));
-        UIManager.put("nimbusBase", new Color(255, 255, 255));
-        UIManager.put("nimbusAlertYellow", new Color(248, 187, 0));
-        UIManager.put("nimbusDisabledText", new Color(255, 255, 255));
-        UIManager.put("nimbusFocus", new Color(115, 164, 209));
-        UIManager.put("nimbusGreen", new Color(176, 179, 50));
-        UIManager.put("nimbusInfoBlue", new Color(66, 139, 221));
-        UIManager.put("nimbusLightBackground", new Color(255, 255, 255));
-        UIManager.put("nimbusOrange", new Color(191, 98, 4));
-        UIManager.put("nimbusRed", new Color(169, 46, 34));
-        UIManager.put("nimbusSelectedText", new Color(0, 0, 0));
-        UIManager.put("nimbusSelectionBackground", new Color(18, 134, 175));
-        UIManager.put("text", new Color(0, 0, 0));
     }
 
     public void setLayout()
     {
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if (m_nimbusTheme.equals(info.getName()))
-                try {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
-                         IllegalAccessException ex) {
-                    JOptionPane.showMessageDialog(null, m_errorMessageUnknown, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
-                }
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+
+        } catch (UnsupportedLookAndFeelException  ex) {
+            JOptionPane.showMessageDialog(null, m_errorMessageUnknown, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
         }
     }
     public void centerFrame(JFrame frame)
@@ -157,9 +140,9 @@ public final class Resources {
                 String.format(m_warningMessageSureToLogout, userInfo), m_warningTitle,
                 JOptionPane.YES_NO_OPTION);
     }
-    public void showEmptyNameTextErrorMessageDialog()
+    public void showEmptyProductFieldTextErrorMessageDialog()
     {
-        JOptionPane.showMessageDialog(null, m_errorMessageEmptyName, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, m_errorMessageEmptyEntry, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
     public void showUnknownErrorMessageDialog(String errMessage)
     {
@@ -186,7 +169,7 @@ public final class Resources {
         }
     }
 
-    public void showNoSelectedMaterialMessage()
+    public void showNoSelectedProductMessage()
     {
         JOptionPane.showMessageDialog(null, m_warningNoSelectedItemText, m_warningTitle,
                 JOptionPane.WARNING_MESSAGE);
@@ -198,6 +181,10 @@ public final class Resources {
     public void showCustomErrorDialog(String message)
     {
         JOptionPane.showMessageDialog(null, message, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
+    }
+    public void showCustomInfoDialog(String message)
+    {
+        JOptionPane.showMessageDialog(null, message, m_infoMessageTitle, JOptionPane.INFORMATION_MESSAGE);
     }
     public String showCustomInputWarningDialog(String message)
     {

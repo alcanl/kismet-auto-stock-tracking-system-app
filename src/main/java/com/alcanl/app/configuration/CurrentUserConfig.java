@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Setter
 @Getter
@@ -14,7 +15,9 @@ import org.springframework.context.annotation.Configuration;
 public class CurrentUserConfig {
 
     private UserDTO m_user;
-    @Bean
+
+    @Primary
+    @Bean(name = "bean.user.current")
     public CurrentUserConfig getCurrentUser()
     {
         return this;

@@ -38,4 +38,40 @@ public class IconConfig {
             throw new RuntimeException(e);
         }
     }
+
+    @Lazy
+    @Bean(name = "bean.image.icon.right.bar.open")
+    public Icon createOpenBarIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_open_right_bar.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Lazy
+    @Bean(name = "bean.image.icon.right.bar.close")
+    public Icon createCloseBarIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_close_right_bar.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Lazy
+    @Bean(name = "bean.image.icon.info.success.tick")
+    public Icon createSuccessTickIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_success_tick.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

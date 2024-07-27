@@ -21,6 +21,8 @@ public class StockDTO {
 
     private int m_amount;
 
+    private int m_threshold;
+
     @EqualsAndHashCode.Include
     private String m_shelfNumber;
 

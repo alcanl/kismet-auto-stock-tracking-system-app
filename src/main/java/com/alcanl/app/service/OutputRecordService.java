@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class OutputRecordService {
+class OutputRecordService {
     private final IOutputRecordMapper m_outputRecordMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
 }

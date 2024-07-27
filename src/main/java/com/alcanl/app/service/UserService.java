@@ -15,7 +15,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class UserService {
+class UserService {
     private final IUserMapper m_userMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
     private final PasswordEncoder m_passwordEncoder;

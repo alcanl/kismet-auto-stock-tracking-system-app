@@ -2,20 +2,23 @@ package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
-import com.alcanl.app.application.ui.view.MainForm;
+import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
+import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
-import com.alcanl.app.service.ProductService;
-import com.alcanl.app.service.UserService;
+import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.formdev.flatlaf.FlatClientProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
-import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
@@ -26,54 +29,62 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Controller
+@DependsOn({"bean.form.login","bean.form.main","bean.dialog.add.new.product"})
 public class MainFrameController extends JFrame {
 
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.x}")
     private int m_mainFrameStartDimensionX;
-
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.y}")
     private int m_mainFrameStartDimensionY;
+    private DialogAddNewProduct dialogAddNewProduct;
     private final DefaultTableModel m_defaultTableModel;
     private final MainForm m_mainForm;
     private final Resources m_resources;
     private final ExecutorService m_threadPool;
     private final CurrentUserConfig m_currentUserConfig;
-    private final UserService m_userService;
-    private final ProductService m_productService;
+    private final ApplicationService m_applicationService;
     private final ApplicationContext m_applicationContext;
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private static final String TABLE_STOCK_OUT_PRODUCT_NAME = "ÜRÜN ADI";
     private static final String TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
     private static final String TABLE_STOCK_OUT_STOCK = "STOK";
 
-    public MainFrameController(Resources resources, ExecutorService threadPool, UserService userService,
-                               ApplicationContext applicationContext, MainForm mainForm, CurrentUserConfig currentUserConfig,
-                               ApplicationEventPublisher applicationEventPublisher, ProductService productService,
+    public MainFrameController(Resources resources, ExecutorService threadPool,
+                               ApplicationService applicationService, ApplicationContext applicationContext, MainForm mainForm,
+                               CurrentUserConfig currentUserConfig, ApplicationEventPublisher applicationEventPublisher,
                                DefaultTableModel defaultTableModel)
     {
         m_mainForm = mainForm;
         m_resources = resources;
         m_threadPool = threadPool;
-        m_userService = userService;
-        m_productService = productService;
+        m_applicationService = applicationService;
         m_applicationContext = applicationContext;
         m_currentUserConfig = currentUserConfig;
         m_applicationEventPublisher = applicationEventPublisher;
         m_defaultTableModel = defaultTableModel;
-        initializeFrame();
-        initializeTopBar();
-        initializeTables();
     }
 
     @PostConstruct
     private void setFrameSize()
     {
+        initializeFrame();
+        initializeTables();
+        initializeBarButtonsHover();
+        m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
+        m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
+        m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
+
         setMinimumSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         setSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         m_resources.centerFrame(this);
         setResizable(true);
     }
+    @Async
+    @EventListener
+    public void onTableEventReceived()
+    {
 
+    }
 
     private void initializeWindowListener()
     {
@@ -86,6 +97,7 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+
     private void initializeFrame()
     {
         setContentPane(m_mainForm.getPanelMain());
@@ -95,6 +107,7 @@ public class MainFrameController extends JFrame {
         m_resources.setLayout();
         m_resources.initializeLogo(this);
     }
+
     private void initializeExitButton()
     {
         m_mainForm.getButtonExit().addMouseListener(new MouseAdapter() {
@@ -102,7 +115,6 @@ public class MainFrameController extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 m_mainForm.getButtonExit().setBackground((Color)m_applicationContext.getBean("bean.color.button.exit"));
             }
-
             @Override
             public void mouseExited(MouseEvent e) {
                 m_mainForm.getButtonExit().setBackground((Color)m_applicationContext.getBean("bean.color.default"));
@@ -117,6 +129,7 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+
     private void initializeMinimizeButton()
     {
         m_mainForm.getButtonMinimize().addMouseListener(new MouseAdapter() {
@@ -128,6 +141,7 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+
     private void initializeMaximizeButton()
     {
         m_mainForm.getButtonMaximize().addMouseListener(new MouseAdapter() {
@@ -138,6 +152,7 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+
     private void maximizeButtonOnClickedCallback(MouseEvent e)
     {
         if (SwingUtilities.isLeftMouseButton(e) && MainFrameController.this.getExtendedState() == Frame.MAXIMIZED_BOTH) {
@@ -153,10 +168,12 @@ public class MainFrameController extends JFrame {
             );
         }
     }
+
     private void initializeLeftTopBarButtonNew()
     {
         setOnPanelButtonClickListener(m_mainForm.getButtonNew(), null);
     }
+
     private void setOnPanelButtonClickListener(JPanel panel, Consumer<MouseEvent> consumer)
     {
         panel.addMouseListener(new MouseAdapter() {
@@ -166,6 +183,7 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+
     private void initializeButtonLogout()
     {
         setOnPanelButtonClickListener(m_mainForm.getButtonLogout(), event -> {
@@ -175,6 +193,12 @@ public class MainFrameController extends JFrame {
            }
         });
     }
+
+    private void initializeBarButtonsHover()
+    {
+        initializeTopBar();
+        initializeRightSideBar();
+    }
     private void initializeTopBar()
     {
         for (Component component: m_mainForm.getPanelTopBar().getComponents())
@@ -182,7 +206,7 @@ public class MainFrameController extends JFrame {
                 if (jpanel.equals(m_mainForm.getPanelLogo()) || jpanel.equals(m_mainForm.getButtonExit()))
                     continue;
 
-                initializeTopBar(jpanel);
+                initializeBarButtonsHover(jpanel);
             }
 
         initializeExitButton();
@@ -191,9 +215,8 @@ public class MainFrameController extends JFrame {
         initializeLeftTopBarButtonNew();
         initializeTopBarClickListener();
         initializeButtonLogout();
-
-
     }
+
     private void initializeTopBarClickListener()
     {
         setOnPanelButtonClickListener(m_mainForm.getPanelTopBar(), e -> {
@@ -202,7 +225,8 @@ public class MainFrameController extends JFrame {
             });
 
     }
-    private void initializeTopBar(JPanel jPanel)
+
+    private void initializeBarButtonsHover(JPanel jPanel)
     {
         jPanel.addMouseListener(new MouseAdapter() {
 
@@ -210,7 +234,6 @@ public class MainFrameController extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 jPanel.setBackground(Color.LIGHT_GRAY);
             }
-
             @Override
             public void mouseExited(MouseEvent e) {
                 jPanel.setBackground((Color)m_applicationContext.getBean("bean.color.default"));
@@ -222,7 +245,6 @@ public class MainFrameController extends JFrame {
     {
         initializeTableModel();
         m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
-        m_mainForm.getTableStockOut().setUI(new SynthTableUI());
         m_mainForm.getTableStockOut().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_mainForm.getTableStockOut().getTableHeader().setBackground(Color.WHITE);
         m_mainForm.getTableStockOut().getTableHeader().setReorderingAllowed(false);
@@ -249,12 +271,12 @@ public class MainFrameController extends JFrame {
         });
 
         try {
-            fillTable(m_threadPool.submit(m_productService::getAllStockOutProducts).get());
+            fillTable(m_threadPool.submit(m_applicationService::getAllStockOutProducts).get());
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeTables: {}", ex.getMessage());
         }
-
     }
+
     private void fillTable(List<ProductDTO> list)
     {
         var testStock = 0;
@@ -267,15 +289,47 @@ public class MainFrameController extends JFrame {
         m_resources.setCellsAlignment(m_mainForm.getTableStockOut(), SwingConstants.CENTER);
 
     }
+
     private void fillTableCallback(ProductDTO productDTO)
     {
         Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().amount};
         m_defaultTableModel.addRow(data);
         m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
     }
+
     private void initializeTableModel()
     {
         Object[] tableHeaders = {TABLE_STOCK_OUT_PRODUCT_NAME, TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE, TABLE_STOCK_OUT_STOCK};
         m_defaultTableModel.setColumnIdentifiers(tableHeaders);
+    }
+
+    private void initializeRightSideBar()
+    {
+        m_mainForm.getLabelCount().setText("%d".formatted(m_defaultTableModel.getRowCount()));
+        initializeBarButtonsHover(m_mainForm.getButtonRightBar());
+        initializeBarButtonsHover(m_mainForm.getButtonAddStock());
+        initializeBarButtonsHover(m_mainForm.getButtonReleaseStock());
+
+        m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (m_mainForm.getPanelStockState().getWidth() > 0) {
+                    m_mainForm.getPanelStockState().setSize(0, m_mainForm.getPanelStockState().getHeight());
+                    m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.open"));
+                }
+                else {
+                    m_mainForm.getPanelStockState().setSize(300, m_mainForm.getPanelStockState().getHeight());
+                    m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.close"));
+                }
+            }
+        });
+        m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                dialogAddNewProduct = (DialogAddNewProduct)m_applicationContext.getBean("bean.dialog.add.new.product");
+                dialogAddNewProduct.pack();
+                dialogAddNewProduct.setLocationRelativeTo(null);
+                dialogAddNewProduct.setVisible(true);
+            }
+        });
     }
 }

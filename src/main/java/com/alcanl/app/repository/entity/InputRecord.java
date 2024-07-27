@@ -19,14 +19,14 @@ public class InputRecord {
     public int amount;
 
     @Column(name = "record_date", nullable = false)
-    public LocalDate recordDate;
+    public LocalDate recordDate = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     public User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "stockId", nullable = false)
+    @JoinColumn(name = "stock_id", nullable = false)
     public Stock stock;
 
 }

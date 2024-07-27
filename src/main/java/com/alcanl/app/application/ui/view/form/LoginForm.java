@@ -1,13 +1,12 @@
-package com.alcanl.app.application.ui.view;
+package com.alcanl.app.application.ui.view.form;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import javax.swing.*;
-import java.awt.*;
 
 @SuppressWarnings("ALL")
-@Component
-public class LoginForm extends JFrame{
+@Component("bean.form.login")
+public class LoginForm extends JFrame {
     @Getter
     private JPanel panelMain;
     private JLabel labelLogo;
@@ -28,10 +27,4 @@ public class LoginForm extends JFrame{
     private JLabel labelVisibility;
     private JLabel labelBalance;
 
-    public LoginForm()
-    {
-        setSize(1400, 800);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(1400, 800));
-    }
 }

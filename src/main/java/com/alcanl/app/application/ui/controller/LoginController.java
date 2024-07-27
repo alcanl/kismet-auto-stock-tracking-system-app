@@ -2,16 +2,17 @@ package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
-import com.alcanl.app.application.ui.view.LoginForm;
+import com.alcanl.app.application.ui.view.form.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
 
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
-import com.alcanl.app.service.UserService;
+import com.alcanl.app.service.ApplicationService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
@@ -19,13 +20,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 @Slf4j
 @Controller
+@DependsOn({"bean.form.login", "bean.form.main", "bean.dialog.add.new.product"})
 public class LoginController extends JFrame {
 
     @Value("${kismet.auto.stock.tracking.system.app.title}")
@@ -46,29 +45,29 @@ public class LoginController extends JFrame {
     private final LoginForm m_loginForm;
     private final Resources m_resources;
     private final ExecutorService m_threadPool;
-    private final UserService m_userService;
+    private final ApplicationService m_applicationService;
     private final ApplicationContext m_applicationContext;
     private final MainFrameController m_mainFrameController;
     private final CurrentUserConfig m_currentUserConfig;
 
-    public LoginController(Resources resources, ExecutorService threadPool, UserService userService,
+    public LoginController(Resources resources, ExecutorService threadPool, ApplicationService applicationService,
                            ApplicationContext applicationContext, LoginForm loginForm, MainFrameController mainFrameController,
                            CurrentUserConfig currentUserConfig)
     {
         m_loginForm = loginForm;
         m_resources = resources;
         m_threadPool = threadPool;
-        m_userService = userService;
+        m_applicationService = applicationService;
         m_applicationContext = applicationContext;
         m_mainFrameController = mainFrameController;
         m_currentUserConfig = currentUserConfig;
-        initializeFrame();
-        setOnViewListeners();
     }
 
     @PostConstruct
     private void setFormTitle()
     {
+        initializeFrame();
+        setOnViewListeners();
         setTitle(m_appTitle);
     }
 
@@ -107,7 +106,7 @@ public class LoginController extends JFrame {
 
         try {
             var userDtoOpt = m_threadPool.submit(
-                    () -> m_userService.findUserByUsernameAndPassword(username, password))
+                    () -> m_applicationService.findUserByUsernameAndPassword(username, password))
                     .get(5, TimeUnit.SECONDS);
 
             if (userDtoOpt.isEmpty()) {
@@ -180,6 +179,7 @@ public class LoginController extends JFrame {
         setVisible(true);
     }
     @EventListener
+    @Async
     public void onApplicationDisposeEvent(DisposeEvent ignoredEvent)
     {
         this.dispose();

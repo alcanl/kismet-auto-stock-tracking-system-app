@@ -24,7 +24,7 @@ public class Product {
     public File imageFile;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "stockId", nullable = false)
+    @JoinColumn(name = "stock_id", nullable = false)
     public Stock stock;
 
 }

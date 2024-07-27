@@ -1,12 +1,19 @@
 package com.alcanl.app.service;
 
 import com.alcanl.app.repository.dal.RepositoryDataHelper;
+import com.alcanl.app.repository.entity.InputRecord;
 import com.alcanl.app.repository.entity.Product;
+import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.repository.exception.RepositoryException;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.alcanl.app.service.dto.StockDTO;
+import com.alcanl.app.service.dto.UserDTO;
 import com.alcanl.app.service.mapper.IProductMapper;
+import com.alcanl.app.service.mapper.IStockMapper;
+import com.alcanl.app.service.mapper.IUserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,8 +22,10 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ProductService {
+class ProductService {
     private final IProductMapper m_productMapper;
+    private final IStockMapper m_stockMapper;
+    private final IUserMapper m_userMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
 
     public List<ProductDTO> getAllStockOutProducts()
@@ -40,6 +49,26 @@ public class ProductService {
         } catch (RepositoryException ex) {
             log.error("ProductService::getAllStockLesserThanThresholdProducts: {}", ex.getMessage());
             return new ArrayList<>();
+        }
+    }
+    public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO, UserDTO userDTO)
+    {
+        try {
+            if (m_repositoryDataHelper.existProductById(productDTO.getOriginalCode()))
+                throw new ProductAlreadyExistException(productDTO.getOriginalCode());
+
+            var stock = m_stockMapper.stockDTOToStock(stockDTO);
+            productDTO.setStock(stock);
+            var inputRecord = new InputRecord();
+            inputRecord.amount = stockDTO.getAmount();
+            inputRecord.user = m_userMapper.userDTOToUser(userDTO);
+            inputRecord.stock = stock;
+            m_repositoryDataHelper.saveInputRecord(inputRecord);
+            return m_repositoryDataHelper.saveProduct(m_productMapper.productDTOToProduct(productDTO));
+        }
+        catch (RepositoryException ex) {
+            log.error("ProductService::saveProduct: {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
         }
     }
 }
