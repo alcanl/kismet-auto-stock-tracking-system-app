@@ -6,6 +6,7 @@ import com.alcanl.app.service.dto.UserDTO;
 import com.alcanl.app.service.mapper.IUserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,6 @@ class UserService {
             log.error(ex.getMessage());
         }
     }
-    public boolean isUserExist(String username, String password)
-    {
-        var userDtoOpt = m_repositoryDataHelper.findUserByUsername(username).map(m_userMapper::userToUserDTO);
-
-        return userDtoOpt.filter(userDTO -> m_passwordEncoder.matches(password, userDTO.getPassword())).isPresent();
-    }
     public Optional<UserDTO> findUserByUsernameAndPassword(String username, String password)
     {
         var userDtoOpt = m_repositoryDataHelper.findUserByUsername(username).map(m_userMapper::userToUserDTO);
@@ -42,5 +37,14 @@ class UserService {
         return userDtoOpt.isEmpty() ? Optional.empty() :
                 m_passwordEncoder.matches(password, userDtoOpt.get().getPassword()) ? userDtoOpt : Optional.empty();
 
+    }
+    public boolean isUserExist(String username)
+    {
+        try {
+            return m_repositoryDataHelper.isUserExistByUsername(username);
+        } catch (RepositoryException ex) {
+            log.error("Error in UserService.isUserExist : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
     }
 }

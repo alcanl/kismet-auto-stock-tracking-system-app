@@ -1,11 +1,9 @@
 package com.alcanl.app.application.ui.view.form;
 
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 import javax.swing.*;
 
 @Getter
-@Component("bean.form.main")
 public class MainForm extends JFrame {
     private JPanel panelMain;
     private JPanel panelBottomBar;
@@ -34,7 +32,6 @@ public class MainForm extends JFrame {
     private JPanel panelLesserThan;
     private JPanel panelStockOut;
     private JTable tableLesserThanThreshold;
-    private JTable tableStockOut;
     private JScrollPane scrollPaneStockOut;
     private JScrollPane scrollPaneLesserThan;
     private JPanel panelRight;
@@ -45,5 +42,9 @@ public class MainForm extends JFrame {
     private JLabel iconAdd;
     private JPanel buttonReleaseStock;
     private JLabel iconRelease;
+    private JPanel panelMainContainer;
+    private JTable tableStockOut;
+    private JTabbedPane tabbedPaneMain;
+    private JPanel panelProducts;
 
 }

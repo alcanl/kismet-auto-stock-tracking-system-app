@@ -1,11 +1,10 @@
 package com.alcanl.app.application.ui.view.form;
 
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 import javax.swing.*;
 
 @SuppressWarnings("ALL")
-@Component("bean.form.login")
+
 public class LoginForm extends JFrame {
     @Getter
     private JPanel panelMain;

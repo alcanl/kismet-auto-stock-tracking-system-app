@@ -3,6 +3,7 @@ package com.alcanl.app.application.ui.view.dialog;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.helper.Resources;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Arrays;
 public final class DialogHelper {
     private final Resources m_resources;
     private final ApplicationEventPublisher m_applicationEventPublisher;
+    private final ApplicationContext m_applicationContext;
 
     public boolean areFieldsValid(String... varargs)
     {
@@ -41,5 +43,19 @@ public final class DialogHelper {
     public void notifyTables()
     {
         m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
+    }
+    public void showAddNewProductDialog()
+    {
+        var dialogAddNewProduct = (DialogAddNewProduct)m_applicationContext.getBean("bean.dialog.add.new.product");
+        dialogAddNewProduct.pack();
+        dialogAddNewProduct.setLocationRelativeTo(null);
+        dialogAddNewProduct.setVisible(true);
+    }
+    public void showProductCardDialog()
+    {
+        var dialog = (DialogProductCard)m_applicationContext.getBean("bean.dialog.card.product");
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 }

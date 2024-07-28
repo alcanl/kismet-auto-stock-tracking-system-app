@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.File;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -18,6 +19,8 @@ public class ProductDTO {
     private String m_originalCode;
 
     private String m_stockCode;
+
+    private LocalDate m_registerDate;
 
     @EqualsAndHashCode.Include
     private String m_productName;

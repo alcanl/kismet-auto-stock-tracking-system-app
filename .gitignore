@@ -38,3 +38,11 @@ build/
 *.png
 
 
+/src/main/resources/application.properties
+/log/stock_track.log
+/log/stock_track.log.2024-07-22.0.gz
+/src/main/resources/values.properties
+/log/stock_track.log.2024-07-25.0.gz
+/log/stock_track.log.2024-07-23.0.gz
+/log/stock_track.log.2024-07-26.0.gz
+/log/stock_track.log.2024-07-27.0.gz

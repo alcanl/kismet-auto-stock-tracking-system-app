@@ -10,7 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Order(2)
+@Order(1)
 @Component
 @PropertySource(value = "classpath:values.properties", encoding = "UTF-8")
 public class AdminUserRunner implements ApplicationRunner {
@@ -39,7 +39,7 @@ public class AdminUserRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (!m_applicationService.isUserExist(adminUserName, adminPassword)) {
+        if (!m_applicationService.isUserExist(adminUserName)) {
             var userDTO = new UserDTO();
             userDTO.setFirstName(adminFirstName);
             userDTO.setLastName(adminLastName);

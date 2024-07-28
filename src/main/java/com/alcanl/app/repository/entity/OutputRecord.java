@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class OutputRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "output_record_id")
     public long outputRecordId;
 
@@ -22,11 +22,11 @@ public class OutputRecord {
     public LocalDate recordDate;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     public User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "stockId", nullable = false)
+    @JoinColumn(name = "stock_id", nullable = false)
     public Stock stock;
 
 }

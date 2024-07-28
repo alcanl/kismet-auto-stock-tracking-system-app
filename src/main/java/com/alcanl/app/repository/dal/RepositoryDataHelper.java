@@ -6,6 +6,7 @@ import com.alcanl.app.repository.exception.RepositoryException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -65,10 +66,10 @@ public class RepositoryDataHelper {
             return Optional.empty();
         }
     }
-    public boolean existByEmail(String eMail)
+    public boolean isUserExistByUsername(String username)
     {
         try {
-            return m_userRepository.existsByeMail(eMail);
+            return m_userRepository.existsByUsername(username);
         } catch (Throwable ex) {
             log.error("Error while existing user by user email: {}", ex.getMessage());
             return false;
@@ -126,9 +127,19 @@ public class RepositoryDataHelper {
     public Iterable<Stock> findAllStockByLesserThan(int lesser)
     {
         try {
-            return m_stockRepository.findAllByLesserThan(lesser);
+            return m_stockRepository.findAllByLesserOrEqualsThan(lesser);
         } catch (Throwable ex) {
             log.error("Error while finding stock by lesser: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+
+    public Iterable<Stock> findAllStockByLesserThanThreshold()
+    {
+        try {
+            return m_stockRepository.findAllByLesserThanThreshold();
+        } catch (Throwable ex) {
+            log.error("Error while finding stock by lesser than threshold: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -151,6 +162,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public void saveUser(User user)
     {
         try {
@@ -161,6 +173,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public void deleteUser(User user)
     {
         try {
@@ -170,6 +183,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public Product saveProduct(Product product)
     {
         try {
@@ -188,6 +202,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public void deleteProduct(Product product)
     {
         try {
@@ -197,15 +212,17 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public void saveStock(Stock stock)
+    @Transactional
+    public Stock saveStock(Stock stock)
     {
         try {
-            m_stockRepository.save(stock);
+            return m_stockRepository.save(stock);
         } catch (Throwable ex) {
             log.error("Error while saving stock: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public void saveInputRecord(InputRecord inputRecord)
     {
         try {
@@ -215,6 +232,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    @Transactional
     public void saveOutputRecord(OutputRecord outputRecord)
     {
         try {

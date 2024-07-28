@@ -11,7 +11,7 @@ import java.util.Set;
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id")
     public long stockId;
 
@@ -24,12 +24,12 @@ public class Stock {
     @Column(name = "shelf_no", nullable = false)
     public String shelfNumber;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "stock", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
     public Product product;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "stock", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
     public Set<InputRecord> inputRecords;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "stock", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
     public Set<OutputRecord> outputRecords;
 }

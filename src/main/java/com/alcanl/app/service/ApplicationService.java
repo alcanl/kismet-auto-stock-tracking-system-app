@@ -34,9 +34,9 @@ public class ApplicationService {
     {
         m_userService.saveUser(userDTO);
     }
-    public boolean isUserExist(String username, String password)
+    public boolean isUserExist(String username)
     {
-        return m_userService.isUserExist(username, password);
+        return m_userService.isUserExist(username);
     }
     public Optional<UserDTO> findUserByUsernameAndPassword(String username, String password)
     {
@@ -46,8 +46,13 @@ public class ApplicationService {
     {
         return m_productService.getAllStockOutProducts();
     }
-    public List<Product> getAllLesserThanThresholdStockProducts()
+    public List<ProductDTO> getAllLesserThanThresholdStockProducts()
     {
         return m_productService.getAllLesserThanThresholdStockProducts();
+    }
+
+    public Optional<ProductDTO> findProductById(String productId)
+    {
+        return m_productService.findProductById(productId);
     }
 }

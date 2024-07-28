@@ -2,12 +2,13 @@ package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
-import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
+import com.alcanl.app.application.ui.event.UpdateTablesEvent;
+import com.alcanl.app.helper.TableInitializer;
+import com.alcanl.app.application.ui.view.dialog.DialogHelper;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
 import com.alcanl.app.service.ApplicationService;
-import com.alcanl.app.service.dto.ProductDTO;
 import com.formdev.flatlaf.FlatClientProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -36,36 +35,35 @@ public class MainFrameController extends JFrame {
     private int m_mainFrameStartDimensionX;
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.y}")
     private int m_mainFrameStartDimensionY;
-    private DialogAddNewProduct dialogAddNewProduct;
-    private final DefaultTableModel m_defaultTableModel;
     private final MainForm m_mainForm;
     private final Resources m_resources;
     private final ExecutorService m_threadPool;
     private final CurrentUserConfig m_currentUserConfig;
     private final ApplicationService m_applicationService;
     private final ApplicationContext m_applicationContext;
+    private final TableInitializer m_tableInitializer;
     private final ApplicationEventPublisher m_applicationEventPublisher;
-    private static final String TABLE_STOCK_OUT_PRODUCT_NAME = "ÜRÜN ADI";
-    private static final String TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
-    private static final String TABLE_STOCK_OUT_STOCK = "STOK";
+    private final DialogHelper m_dialogHelper;
+
 
     public MainFrameController(Resources resources, ExecutorService threadPool,
                                ApplicationService applicationService, ApplicationContext applicationContext, MainForm mainForm,
                                CurrentUserConfig currentUserConfig, ApplicationEventPublisher applicationEventPublisher,
-                               DefaultTableModel defaultTableModel)
+                               DefaultTableModel defaultTableModel, DialogHelper dialogHelper, TableInitializer tableInitializer)
     {
         m_mainForm = mainForm;
         m_resources = resources;
         m_threadPool = threadPool;
+        m_dialogHelper = dialogHelper;
         m_applicationService = applicationService;
         m_applicationContext = applicationContext;
         m_currentUserConfig = currentUserConfig;
         m_applicationEventPublisher = applicationEventPublisher;
-        m_defaultTableModel = defaultTableModel;
+        m_tableInitializer = tableInitializer;
     }
 
     @PostConstruct
-    private void setFrameSize()
+    private void setFrameProperties()
     {
         initializeFrame();
         initializeTables();
@@ -73,7 +71,6 @@ public class MainFrameController extends JFrame {
         m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
-
         setMinimumSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         setSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
         m_resources.centerFrame(this);
@@ -81,9 +78,9 @@ public class MainFrameController extends JFrame {
     }
     @Async
     @EventListener
-    public void onTableEventReceived()
+    public void onTableEventReceived(UpdateTablesEvent ignore)
     {
-
+        initializeTables();
     }
 
     private void initializeWindowListener()
@@ -169,9 +166,13 @@ public class MainFrameController extends JFrame {
         }
     }
 
-    private void initializeLeftTopBarButtonNew()
+    private void initializeLeftBarButton(JPanel panel, String bean)
     {
-        setOnPanelButtonClickListener(m_mainForm.getButtonNew(), null);
+        setOnPanelButtonClickListener(panel, e -> {
+                    var menu = ((JPopupMenu)m_applicationContext.getBean(bean));
+                    menu.pack();
+                    menu.show(panel, panel.getComponent(0).getX(),panel.getY() + panel.getHeight());
+        });
     }
 
     private void setOnPanelButtonClickListener(JPanel panel, Consumer<MouseEvent> consumer)
@@ -212,9 +213,11 @@ public class MainFrameController extends JFrame {
         initializeExitButton();
         initializeMaximizeButton();
         initializeMinimizeButton();
-        initializeLeftTopBarButtonNew();
         initializeTopBarClickListener();
         initializeButtonLogout();
+        initializeLeftBarButton(m_mainForm.getButtonNew(),"bean.menu.popup.top.bar.new");
+        initializeLeftBarButton(m_mainForm.getButtonEdit(),"bean.menu.popup.top.bar.edit");
+        initializeLeftBarButton(m_mainForm.getButtonSettings(),"bean.menu.popup.top.bar.settings");
     }
 
     private void initializeTopBarClickListener()
@@ -243,69 +246,12 @@ public class MainFrameController extends JFrame {
 
     private void initializeTables()
     {
-        initializeTableModel();
-        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
-        m_mainForm.getTableStockOut().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        m_mainForm.getTableStockOut().getTableHeader().setBackground(Color.WHITE);
-        m_mainForm.getTableStockOut().getTableHeader().setReorderingAllowed(false);
-        m_mainForm.getTableStockOut().getTableHeader().setResizingAllowed(false);
-        m_mainForm.getTableStockOut().getTableHeader().setUpdateTableInRealTime(true);
-        m_mainForm.getTableStockOut().getTableHeader().setFont(new Font("segoe ui semibold", Font.BOLD, 13));
-        m_mainForm.getTableStockOut().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Point point = e.getPoint();
-                int currentRow = m_mainForm.getTableStockOut().rowAtPoint(point);
-                m_mainForm.getTableStockOut().setRowSelectionInterval(currentRow, currentRow);
-
-                if (SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
-                {
-
-                }
-
-                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
-                {
-
-                }
-            }
-        });
-
-        try {
-            fillTable(m_threadPool.submit(m_applicationService::getAllStockOutProducts).get());
-        } catch (ExecutionException | InterruptedException ex) {
-            log.error("MainFrameController::initializeTables: {}", ex.getMessage());
-        }
+        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold());
+        m_tableInitializer.initializeTables();
+        m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
-
-    private void fillTable(List<ProductDTO> list)
-    {
-        var testStock = 0;
-        var testProduct = "testName";
-        var testProductCode = "testCode";
-        Object[] dataTest = {testProduct, testProductCode, testStock};
-        m_defaultTableModel.addRow(dataTest);
-        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
-        list.forEach(this::fillTableCallback);
-        m_resources.setCellsAlignment(m_mainForm.getTableStockOut(), SwingConstants.CENTER);
-
-    }
-
-    private void fillTableCallback(ProductDTO productDTO)
-    {
-        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().amount};
-        m_defaultTableModel.addRow(data);
-        m_mainForm.getTableStockOut().setModel(m_defaultTableModel);
-    }
-
-    private void initializeTableModel()
-    {
-        Object[] tableHeaders = {TABLE_STOCK_OUT_PRODUCT_NAME, TABLE_STOCK_OUT_PRODUCT_ORIGINAL_CODE, TABLE_STOCK_OUT_STOCK};
-        m_defaultTableModel.setColumnIdentifiers(tableHeaders);
-    }
-
     private void initializeRightSideBar()
     {
-        m_mainForm.getLabelCount().setText("%d".formatted(m_defaultTableModel.getRowCount()));
         initializeBarButtonsHover(m_mainForm.getButtonRightBar());
         initializeBarButtonsHover(m_mainForm.getButtonAddStock());
         initializeBarButtonsHover(m_mainForm.getButtonReleaseStock());
@@ -315,20 +261,21 @@ public class MainFrameController extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (m_mainForm.getPanelStockState().getWidth() > 0) {
                     m_mainForm.getPanelStockState().setSize(0, m_mainForm.getPanelStockState().getHeight());
+                    m_mainForm.getPanelMainContainer().setSize(
+                            m_mainForm.getPanelMainContainer().getWidth() + 350, m_mainForm.getPanelMainContainer().getHeight());
                     m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.open"));
                 }
                 else {
-                    m_mainForm.getPanelStockState().setSize(300, m_mainForm.getPanelStockState().getHeight());
+                    m_mainForm.getPanelStockState().setSize(350, m_mainForm.getPanelStockState().getHeight());
+                    m_mainForm.getPanelMainContainer().setSize(
+                            m_mainForm.getPanelMainContainer().getWidth() - 350, m_mainForm.getPanelMainContainer().getHeight());
                     m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.close"));
                 }
             }
         });
         m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                dialogAddNewProduct = (DialogAddNewProduct)m_applicationContext.getBean("bean.dialog.add.new.product");
-                dialogAddNewProduct.pack();
-                dialogAddNewProduct.setLocationRelativeTo(null);
-                dialogAddNewProduct.setVisible(true);
+                m_dialogHelper.showAddNewProductDialog();
             }
         });
     }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
 import java.io.File;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "product_info")
@@ -13,6 +14,9 @@ public class Product {
     @Id
     @Column(name = "original_code")
     public String originalCode;
+
+    @Column(name = "product_register_date", nullable = false)
+    public LocalDate registerDate = LocalDate.now();
 
     @Column(name = "stock_code", nullable = false)
     public String stockCode;

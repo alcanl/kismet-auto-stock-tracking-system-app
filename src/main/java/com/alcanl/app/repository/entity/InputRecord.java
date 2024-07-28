@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class InputRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "input_record_id")
     public long inputRecordId;
 

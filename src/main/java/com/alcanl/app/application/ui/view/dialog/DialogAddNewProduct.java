@@ -5,27 +5,25 @@ import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("ALL")
-@Component("bean.dialog.add.new.product")
-@Scope("prototype")
 @Slf4j
 public class DialogAddNewProduct extends JDialog {
 
-    private JPanel contentPane;
+    @Getter
+    private JPanel contentPaneMain;
     private JButton buttonSave;
     private JButton buttonCancel;
     private JPanel panelSaveProcess;
@@ -51,11 +49,11 @@ public class DialogAddNewProduct extends JDialog {
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
 
-    public DialogAddNewProduct(ApplicationService applicationService, JFileChooser fileFilter,
+    public DialogAddNewProduct(ApplicationService applicationService, JFileChooser fileChooser,
                                DialogHelper dialogHelper, ApplicationContext applicationContext) {
 
         m_applicationService = applicationService;
-        m_fileChooser = fileFilter;
+        m_fileChooser = fileChooser;
         m_dialogHelper = dialogHelper;
         m_applicationContext = applicationContext;
     }
@@ -63,7 +61,6 @@ public class DialogAddNewProduct extends JDialog {
     private void postConstruct()
     {
         setSize(390, 290);
-        setContentPane(contentPane);
         setTitle("Yeni Ürün Ekle");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModal(true);
@@ -80,7 +77,7 @@ public class DialogAddNewProduct extends JDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(e -> onCancel(e),
+        contentPaneMain.registerKeyboardAction(e -> onCancel(e),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
@@ -107,11 +104,18 @@ public class DialogAddNewProduct extends JDialog {
                     stockCode, productOriginalCode, stockThreshold)) {
 
                 var stockDTO = new StockDTO();
-                stockDTO.setAmount(Integer.parseInt(stockAmount));
+                var stockAmountInt = Integer.parseInt(stockAmount);
+
+                if (stockAmountInt < 0) {
+                    m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı '0' dan küçük olamaz!");
+                    dispose();
+                    return;
+                }
+                stockDTO.setAmount(stockAmountInt);
                 stockDTO.setThreshold(Integer.parseInt(stockThreshold));
                 stockDTO.setShelfNumber(productShelfCode);
 
-                var productDTO = new ProductDTO(productOriginalCode, stockCode, productName,
+                var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
                         m_imageFile, null);
                 m_applicationService.saveProduct(productDTO, stockDTO);
                 m_dialogHelper.showProductSaveSuccess();

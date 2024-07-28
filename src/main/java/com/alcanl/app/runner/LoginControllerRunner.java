@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
-@Order(1)
+@Order(2)
 @Component
 public class LoginControllerRunner implements ApplicationRunner
 {
