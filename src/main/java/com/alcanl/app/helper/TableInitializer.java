@@ -132,12 +132,12 @@ public final class TableInitializer {
 
     private void fillTableStockOutCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
     {
-        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().amount};
+        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().getAmount()};
         defaultTableModel.addRow(data);
     }
     private void fillTableLesserCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
     {
-        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().threshold, productDTO.getStock().amount};
+        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().getThreshold(), productDTO.getStock().getAmount()};
         defaultTableModel.addRow(data);
     }
 }

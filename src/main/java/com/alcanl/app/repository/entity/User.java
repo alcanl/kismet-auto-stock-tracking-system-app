@@ -2,48 +2,49 @@ package com.alcanl.app.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Set;
 
+@Getter
+@Setter
 @Table(name = "user_info")
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    public long userId;
+    private long userId;
 
-    @EqualsAndHashCode.Include
     @Column(name = "user_name", nullable = false, unique = true)
-    public String username;
+    private String username;
 
-    @EqualsAndHashCode.Include
     @Column(name = "e_mail", unique = true)
-    public String eMail;
+    private String eMail;
 
     @Column(name = "first_name", nullable = false)
-    public String firstName;
+    private String firstName;
 
-    @EqualsAndHashCode.Include
     @Column(nullable = false)
-    public String password;
+    private String password;
 
     @Column(name = "last_name", nullable = false)
-    public String lastName;
+    private String lastName;
 
     @Column(name = "is_admin", nullable = false)
-    public boolean isAdmin;
+    private boolean isAdmin;
 
     @Column(name = "register_date", nullable = false)
-    public LocalDate dateOfRegister;
+    private LocalDate dateOfRegister = LocalDate.now();
 
     @Column(length = 500)
-    public String description;
+    private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    public Set<UserRecords> userRecords;
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "user")
+    private Set<StockMovement> stockMovements;
 
 }

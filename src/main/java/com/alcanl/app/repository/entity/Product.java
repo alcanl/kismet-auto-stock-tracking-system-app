@@ -2,46 +2,39 @@ package com.alcanl.app.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @Table(name = "product_info")
+@Getter
+@Setter
 @EqualsAndHashCode
 public class Product {
 
     @Id
     @Column(name = "original_code")
-    public String originalCode;
+    private String originalCode;
 
     @Column(name = "product_register_date", nullable = false)
-    public LocalDate registerDate = LocalDate.now();
+    private LocalDate registerDate;
 
     @Column(name = "stock_code", nullable = false)
-    public String stockCode;
+    private String stockCode;
 
     @Column(name = "product_name", nullable = false)
-    public String productName;
+    private String productName;
 
     @Column(name = "product_image")
-    public File imageFile;
+    private File imageFile;
 
     @Column(length = 500)
-    public String description;
+    private String description;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_id", nullable = false)
-    public Stock stock;
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    public ProductRegisterRecord productRegisterRecord;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "productInput", cascade = CascadeType.ALL)
-    public Set<InputRecord> inputRecords;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "productOutput", cascade = CascadeType.ALL)
-    public Set<OutputRecord> outputRecords;
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    private Stock stock;
 
 }

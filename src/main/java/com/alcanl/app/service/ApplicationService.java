@@ -18,9 +18,8 @@ import java.util.concurrent.ExecutorService;
 public class ApplicationService {
     private final UserService m_userService;
     private final StockService m_stockService;
+    private final StockMovementService m_stockMovementService;
     private final ProductService m_productService;
-    private final InputRecordService m_inputRecordService;
-    private final OutputRecordService m_outputRecordService;
     private final CurrentUserConfig m_currentUser;
     private final ExecutorService m_threadPool;
 

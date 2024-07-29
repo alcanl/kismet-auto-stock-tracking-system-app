@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
+import com.alcanl.app.repository.entity.StockMovement;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
@@ -119,7 +120,9 @@ public class DialogAddNewProduct extends JDialog {
                 stockDTO.setShelfNumber(productShelfCode);
 
                 var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
-                        m_imageFile, null, description, null, null, null);
+                        m_imageFile, null, description);
+                var test = new StockMovement();
+
                 m_applicationService.saveProduct(productDTO, stockDTO);
                 m_dialogHelper.showProductSaveSuccess();
                 m_dialogHelper.notifyTables();
@@ -130,6 +133,7 @@ public class DialogAddNewProduct extends JDialog {
         catch (NumberFormatException ex)
         {
             m_dialogHelper.showUnSupportedFormatMessage(textFieldProductName.getText());
+            log.error("DailogAddNewProduct::onOk : {} ",ex.getMessage());
         }
         catch (ExecutionException | InterruptedException ex)
         {
@@ -137,9 +141,12 @@ public class DialogAddNewProduct extends JDialog {
                 m_dialogHelper.showProductAlreadyExistMessage(textFieldProductOriginalCode.getText());
             else
                 m_dialogHelper.showUnknownErrorMessage();
+
+            log.error("DailogAddNewProduct::onOk : {} ",ex.getMessage());
         }
         catch (ServiceException ex) {
             m_dialogHelper.showUnknownErrorMessage();
+            log.error("DailogAddNewProduct::onOk : {} ",ex.getMessage());
         }
     }
 

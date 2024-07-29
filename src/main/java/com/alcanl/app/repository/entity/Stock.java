@@ -2,8 +2,13 @@ package com.alcanl.app.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "stock_info")
 @EqualsAndHashCode
@@ -12,18 +17,22 @@ public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id")
-    public long stockId;
+    private long stockId;
 
     @Column(name = "stock_amount", nullable = false)
-    public int amount;
+    private int amount;
 
     @Column(name = "stock_threshold", nullable = false)
-    public int threshold;
+    private int threshold;
 
     @Column(name = "shelf_no", nullable = false)
-    public String shelfNumber;
+    private String shelfNumber;
 
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
-    public Product product;
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.MERGE)
+    private Set<StockMovement> stockMovements;
+
+    @JoinColumn(name = "original_code", referencedColumnName = "original_code")
+    @OneToOne(cascade = CascadeType.ALL)
+    private Product product;
 
 }

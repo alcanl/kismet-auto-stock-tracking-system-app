@@ -1,6 +1,6 @@
 package com.alcanl.app.service.dto;
 
-import com.alcanl.app.repository.entity.UserRecords;
+import com.alcanl.app.repository.entity.StockMovement;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -35,7 +35,7 @@ public class UserDTO {
 
     private String m_description;
 
-    private Set<UserRecords> m_userRecords;
+    private Set<StockMovement> m_stockMovements;
 
     @Override
     public String toString()

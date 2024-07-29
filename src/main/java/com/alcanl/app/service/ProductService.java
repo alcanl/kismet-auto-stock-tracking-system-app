@@ -2,7 +2,6 @@ package com.alcanl.app.service;
 
 import com.alcanl.app.repository.dal.RepositoryDataHelper;
 import com.alcanl.app.repository.entity.Product;
-import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.repository.exception.RepositoryException;
 import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
@@ -33,7 +32,7 @@ class ProductService {
     {
         var list = new ArrayList<ProductDTO>();
         try {
-            m_repositoryDataHelper.findAllStockByLesserThan(0).forEach(s -> list.add(m_productMapper.productToProductDTO(s.product)));
+            m_repositoryDataHelper.findAllStockByLesserThan(0).forEach(s -> list.add(m_productMapper.productToProductDTO(s.getProduct())));
 
         } catch (RepositoryException ex) {
             log.error("ProductService::getAllStockOutProducts: {}", ex.getMessage());
@@ -45,8 +44,8 @@ class ProductService {
         try {
             var list = new ArrayList<ProductDTO>();
             StreamSupport.stream(m_repositoryDataHelper.findAllStockByLesserThanThreshold().spliterator(), false)
-                            .filter(s -> s.amount != 0)
-                    .forEach(s -> list.add(m_productMapper.productToProductDTO(s.product)));
+                            .filter(s -> s.getAmount() != 0)
+                    .forEach(s -> list.add(m_productMapper.productToProductDTO(s.getProduct())));
 
             return list;
         } catch (RepositoryException ex) {
@@ -58,14 +57,7 @@ class ProductService {
     public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO, UserDTO userDTO)
     {
         try {
-            if (m_repositoryDataHelper.existProductById(productDTO.getOriginalCode()))
-                throw new ProductAlreadyExistException(productDTO.getOriginalCode());
-
-            var user = m_userMapper.userDTOToUser(userDTO);
-            var stock = m_stockMapper.stockDTOToStock(stockDTO);
-            productDTO.setStock(stock);
-            //productDTO.setRecorderUser(user);
-            return m_repositoryDataHelper.saveProduct(m_productMapper.productDTOToProduct(productDTO));
+            return null;
         }
         catch (RepositoryException ex) {
             log.error("ProductService::saveProduct: {}", ex.getMessage());

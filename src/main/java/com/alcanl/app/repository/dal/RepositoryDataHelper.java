@@ -13,11 +13,10 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class RepositoryDataHelper {
-    private final IInputRecordRepository m_inputRecordRepository;
-    private final IOutputRecordRepository m_outputRecordRepository;
     private final IStockRepository m_stockRepository;
     private final IProductRepository m_productRepository;
     private final IUserRepository m_userRepository;
+    private final IStockMovementRepository m_stockMovementRepository;
 
     public Optional<Stock > findProductStock(Product product)
     {
@@ -28,15 +27,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public Iterable<InputRecord> findInputRecordsByUser(User user)
-    {
-        try {
-            return m_inputRecordRepository.findInputRecordsByUserId(user.userId);
-        } catch (Throwable ex) {
-            log.error("Error while finding input records by user: {}", ex.getMessage(), ex);
-            throw new RepositoryException(ex);
-        }
-    }
+
     public boolean existByUsernameAndPassword(String username, String password)
     {
         try {
@@ -201,24 +192,6 @@ public class RepositoryDataHelper {
             return m_stockRepository.save(stock);
         } catch (Throwable ex) {
             log.error("Error while saving stock: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-    public void saveInputRecord(InputRecord inputRecord)
-    {
-        try {
-            m_inputRecordRepository.save(inputRecord);
-        } catch (Throwable ex) {
-            log.error("Error while saving input record: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-    public void saveOutputRecord(OutputRecord outputRecord)
-    {
-        try {
-            m_outputRecordRepository.save(outputRecord);
-        } catch (Throwable ex) {
-            log.error("Error while saving output record: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
