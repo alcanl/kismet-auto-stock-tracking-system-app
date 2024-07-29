@@ -1,8 +1,10 @@
 package com.alcanl.app.helper;
 
 import com.alcanl.app.application.ui.view.dialog.DialogHelper;
+import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import lombok.AllArgsConstructor;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +12,10 @@ import javax.swing.*;
 
 @AllArgsConstructor
 @Component
-public class PopUpHelper {
+public final class PopUpHelper {
     private final Resources m_resources;
     private final ApplicationContext m_applicationContext;
+    private final ApplicationService m_applicationService;
     private final DialogHelper m_dialogHelper;
 
     public static final String FAST_STOCK_ADD_TEXT = "Hızlı Stok Ekle";
@@ -68,6 +71,12 @@ public class PopUpHelper {
     }
     public void deleteSelectedProduct(ProductDTO productDTO)
     {
+        try {
+            if (m_resources.showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
+                m_applicationService.deleteProduct(productDTO.getOriginalCode());
+        } catch (ServiceException ex) {
+            m_resources.showCustomErrorDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
+        }
 
     }
     public void editSelectedProduct(ProductDTO productDTO)

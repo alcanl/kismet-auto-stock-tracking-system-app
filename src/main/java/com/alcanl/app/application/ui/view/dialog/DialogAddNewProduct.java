@@ -43,6 +43,8 @@ public class DialogAddNewProduct extends JDialog {
     private JButton buttonAddFile;
     private JTextField textFieldThreshold;
     private JLabel labelThreshold;
+    private JTextArea textFieldDescription;
+    private JLabel labelDescription;
     private File m_imageFile = null;
     private final ApplicationService m_applicationService;
     private final JFileChooser m_fileChooser;
@@ -99,6 +101,7 @@ public class DialogAddNewProduct extends JDialog {
             var stockCode = textFieldStockCode.getText();
             var productOriginalCode = textFieldProductOriginalCode.getText();
             var stockThreshold = textFieldThreshold.getText();
+            var description = textFieldDescription.getText();
 
             if (m_dialogHelper.areFieldsValid(productName, stockAmount, productShelfCode,
                     stockCode, productOriginalCode, stockThreshold)) {
@@ -116,18 +119,26 @@ public class DialogAddNewProduct extends JDialog {
                 stockDTO.setShelfNumber(productShelfCode);
 
                 var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
-                        m_imageFile, null);
+                        m_imageFile, null, description, null, null, null);
                 m_applicationService.saveProduct(productDTO, stockDTO);
                 m_dialogHelper.showProductSaveSuccess();
                 m_dialogHelper.notifyTables();
                 dispose();
             }
 
-        } catch (NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex)
+        {
             m_dialogHelper.showUnSupportedFormatMessage(textFieldProductName.getText());
-        } catch (ProductAlreadyExistException ex) {
-            m_dialogHelper.showProductAlreadyExistMessage(ex.getMessage());
-        } catch (ServiceException | ExecutionException | InterruptedException ex) {
+        }
+        catch (ExecutionException | InterruptedException ex)
+        {
+            if (ex.getCause() instanceof ProductAlreadyExistException)
+                m_dialogHelper.showProductAlreadyExistMessage(textFieldProductOriginalCode.getText());
+            else
+                m_dialogHelper.showUnknownErrorMessage();
+        }
+        catch (ServiceException ex) {
             m_dialogHelper.showUnknownErrorMessage();
         }
     }

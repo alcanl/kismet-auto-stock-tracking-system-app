@@ -6,14 +6,14 @@ import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
 import com.alcanl.app.service.dto.UserDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-@Component
+@Service
 @AllArgsConstructor
 public class ApplicationService {
     private final UserService m_userService;
@@ -24,6 +24,7 @@ public class ApplicationService {
     private final CurrentUserConfig m_currentUser;
     private final ExecutorService m_threadPool;
 
+    @Transactional
     public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO) throws ExecutionException, InterruptedException
     {
         return m_threadPool.submit(() -> m_productService.saveProduct(productDTO, stockDTO,
@@ -54,5 +55,10 @@ public class ApplicationService {
     public Optional<ProductDTO> findProductById(String productId)
     {
         return m_productService.findProductById(productId);
+    }
+    @Transactional
+    public void deleteProduct(String productId)
+    {
+        m_productService.deleteProductById(productId);
     }
 }

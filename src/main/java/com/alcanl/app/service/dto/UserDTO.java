@@ -1,7 +1,6 @@
 package com.alcanl.app.service.dto;
 
-import com.alcanl.app.repository.entity.InputRecord;
-import com.alcanl.app.repository.entity.OutputRecord;
+import com.alcanl.app.repository.entity.UserRecords;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -36,9 +35,7 @@ public class UserDTO {
 
     private String m_description;
 
-    private Set<InputRecord> m_inputRecord;
-
-    private Set<OutputRecord> m_outputRecord;
+    private Set<UserRecords> m_userRecords;
 
     @Override
     public String toString()

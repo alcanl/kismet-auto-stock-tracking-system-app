@@ -22,11 +22,11 @@ public class InputRecord {
     public LocalDate recordDate = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
-    public User user;
+    @JoinColumn(name = "user_records_info_id", nullable = false)
+    public UserRecords userRecords;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_id", nullable = false)
-    public Stock stock;
+    @JoinColumn(name = "original_code", nullable = false)
+    public Product productInput;
 
 }

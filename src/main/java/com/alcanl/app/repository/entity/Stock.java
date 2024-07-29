@@ -3,7 +3,6 @@ package com.alcanl.app.repository.entity;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 
-import java.util.Set;
 
 @Entity
 @Table(name = "stock_info")
@@ -27,9 +26,4 @@ public class Stock {
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
     public Product product;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
-    public Set<InputRecord> inputRecords;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = CascadeType.ALL)
-    public Set<OutputRecord> outputRecords;
 }

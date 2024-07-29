@@ -1,12 +1,9 @@
 package com.alcanl.app.service.dto;
 
-import com.alcanl.app.repository.entity.InputRecord;
-import com.alcanl.app.repository.entity.OutputRecord;
 import com.alcanl.app.repository.entity.Product;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,10 +25,6 @@ public class StockDTO {
 
     @EqualsAndHashCode.Include
     private Product m_product;
-
-    private Set<InputRecord> m_inputRecords;
-
-    private Set<OutputRecord> m_outputRecords;
 
     @Override
     public String toString()

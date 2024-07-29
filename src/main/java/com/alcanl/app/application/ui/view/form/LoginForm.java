@@ -4,7 +4,6 @@ import lombok.Getter;
 import javax.swing.*;
 
 @SuppressWarnings("ALL")
-
 public class LoginForm extends JFrame {
     @Getter
     private JPanel panelMain;
@@ -25,5 +24,4 @@ public class LoginForm extends JFrame {
     @Getter
     private JLabel labelVisibility;
     private JLabel labelBalance;
-
 }

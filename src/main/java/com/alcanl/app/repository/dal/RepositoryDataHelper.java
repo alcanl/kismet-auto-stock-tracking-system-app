@@ -6,9 +6,7 @@ import com.alcanl.app.repository.exception.RepositoryException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Slf4j
@@ -26,7 +24,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findByProduct(product);
         } catch (Throwable ex) {
-            log.error("Error while finding product stock: {}", ex.getMessage());
+            log.error("Error while finding product product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -75,18 +73,7 @@ public class RepositoryDataHelper {
             return false;
         }
     }
-    public Iterable<InputRecord> findInputRecordsByUserAndDate(User user, LocalDate start, LocalDate end)
-    {
-        try {
-            return m_inputRecordRepository.findInputRecordsByUserAndDate(
-                    start.getDayOfMonth(), start.getMonthValue(), start.getYear(),
-                    end.getDayOfMonth(), end.getMonthValue(), end.getYear(), user.userId);
 
-        } catch (Throwable ex) {
-            log.error("Error while finding input records by user and date: {} ", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
     public Optional<Product> findProductById(String id)
     {
         try {
@@ -101,7 +88,7 @@ public class RepositoryDataHelper {
         try {
             return m_productRepository.findAll();
         } catch (Throwable ex) {
-            log.error("Error while finding all products: {}", ex.getMessage());
+            log.error("Error while finding all product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -129,7 +116,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findAllByLesserOrEqualsThan(lesser);
         } catch (Throwable ex) {
-            log.error("Error while finding stock by lesser: {}", ex.getMessage());
+            log.error("Error while finding product by lesser: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -139,7 +126,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findAllByLesserThanThreshold();
         } catch (Throwable ex) {
-            log.error("Error while finding stock by lesser than threshold: {}", ex.getMessage());
+            log.error("Error while finding product by lesser than threshold: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -149,7 +136,7 @@ public class RepositoryDataHelper {
         try {
             return m_stockRepository.findAllByGreaterThan(greater);
         } catch (Throwable ex) {
-            log.error("Error while finding stock by greater: {}", ex.getMessage());
+            log.error("Error while finding product by greater: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -162,7 +149,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public void saveUser(User user)
     {
         try {
@@ -173,7 +159,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public void deleteUser(User user)
     {
         try {
@@ -183,7 +168,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public Product saveProduct(Product product)
     {
         try {
@@ -202,17 +186,15 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
-    public void deleteProduct(Product product)
+    public void deleteProduct(String productId)
     {
         try {
-            m_productRepository.delete(product);
+            m_productRepository.deleteById(productId);
         } catch (Throwable ex) {
             log.error("Error while deleting product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public Stock saveStock(Stock stock)
     {
         try {
@@ -222,7 +204,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public void saveInputRecord(InputRecord inputRecord)
     {
         try {
@@ -232,7 +213,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    @Transactional
     public void saveOutputRecord(OutputRecord outputRecord)
     {
         try {

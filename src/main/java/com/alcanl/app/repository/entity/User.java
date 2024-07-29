@@ -40,11 +40,10 @@ public class User {
     @Column(name = "register_date", nullable = false)
     public LocalDate dateOfRegister;
 
+    @Column(length = 500)
     public String description;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    public Set<InputRecord> inputRecord;
+    public Set<UserRecords> userRecords;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    public Set<OutputRecord> outputRecord;
 }

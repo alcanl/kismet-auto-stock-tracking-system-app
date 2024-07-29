@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 @Component
 @Getter
 @Slf4j
-public class TableInitializer {
+public final class TableInitializer {
 
     private final List<Pair<JTable, DefaultTableModel>> m_tablePairsList;
     private final ApplicationContext m_applicationContext;
@@ -123,21 +123,10 @@ public class TableInitializer {
 
     private void fillStockOutTable(List<ProductDTO> list,DefaultTableModel defaultTableModel)
     {
-        var testStock = 0;
-        var testProduct = "testName";
-        var testProductCode = "testCode";
-        Object[] dataTest = {testProduct, testProductCode, testStock};
-        defaultTableModel.addRow(dataTest);
         list.forEach(productDTO -> fillTableStockOutCallback(productDTO, defaultTableModel));
     }
     private void fillStockThresholdTable(List<ProductDTO> list,DefaultTableModel defaultTableModel)
     {
-        var testStock = 1;
-        var testThreshold = 5;
-        var testProduct = "testThresholdName";
-        var testProductCode = "testThresholdCode";
-        Object[] dataTest = {testProduct, testProductCode, testThreshold, testStock};
-        defaultTableModel.addRow(dataTest);
         list.forEach(productDTO -> fillTableLesserCallback(productDTO, defaultTableModel));
     }
 

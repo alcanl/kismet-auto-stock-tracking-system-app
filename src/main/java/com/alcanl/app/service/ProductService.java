@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +54,17 @@ class ProductService {
             return new ArrayList<>();
         }
     }
-    @Transactional
+
     public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO, UserDTO userDTO)
     {
         try {
             if (m_repositoryDataHelper.existProductById(productDTO.getOriginalCode()))
                 throw new ProductAlreadyExistException(productDTO.getOriginalCode());
 
+            var user = m_userMapper.userDTOToUser(userDTO);
             var stock = m_stockMapper.stockDTOToStock(stockDTO);
             productDTO.setStock(stock);
+            //productDTO.setRecorderUser(user);
             return m_repositoryDataHelper.saveProduct(m_productMapper.productDTOToProduct(productDTO));
         }
         catch (RepositoryException ex) {
@@ -77,6 +78,15 @@ class ProductService {
             return m_repositoryDataHelper.findProductById(productId).map(m_productMapper::productToProductDTO);
         } catch (RepositoryException ex) {
             log.error("ProductService::findProductById: {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public void deleteProductById(String productId)
+    {
+        try {
+            m_repositoryDataHelper.deleteProduct(productId);
+        }catch (RepositoryException ex) {
+            log.error("ProductService::deleteProductById : {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }

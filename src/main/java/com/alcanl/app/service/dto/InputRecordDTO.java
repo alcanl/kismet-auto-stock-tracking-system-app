@@ -1,7 +1,7 @@
 package com.alcanl.app.service.dto;
 
-import com.alcanl.app.repository.entity.Stock;
-import com.alcanl.app.repository.entity.User;
+import com.alcanl.app.repository.entity.Product;
+import com.alcanl.app.repository.entity.UserRecords;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -22,9 +22,9 @@ public class InputRecordDTO {
 
     private LocalDate m_recordDate = LocalDate.now();
 
-    private User m_user;
+    private UserRecords m_userRecords;
 
-    private Stock m_stock;
+    private Product m_productInput;
 
     @Override
     public String toString()
