@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
+import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
@@ -7,10 +8,18 @@ import com.alcanl.app.service.dto.StockDTO;
 import com.alcanl.app.service.dto.StockMovementDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -21,6 +30,10 @@ import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("ALL")
 @Slf4j
+@SwingContainer
+@Component("bean.dialog.add.new.product")
+@Scope("prototype")
+@RequiredArgsConstructor
 public class DialogAddNewProduct extends JDialog {
 
     @Getter
@@ -52,19 +65,12 @@ public class DialogAddNewProduct extends JDialog {
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
 
-    public DialogAddNewProduct(ApplicationService applicationService, JFileChooser fileChooser,
-                               DialogHelper dialogHelper, ApplicationContext applicationContext) {
-
-        m_applicationService = applicationService;
-        m_fileChooser = fileChooser;
-        m_dialogHelper = dialogHelper;
-        m_applicationContext = applicationContext;
-    }
     @PostConstruct
     private void postConstruct()
     {
         setSize(390, 290);
         setTitle("Yeni Ürün Ekle");
+        setContentPane(contentPaneMain);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
@@ -73,7 +79,6 @@ public class DialogAddNewProduct extends JDialog {
         buttonSave.addActionListener(this::onOK);
         buttonCancel.addActionListener(this::onCancel);
         buttonAddFile.addActionListener(this::getSelectedFileCallback);
-        dispose();
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 dispose();
@@ -83,6 +88,28 @@ public class DialogAddNewProduct extends JDialog {
         contentPaneMain.registerKeyboardAction(e -> onCancel(e),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPaneMain.registerKeyboardAction(e -> onOK(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        textFieldDescription.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+        textFieldDescription.setFocusTraversalKeys (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
+
+        textFieldDescription.setLineWrap(true);
+        textFieldDescription.setWrapStyleWord(true);
+        textFieldDescription.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                if (str == null || textFieldDescription.getText().length() >= 255)
+                    return;
+
+                super.insertString(offs, str, a);
+            }
+        });
     }
 
     private void getSelectedFileCallback(ActionEvent e) {

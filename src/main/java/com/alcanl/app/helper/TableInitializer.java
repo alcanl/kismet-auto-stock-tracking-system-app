@@ -1,7 +1,5 @@
 package com.alcanl.app.helper;
 
-import com.alcanl.app.application.ui.view.dialog.DialogHelper;
-import com.alcanl.app.application.ui.view.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import lombok.Getter;
@@ -29,6 +27,7 @@ public final class TableInitializer {
     private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
     private final ExecutorService m_threadPool;
+    private final PopUpHelper m_popUpHelper;
     private final DialogHelper m_dialogHelper;
     private final Resources m_resources;
 
@@ -39,7 +38,8 @@ public final class TableInitializer {
 
     public static int criticalStockCount = 0;
     public TableInitializer(ApplicationService applicationService, ExecutorService threadPool,
-                            Resources resources, ApplicationContext applicationContext, DialogHelper dialogHelper)
+                            Resources resources, ApplicationContext applicationContext, DialogHelper dialogHelper,
+                            PopUpHelper popUpHelper)
     {
         m_tablePairsList = new ArrayList<>();
         m_applicationService = applicationService;
@@ -47,6 +47,7 @@ public final class TableInitializer {
         m_resources = resources;
         m_dialogHelper = dialogHelper;
         m_applicationContext = applicationContext;
+        m_popUpHelper = popUpHelper;
     }
     public void setTables(JTable... tables)
     {
@@ -89,18 +90,12 @@ public final class TableInitializer {
                     int currentRow = pair.getFirst().rowAtPoint(point);
 
                     if (SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
-                    {
-                        pair.getFirst().setRowSelectionInterval(currentRow, currentRow);
-                        ((TableItemRightClickPopUpMenu)(pair.getFirst().getComponentPopupMenu()))
-                            .selectedProduct = m_applicationService.findProductById(pair.getFirst()
-                                .getValueAt(currentRow, 1).toString()).orElse(null);
-                    }
+                        m_threadPool.execute(() -> tableItemClickCallback(pair.getFirst(), currentRow));
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
-                    {
                         m_dialogHelper.showProductCardDialog();
-                    }
-                    } catch (IllegalArgumentException ignore) {
+
+                } catch (IllegalArgumentException ignore) {
                         pair.getFirst().clearSelection();
                     }
                 }
@@ -108,6 +103,13 @@ public final class TableInitializer {
         pair.getFirst().setModel(pair.getSecond());
         m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
         criticalStockCount += pair.getSecond().getRowCount();
+    }
+    private void tableItemClickCallback(JTable table, int currentRow)
+    {
+        var selectedProductDTO = m_applicationService.findProductById(table
+                .getValueAt(currentRow, 1).toString()).orElse(null);
+        m_dialogHelper.setSelectedProduct(selectedProductDTO);
+        m_popUpHelper.setSelectedProduct(selectedProductDTO);
     }
     private void initializeStockOutTableModel(DefaultTableModel model)
     {

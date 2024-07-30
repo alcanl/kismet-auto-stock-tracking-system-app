@@ -4,7 +4,7 @@ import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.helper.TableInitializer;
-import com.alcanl.app.application.ui.view.dialog.DialogHelper;
+import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
@@ -20,10 +20,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -37,7 +35,6 @@ public class MainFrameController extends JFrame {
     private int m_mainFrameStartDimensionY;
     private final MainForm m_mainForm;
     private final Resources m_resources;
-    private final ExecutorService m_threadPool;
     private final CurrentUserConfig m_currentUserConfig;
     private final ApplicationService m_applicationService;
     private final ApplicationContext m_applicationContext;
@@ -46,14 +43,13 @@ public class MainFrameController extends JFrame {
     private final DialogHelper m_dialogHelper;
 
 
-    public MainFrameController(Resources resources, ExecutorService threadPool,
-                               ApplicationService applicationService, ApplicationContext applicationContext, MainForm mainForm,
+    public MainFrameController(Resources resources, ApplicationService applicationService,
+                               ApplicationContext applicationContext, MainForm mainForm,
                                CurrentUserConfig currentUserConfig, ApplicationEventPublisher applicationEventPublisher,
-                               DefaultTableModel defaultTableModel, DialogHelper dialogHelper, TableInitializer tableInitializer)
+                               DialogHelper dialogHelper, TableInitializer tableInitializer)
     {
         m_mainForm = mainForm;
         m_resources = resources;
-        m_threadPool = threadPool;
         m_dialogHelper = dialogHelper;
         m_applicationService = applicationService;
         m_applicationContext = applicationContext;
@@ -278,5 +274,9 @@ public class MainFrameController extends JFrame {
                 m_dialogHelper.showAddNewProductDialog();
             }
         });
+    }
+    private void initializeMainTabs()
+    {
+
     }
 }

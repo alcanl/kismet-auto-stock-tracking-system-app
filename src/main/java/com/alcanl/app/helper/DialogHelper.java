@@ -1,20 +1,33 @@
-package com.alcanl.app.application.ui.view.dialog;
+package com.alcanl.app.helper;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
-import com.alcanl.app.helper.Resources;
-import lombok.AllArgsConstructor;
+import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
+import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
+import com.alcanl.app.service.dto.ProductDTO;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.awt.print.Printable;
+import java.awt.print.PrinterJob;
 import java.util.Arrays;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class DialogHelper {
+
+    @Getter
+    @Setter
+    @Accessors(prefix = "m_")
+    private ProductDTO m_selectedProduct;
     private final Resources m_resources;
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final ApplicationContext m_applicationContext;
+    private final PrinterJob m_printerJob;
 
     public boolean areFieldsValid(String... varargs)
     {
@@ -57,5 +70,9 @@ public final class DialogHelper {
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+    public void printLabel()
+    {
+        m_printerJob.setPrintable(m_applicationContext.getBean("bean.print.printable", Printable.class));
     }
 }

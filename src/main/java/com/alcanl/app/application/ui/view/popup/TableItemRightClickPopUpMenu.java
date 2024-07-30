@@ -1,7 +1,6 @@
 package com.alcanl.app.application.ui.view.popup;
 
 import com.alcanl.app.helper.PopUpHelper;
-import com.alcanl.app.service.dto.ProductDTO;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,7 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
     private final JMenuItem deleteSelectedRow;
     private final JMenuItem getProductCard;
     private final PopUpHelper m_popUpHelper;
-    public ProductDTO selectedProduct;
+
     public TableItemRightClickPopUpMenu(PopUpHelper popUpHelper)
     {
         m_popUpHelper = popUpHelper;
@@ -47,9 +46,9 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
         if (e.getSource().equals(getProductCard))
             m_popUpHelper.newProduct();
         else if (e.getSource().equals(deleteSelectedRow))
-            m_popUpHelper.deleteSelectedProduct(selectedProduct);
+            m_popUpHelper.deleteSelectedProduct();
         else
-            m_popUpHelper.editSelectedProduct(selectedProduct);
+            m_popUpHelper.editSelectedProduct();
 
     }
 }

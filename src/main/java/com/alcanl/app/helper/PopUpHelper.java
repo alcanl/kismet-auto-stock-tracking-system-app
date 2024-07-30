@@ -1,22 +1,29 @@
 package com.alcanl.app.helper;
 
-import com.alcanl.app.application.ui.view.dialog.DialogHelper;
+import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public final class PopUpHelper {
     private final Resources m_resources;
     private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
     private final DialogHelper m_dialogHelper;
+    @Getter
+    @Setter
+    @Accessors(prefix = "m_")
+    private ProductDTO m_selectedProduct;
 
     public static final String FAST_STOCK_ADD_TEXT = "Hızlı Stok Ekle";
     public static final String EDIT_PRODUCT_TEXT = "Ürün Düzenle";
@@ -51,7 +58,7 @@ public final class PopUpHelper {
     }
     public void newProductCard()
     {
-
+        ((DialogProductCard)m_applicationContext.getBean("bean.dialog.card.product")).setVisible(true);
     }
     public void editProduct()
     {
@@ -69,17 +76,18 @@ public final class PopUpHelper {
     {
 
     }
-    public void deleteSelectedProduct(ProductDTO productDTO)
+    public void deleteSelectedProduct()
     {
         try {
             if (m_resources.showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
-                m_applicationService.deleteProduct(productDTO.getOriginalCode());
+                m_applicationService.deleteProduct(m_selectedProduct.getOriginalCode());
+
         } catch (ServiceException ex) {
             m_resources.showCustomErrorDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
         }
 
     }
-    public void editSelectedProduct(ProductDTO productDTO)
+    public void editSelectedProduct()
     {
 
     }

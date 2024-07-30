@@ -33,7 +33,7 @@ public class Product {
     @Column(name = "product_image")
     private File imageFile;
 
-    @Column(length = 500)
+    @Column
     private String description;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

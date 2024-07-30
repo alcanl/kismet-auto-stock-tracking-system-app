@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,7 @@ class ProductService {
             throw new ServiceException(ex.getMessage());
         }
     }
+    @Transactional
     public void deleteProductById(String productId)
     {
         try {
