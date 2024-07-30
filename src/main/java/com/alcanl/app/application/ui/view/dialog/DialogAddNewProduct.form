@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct">
   <grid id="cbd77" binding="contentPaneMain" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="15" left="30" bottom="30" right="40"/>
+    <margin top="15" left="40" bottom="30" right="40"/>
     <constraints>
-      <xy x="157" y="137" width="492" height="478"/>
+      <xy x="157" y="137" width="492" height="489"/>
     </constraints>
     <properties/>
     <border type="none" title-position="2">
@@ -12,7 +12,7 @@
     </border>
     <children>
       <grid id="bb200" binding="mainPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="20" left="25" bottom="15" right="25"/>
+        <margin top="20" left="30" bottom="20" right="30"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -92,7 +92,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="6c7a1" class="javax.swing.JButton" binding="buttonAddFile">
+                  <component id="85613" class="javax.swing.JButton" binding="buttonAddFile">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -124,6 +124,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Stok Kodu : "/>
                         </properties>
                       </component>
@@ -142,6 +144,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Stok Miktarı : "/>
                         </properties>
                       </component>
@@ -160,6 +164,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Raf Kodu : "/>
                         </properties>
                       </component>
@@ -178,6 +184,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Görseli : "/>
                         </properties>
                       </component>
@@ -196,6 +204,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Orijinal Kodu :"/>
                         </properties>
                       </component>
@@ -214,6 +224,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Ürün Adı :"/>
                         </properties>
                       </component>
@@ -232,6 +244,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Stok Eşik Değeri :"/>
                         </properties>
                       </component>
@@ -253,6 +267,8 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <font name="Calibri" size="14" style="0"/>
+                          <foreground color="-12169629"/>
                           <text value="Açıklama :"/>
                         </properties>
                       </component>
@@ -350,7 +366,12 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="e7465" class="javax.swing.JButton" binding="buttonSave">
+              <hspacer id="ed315">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <component id="f6a99" class="javax.swing.JButton" binding="buttonSave">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -358,19 +379,14 @@
                   <text value="Kaydet"/>
                 </properties>
               </component>
-              <component id="5723f" class="javax.swing.JButton" binding="buttonCancel">
+              <component id="764c2" class="javax.swing.JButton" binding="buttonCancel">
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="İptal"/>
+                  <text value="Cancel"/>
                 </properties>
               </component>
-              <hspacer id="ed315">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </hspacer>
             </children>
           </grid>
         </children>

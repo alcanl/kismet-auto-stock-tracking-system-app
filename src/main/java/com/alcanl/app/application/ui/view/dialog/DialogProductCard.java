@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 @SwingContainer
 @Component("bean.dialog.card.product")
 @Scope("prototype")
+@Lazy
 @RequiredArgsConstructor
 public class DialogProductCard extends JDialog {
     @Getter
@@ -45,16 +47,12 @@ public class DialogProductCard extends JDialog {
         setModal(true);
         setResizable(false);
         setModalityType(ModalityType.APPLICATION_MODAL);
-        buttonOK.addActionListener(this::onOK);
-        buttonPrintCart.addActionListener(this::onPrintCart);
-        contentPaneMain.registerKeyboardAction(ignored -> dispose(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        contentPaneMain.registerKeyboardAction(this::onOK,
-                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        textFieldDescription.setLineWrap(true);
-        textFieldDescription.setWrapStyleWord(true);
+        setLocationRelativeTo(null);
+        pack();
+        initializeButtons();
+        registerKeys();
+        dispose();
+
         try {
             initializeTextViews();
         } catch (IOException ignore) {}
@@ -65,7 +63,32 @@ public class DialogProductCard extends JDialog {
             }
         });
     }
-    private void initializeTextViews() throws IOException {
+
+    private void registerKeys()
+    {
+        contentPaneMain.registerKeyboardAction(ignored -> dispose(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPaneMain.registerKeyboardAction(this::onOK,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private void initializeButtons()
+    {
+        buttonOK.addActionListener(this::onOK);
+        buttonPrintCart.addActionListener(this::onPrintCart);
+    }
+
+    private void initializeTextViews() throws IOException
+    {
+        if (m_dialogHelper.getSelectedProduct() == null) {
+            dispose();
+            return;
+        }
+
+        textFieldDescription.setLineWrap(true);
+        textFieldDescription.setWrapStyleWord(true);
         textFieldProductName.setText(m_dialogHelper.getSelectedProduct().getProductName());
         textFieldProductOriginalCode.setText(m_dialogHelper.getSelectedProduct().getOriginalCode());
         textFieldStockCode.setText(m_dialogHelper.getSelectedProduct().getStockCode());
@@ -89,6 +112,7 @@ public class DialogProductCard extends JDialog {
     {
         dispose();
     }
+
     private void onPrintCart(ActionEvent e)
     {
         m_dialogHelper.printLabel();

@@ -11,6 +11,7 @@ import com.alcanl.app.helper.Resources;
 import com.alcanl.app.service.ApplicationService;
 import com.formdev.flatlaf.FlatClientProperties;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Controller
 @DependsOn({"bean.form.login","bean.form.main","bean.dialog.add.new.product"})
+@RequiredArgsConstructor
 public class MainFrameController extends JFrame {
 
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.x}")
@@ -42,28 +44,12 @@ public class MainFrameController extends JFrame {
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final DialogHelper m_dialogHelper;
 
-
-    public MainFrameController(Resources resources, ApplicationService applicationService,
-                               ApplicationContext applicationContext, MainForm mainForm,
-                               CurrentUserConfig currentUserConfig, ApplicationEventPublisher applicationEventPublisher,
-                               DialogHelper dialogHelper, TableInitializer tableInitializer)
-    {
-        m_mainForm = mainForm;
-        m_resources = resources;
-        m_dialogHelper = dialogHelper;
-        m_applicationService = applicationService;
-        m_applicationContext = applicationContext;
-        m_currentUserConfig = currentUserConfig;
-        m_applicationEventPublisher = applicationEventPublisher;
-        m_tableInitializer = tableInitializer;
-    }
-
     @PostConstruct
     private void setFrameProperties()
     {
         initializeFrame();
         initializeTables();
-        initializeBarButtonsHover();
+        initializeBars();
         m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
@@ -191,7 +177,7 @@ public class MainFrameController extends JFrame {
         });
     }
 
-    private void initializeBarButtonsHover()
+    private void initializeBars()
     {
         initializeTopBar();
         initializeRightSideBar();
@@ -203,7 +189,7 @@ public class MainFrameController extends JFrame {
                 if (jpanel.equals(m_mainForm.getPanelLogo()) || jpanel.equals(m_mainForm.getButtonExit()))
                     continue;
 
-                initializeBarButtonsHover(jpanel);
+                initializeBars(jpanel);
             }
 
         initializeExitButton();
@@ -225,7 +211,7 @@ public class MainFrameController extends JFrame {
 
     }
 
-    private void initializeBarButtonsHover(JPanel jPanel)
+    private void initializeBars(JPanel jPanel)
     {
         jPanel.addMouseListener(new MouseAdapter() {
 
@@ -248,9 +234,9 @@ public class MainFrameController extends JFrame {
     }
     private void initializeRightSideBar()
     {
-        initializeBarButtonsHover(m_mainForm.getButtonRightBar());
-        initializeBarButtonsHover(m_mainForm.getButtonAddStock());
-        initializeBarButtonsHover(m_mainForm.getButtonReleaseStock());
+        initializeBars(m_mainForm.getButtonRightBar());
+        initializeBars(m_mainForm.getButtonAddStock());
+        initializeBars(m_mainForm.getButtonReleaseStock());
 
         m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
             @Override
@@ -271,7 +257,7 @@ public class MainFrameController extends JFrame {
         });
         m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                m_dialogHelper.showAddNewProductDialog();
+                m_dialogHelper.showAdditionFastStockDialog();
             }
         });
     }

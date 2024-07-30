@@ -1,6 +1,5 @@
 package com.alcanl.app.helper;
 
-import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import lombok.Getter;
@@ -46,7 +45,7 @@ public final class PopUpHelper {
     }
     public void newProduct()
     {
-        m_dialogHelper.showAddNewProductDialog();
+        m_dialogHelper.showProductRegisterDialog();
     }
     public void newStockInput()
     {
@@ -58,7 +57,7 @@ public final class PopUpHelper {
     }
     public void newProductCard()
     {
-        ((DialogProductCard)m_applicationContext.getBean("bean.dialog.card.product")).setVisible(true);
+        m_dialogHelper.showProductCardDialog();
     }
     public void editProduct()
     {

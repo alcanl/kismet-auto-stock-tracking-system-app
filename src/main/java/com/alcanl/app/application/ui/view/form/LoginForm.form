@@ -75,6 +75,7 @@
                 </constraints>
                 <properties>
                   <background color="-1"/>
+                  <horizontalAlignment value="0"/>
                 </properties>
               </component>
               <component id="36c2" class="javax.swing.JLabel" binding="labelPassword">
@@ -99,6 +100,7 @@
                 </constraints>
                 <properties>
                   <background color="-1"/>
+                  <horizontalAlignment value="0"/>
                 </properties>
               </component>
               <component id="45ea2" class="javax.swing.JButton" binding="buttonLogin">

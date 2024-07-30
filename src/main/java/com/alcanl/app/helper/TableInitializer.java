@@ -108,6 +108,7 @@ public final class TableInitializer {
     {
         var selectedProductDTO = m_applicationService.findProductById(table
                 .getValueAt(currentRow, 1).toString()).orElse(null);
+        table.setRowSelectionInterval(currentRow, currentRow);
         m_dialogHelper.setSelectedProduct(selectedProductDTO);
         m_popUpHelper.setSelectedProduct(selectedProductDTO);
     }

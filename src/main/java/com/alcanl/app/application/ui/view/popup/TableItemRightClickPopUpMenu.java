@@ -44,7 +44,7 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
     public void actionPerformed(ActionEvent e)
     {
         if (e.getSource().equals(getProductCard))
-            m_popUpHelper.newProduct();
+            m_popUpHelper.newProductCard();
         else if (e.getSource().equals(deleteSelectedRow))
             m_popUpHelper.deleteSelectedProduct();
         else

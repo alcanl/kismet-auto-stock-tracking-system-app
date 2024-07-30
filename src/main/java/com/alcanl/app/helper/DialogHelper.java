@@ -2,6 +2,7 @@ package com.alcanl.app.helper;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
+import com.alcanl.app.application.ui.view.dialog.DialogFastStockAddition;
 import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
 import com.alcanl.app.service.dto.ProductDTO;
 import lombok.Getter;
@@ -43,7 +44,7 @@ public final class DialogHelper {
     }
     public void showProductAlreadyExistMessage(String originalCode)
     {
-        m_resources.showCustomErrorDialog("%s Orijinal Koduna Sahip Ürün Daha Önceden Kaydedilmiştir.".formatted(originalCode));
+        m_resources.showCustomErrorDialog("%s Orjinal Koduna Sahip Ürün Daha Önceden Kaydedilmiştir.".formatted(originalCode));
     }
     public void showProductSaveSuccess()
     {
@@ -51,25 +52,27 @@ public final class DialogHelper {
     }
     public void showUnSupportedFormatMessage(String format)
     {
-        m_resources.showCustomErrorDialog("Kayıt için Geçersiz Formatte Bir Değer Girdiniz : %s".formatted(format));
+        m_resources.showCustomErrorDialog("Kayıt İçin Geçersiz Formatta Bir Değer Girdiniz : %s".formatted(format));
     }
     public void notifyTables()
     {
         m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
     }
-    public void showAddNewProductDialog()
+    public void showProductRegisterDialog()
     {
-        var dialogAddNewProduct = (DialogAddNewProduct)m_applicationContext.getBean("bean.dialog.add.new.product");
-        dialogAddNewProduct.pack();
-        dialogAddNewProduct.setLocationRelativeTo(null);
-        dialogAddNewProduct.setVisible(true);
+       m_applicationContext.getBean("bean.dialog.add.new.product", DialogAddNewProduct.class)
+               .setVisible(true);
+    }
+    public void showAdditionFastStockDialog()
+    {
+       m_applicationContext.getBean("bean.dialog.fast.stock", DialogFastStockAddition.class)
+               .setVisible(true);
+
     }
     public void showProductCardDialog()
     {
-        var dialog = (DialogProductCard)m_applicationContext.getBean("bean.dialog.card.product");
-        dialog.pack();
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
+        m_applicationContext.getBean("bean.dialog.card.product", DialogProductCard.class)
+                .setVisible(true);
     }
     public void printLabel()
     {

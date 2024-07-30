@@ -183,6 +183,6 @@ public class LoginController extends JFrame {
     @Async
     public void onApplicationDisposeEvent(DisposeEvent ignoredEvent)
     {
-        this.dispose();
+        dispose();
     }
 }

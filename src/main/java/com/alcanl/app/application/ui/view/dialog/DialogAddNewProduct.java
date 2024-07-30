@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 @SwingContainer
 @Component("bean.dialog.add.new.product")
 @Scope("prototype")
+@Lazy
 @RequiredArgsConstructor
 public class DialogAddNewProduct extends JDialog {
 
@@ -76,22 +78,20 @@ public class DialogAddNewProduct extends JDialog {
         setResizable(false);
         setModalityType(ModalityType.APPLICATION_MODAL);
         getRootPane().setDefaultButton(buttonSave);
-        buttonSave.addActionListener(this::onOK);
-        buttonCancel.addActionListener(this::onCancel);
-        buttonAddFile.addActionListener(this::getSelectedFileCallback);
+        setLocationRelativeTo(null);
+        pack();
+        initializeButtons();
+        registerKeys();
+        initializeTextArea();
+        dispose();
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 dispose();
             }
         });
-
-        contentPaneMain.registerKeyboardAction(e -> onCancel(e),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        contentPaneMain.registerKeyboardAction(e -> onOK(e),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
+    }
+    private void initializeTextArea()
+    {
         textFieldDescription.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
                 KeyboardFocusManager.getCurrentKeyboardFocusManager()
                         .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
@@ -110,6 +110,26 @@ public class DialogAddNewProduct extends JDialog {
                 super.insertString(offs, str, a);
             }
         });
+    }
+    private void initializeButtons()
+    {
+        buttonSave.addActionListener(this::onOK);
+        buttonCancel.addActionListener(this::onCancel);
+        buttonAddFile.addActionListener(this::getSelectedFileCallback);
+    }
+    private void registerKeys()
+    {
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
+        contentPaneMain.registerKeyboardAction(e -> onCancel(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPaneMain.registerKeyboardAction(e -> onOK(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void getSelectedFileCallback(ActionEvent e) {
