@@ -44,7 +44,8 @@ public class User {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<StockMovement> stockMovements;
 
 }

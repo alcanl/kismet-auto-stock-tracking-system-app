@@ -195,4 +195,13 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    public StockMovement saveStockMovement(StockMovement stockMovement)
+    {
+        try {
+            return m_stockMovementRepository.save(stockMovement);
+        } catch (Throwable ex) {
+            log.error("Error while saving stock movement {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
 }

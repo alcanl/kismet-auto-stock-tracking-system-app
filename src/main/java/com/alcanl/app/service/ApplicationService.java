@@ -2,8 +2,10 @@ package com.alcanl.app.service;
 
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.repository.entity.Product;
+import com.alcanl.app.repository.entity.StockMovement;
 import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
+import com.alcanl.app.service.dto.StockMovementDTO;
 import com.alcanl.app.service.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,5 +61,9 @@ public class ApplicationService {
     public void deleteProduct(String productId)
     {
         m_productService.deleteProductById(productId);
+    }
+    public StockMovement saveNewStockMovement(StockMovementDTO stockMovementDTO, StockDTO stockDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException {
+        return m_threadPool.submit(() -> m_stockMovementService.saveNewStockMovement(
+                stockMovementDTO, m_currentUser.getUser(), stockDTO, productDTO)).get();
     }
 }

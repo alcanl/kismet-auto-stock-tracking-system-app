@@ -28,10 +28,12 @@ public class Stock {
     @Column(name = "shelf_no", nullable = false)
     private String shelfNumber;
 
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.MERGE)
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<StockMovement> stockMovements;
 
-    @JoinColumn(name = "original_code", referencedColumnName = "original_code")
+    @EqualsAndHashCode.Exclude
+    @JoinColumn(name = "original_code", nullable = false)
     @OneToOne(cascade = CascadeType.ALL)
     private Product product;
 

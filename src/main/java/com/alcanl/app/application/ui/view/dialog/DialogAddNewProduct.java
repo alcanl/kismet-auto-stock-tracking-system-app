@@ -1,10 +1,10 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.repository.entity.StockMovement;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
+import com.alcanl.app.service.dto.StockMovementDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -121,9 +121,8 @@ public class DialogAddNewProduct extends JDialog {
 
                 var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
                         m_imageFile, null, description);
-                var test = new StockMovement();
 
-                m_applicationService.saveProduct(productDTO, stockDTO);
+                m_applicationService.saveNewStockMovement(new StockMovementDTO(), stockDTO, productDTO);
                 m_dialogHelper.showProductSaveSuccess();
                 m_dialogHelper.notifyTables();
                 dispose();

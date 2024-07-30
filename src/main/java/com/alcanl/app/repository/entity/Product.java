@@ -12,17 +12,19 @@ import java.time.LocalDate;
 @Table(name = "product_info")
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Product {
 
     @Id
     @Column(name = "original_code")
+    @EqualsAndHashCode.Include
     private String originalCode;
 
     @Column(name = "product_register_date", nullable = false)
     private LocalDate registerDate;
 
-    @Column(name = "stock_code", nullable = false)
+    @Column(name = "stock_code", nullable = false, unique = true)
+    @EqualsAndHashCode.Include
     private String stockCode;
 
     @Column(name = "product_name", nullable = false)
@@ -34,7 +36,7 @@ public class Product {
     @Column(length = 500)
     private String description;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Stock stock;
 
 }

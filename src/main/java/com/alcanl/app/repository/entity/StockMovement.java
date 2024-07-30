@@ -30,12 +30,14 @@ public class StockMovement {
     @Column(name = "stock_movement_type", nullable = false)
     private StockMovementType stockMovementType;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "stock_id", referencedColumnName = "stock_id")
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 }

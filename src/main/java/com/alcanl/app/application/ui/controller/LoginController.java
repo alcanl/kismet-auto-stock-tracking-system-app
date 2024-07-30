@@ -120,6 +120,7 @@ public class LoginController extends JFrame {
                 m_mainFrameController.setVisible(true);
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
+            log.error(ex.getMessage());
             m_resources.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }

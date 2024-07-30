@@ -93,7 +93,7 @@ public final class TableInitializer {
                         pair.getFirst().setRowSelectionInterval(currentRow, currentRow);
                         ((TableItemRightClickPopUpMenu)(pair.getFirst().getComponentPopupMenu()))
                             .selectedProduct = m_applicationService.findProductById(pair.getFirst()
-                                .getValueAt(currentRow, 0).toString()).orElse(null);
+                                .getValueAt(currentRow, 1).toString()).orElse(null);
                     }
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
