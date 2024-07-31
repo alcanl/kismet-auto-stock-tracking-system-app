@@ -1,6 +1,6 @@
 package com.alcanl.app.repository.entity;
 
-import com.alcanl.app.repository.entity.type.StockMovementType;
+import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,23 +12,20 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode
 @Entity
-@Table(name = "stock_movement_info")
-public class StockMovement {
+@Table(name = "update_operation_info")
+public class UpdateOperation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stock_movement_id")
+    @Column(name = "update_operation_id")
     private long stockMovementId;
 
-    @Column(name = "stock_movement_amount", nullable = false)
-    private int amount;
-
-    @Column(name = "stock_movement_date", nullable = false)
+    @Column(name = "update_operation_date", nullable = false)
     private LocalDate recordDate = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "stock_movement_type", nullable = false)
-    private StockMovementType stockMovementType;
+    @Column(name = "update_operation_type", nullable = false)
+    private UpdateOperationType updateOperationType;
 
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})

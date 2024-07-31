@@ -61,17 +61,17 @@ public class DialogAddNewProduct extends JDialog {
     private JLabel labelThreshold;
     private JTextArea textFieldDescription;
     private JLabel labelDescription;
-    private File m_imageFile = null;
+    private File m_imageFile;
     private final ApplicationService m_applicationService;
     private final JFileChooser m_fileChooser;
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
+    private static final String ms_title = "Yeni Ürün Ekle";
 
     @PostConstruct
     private void postConstruct()
     {
-        setSize(390, 290);
-        setTitle("Yeni Ürün Ekle");
+        setTitle(ms_title);
         setContentPane(contentPaneMain);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModal(true);
@@ -79,6 +79,8 @@ public class DialogAddNewProduct extends JDialog {
         setModalityType(ModalityType.APPLICATION_MODAL);
         getRootPane().setDefaultButton(buttonSave);
         setLocationRelativeTo(null);
+        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.add.new.product",
+                ImageIcon.class).getImage());
         pack();
         initializeButtons();
         registerKeys();
@@ -169,8 +171,8 @@ public class DialogAddNewProduct extends JDialog {
                 var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
                         m_imageFile, null, description);
 
-                m_applicationService.saveNewStockMovement(new StockMovementDTO(), stockDTO, productDTO);
-                m_dialogHelper.showProductSaveSuccess();
+                var newStockMovement = m_applicationService.saveNewStockMovement(new StockMovementDTO(), stockDTO, productDTO);
+                m_dialogHelper.showProductSaveSuccess(newStockMovement);
                 m_dialogHelper.notifyTables();
                 dispose();
             }

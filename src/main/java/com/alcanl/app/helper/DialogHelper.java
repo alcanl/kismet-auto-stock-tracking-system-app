@@ -4,6 +4,7 @@ import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
 import com.alcanl.app.application.ui.view.dialog.DialogFastStockAddition;
 import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
+import com.alcanl.app.repository.entity.StockMovement;
 import com.alcanl.app.service.dto.ProductDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +47,9 @@ public final class DialogHelper {
     {
         m_resources.showCustomErrorDialog("%s Orjinal Koduna Sahip Ürün Daha Önceden Kaydedilmiştir.".formatted(originalCode));
     }
-    public void showProductSaveSuccess()
+    public void showProductSaveSuccess(StockMovement stockMovement)
     {
-        m_resources.showCustomInfoDialog("Ürün Kaydedildi.");
+        m_resources.showCustomInfoDialog("%s Orjinal Kodlu Ürün Kaydedildi.".formatted(stockMovement.getStock().getProduct().getOriginalCode()));
     }
     public void showUnSupportedFormatMessage(String format)
     {
@@ -60,16 +61,22 @@ public final class DialogHelper {
     }
     public void showProductRegisterDialog()
     {
-       m_applicationContext.getBean("bean.dialog.add.new.product", DialogAddNewProduct.class)
+        m_applicationContext.getBean("bean.dialog.add.new.product", DialogAddNewProduct.class)
                .setVisible(true);
     }
     public void showAdditionFastStockDialog()
     {
-       m_applicationContext.getBean("bean.dialog.fast.stock", DialogFastStockAddition.class)
-               .setVisible(true);
+         m_applicationContext.getBean("bean.dialog.fast.stock", DialogFastStockAddition.class)
+                 .setVisible(true);
 
     }
-    public void showProductCardDialog()
+    public void showAdditionFastStockDialogWithProduct()
+    {
+        var dialog = m_applicationContext.getBean("bean.dialog.fast.stock", DialogFastStockAddition.class);
+        dialog.initializeTextFields();
+        dialog.setVisible(true);
+    }
+    public void showProductCardDialogWithProduct()
     {
         m_applicationContext.getBean("bean.dialog.card.product", DialogProductCard.class)
                 .setVisible(true);
@@ -77,5 +84,9 @@ public final class DialogHelper {
     public void printLabel()
     {
         m_printerJob.setPrintable(m_applicationContext.getBean("bean.print.printable", Printable.class));
+    }
+    public void showNoSelectedProductMessage()
+    {
+        m_resources.showCustomWarningDialog("Seçili Bir Ürün Bulunmamaktadır. Lütfen Kayıt İçin Listeden İlgili Ürünü Seçiniz.");
     }
 }

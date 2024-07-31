@@ -33,6 +33,10 @@ public class Stock {
     private Set<StockMovement> stockMovements;
 
     @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UpdateOperation> updateOperations;
+
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "original_code", nullable = false)
     @OneToOne(cascade = CascadeType.ALL)
     private Product product;

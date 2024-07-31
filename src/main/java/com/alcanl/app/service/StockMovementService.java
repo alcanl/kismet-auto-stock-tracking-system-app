@@ -52,4 +52,19 @@ class StockMovementService {
             throw new ServiceException(ex.getMessage());
         }
     }
+    @Transactional
+    public StockMovement saveNewStockMovementWithUpdate(StockMovementDTO stockMovementDTO, UserDTO userDTO, ProductDTO productDTO)
+    {
+        try {
+            var product = m_productMapper.productDTOToProduct(productDTO);
+            var user = m_userMapper.userDTOToUser(userDTO);
+            stockMovementDTO.setUser(user);
+            stockMovementDTO.getStock().setProduct(product);
+            var stockMovement = m_stockMovementMapper.stockMovementDTOToStockMovement(stockMovementDTO);
+            return m_repositoryDataHelper.saveStockMovement(stockMovement);
+        } catch (RepositoryException ex) {
+            log.error("Error while saving stock movement with update {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
 }

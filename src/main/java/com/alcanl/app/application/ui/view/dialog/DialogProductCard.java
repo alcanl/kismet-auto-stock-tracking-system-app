@@ -5,11 +5,13 @@ import com.google.common.io.Files;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -35,20 +37,23 @@ public class DialogProductCard extends JDialog {
     private JTextArea textFieldDescription;
     private JLabel labelProductImage;
     private final DialogHelper m_dialogHelper;
+    private final ApplicationContext m_applicationContext;
+    private static final String ms_title = "Ürün Kartı";
 
     @PostConstruct
     private void postConstruct()
     {
-        setSize(390, 290);
         setLocationRelativeTo(null);
-        setTitle("Ürün Kartı");
+        setTitle(ms_title);
         setContentPane(contentPaneMain);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
         setModalityType(ModalityType.APPLICATION_MODAL);
-        setLocationRelativeTo(null);
+        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.card.product",
+                ImageIcon.class).getImage());
         pack();
+        setLocationRelativeTo(null);
         initializeButtons();
         registerKeys();
         dispose();
@@ -104,8 +109,12 @@ public class DialogProductCard extends JDialog {
         textFieldDescription.setEditable(false);
         textFieldShelfCode.setEditable(false);
         var imageFile = m_dialogHelper.getSelectedProduct().getImageFile();
-        if (imageFile != null)
-            labelProductImage.setIcon(new ImageIcon( Files.toByteArray(imageFile)));
+        if (imageFile != null) {
+            var image = new ImageIcon(Files.toByteArray(imageFile)).getImage();
+            var imageScale = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            var scaledIcon = new ImageIcon(imageScale);
+            labelProductImage.setIcon(scaledIcon);
+        }
     }
 
     private void onOK(ActionEvent e)

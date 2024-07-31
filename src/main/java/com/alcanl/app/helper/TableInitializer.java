@@ -93,7 +93,7 @@ public final class TableInitializer {
                         m_threadPool.execute(() -> tableItemClickCallback(pair.getFirst(), currentRow));
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
-                        m_dialogHelper.showProductCardDialog();
+                        m_dialogHelper.showProductCardDialogWithProduct();
 
                 } catch (IllegalArgumentException ignore) {
                         pair.getFirst().clearSelection();

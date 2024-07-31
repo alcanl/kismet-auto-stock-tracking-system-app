@@ -17,7 +17,7 @@ public class IconConfig {
 
     @Lazy
     @Bean(name = "bean.image.icon.maximize.partial.window")
-    public Icon createMaximizePartialWindowIcon()
+    public ImageIcon createMaximizePartialWindowIcon()
     {
         try {
             return new ImageIcon(m_applicationContext.getResource("icons/icon_maximize_window.png")
@@ -29,7 +29,7 @@ public class IconConfig {
 
     @Lazy
     @Bean(name = "bean.image.icon.maximize.full.window")
-    public Icon createMaximizeFulllWindowIcon()
+    public ImageIcon createMaximizeFulllWindowIcon()
     {
         try {
             return new ImageIcon(m_applicationContext.getResource("icons/icon_maximize_full.png")
@@ -41,7 +41,7 @@ public class IconConfig {
 
     @Lazy
     @Bean(name = "bean.image.icon.right.bar.open")
-    public Icon createOpenBarIcon()
+    public ImageIcon createOpenBarIcon()
     {
         try {
             return new ImageIcon(m_applicationContext.getResource("icons/icon_open_right_bar.png")
@@ -53,7 +53,7 @@ public class IconConfig {
 
     @Lazy
     @Bean(name = "bean.image.icon.right.bar.close")
-    public Icon createCloseBarIcon()
+    public ImageIcon createCloseBarIcon()
     {
         try {
             return new ImageIcon(m_applicationContext.getResource("icons/icon_close_right_bar.png")
@@ -65,10 +65,65 @@ public class IconConfig {
 
     @Lazy
     @Bean(name = "bean.image.icon.info.success.tick")
-    public Icon createSuccessTickIcon()
+    public ImageIcon createSuccessTickIcon()
     {
         try {
             return new ImageIcon(m_applicationContext.getResource("icons/icon_success_tick.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.add.new.product")
+    public ImageIcon createAddNewProductDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_add_new_product.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.card.product")
+    public ImageIcon createProductCardDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_card.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.add.stock")
+    public ImageIcon createAddStockDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_add_stock.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.release.stock")
+    public ImageIcon createReleaseStockDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_release_stock.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.edit.product")
+    public ImageIcon createEditProductDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_edit.png")
                     .getContentAsByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);

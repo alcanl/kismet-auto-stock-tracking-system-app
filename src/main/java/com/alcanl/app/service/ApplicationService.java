@@ -80,4 +80,14 @@ public class ApplicationService {
         return m_threadPool.submit(() -> m_stockMovementService.saveNewStockMovement(
                 stockMovementDTO, m_currentUser.getUser(), stockDTO, productDTO)).get();
     }
+    public StockMovement saveNewStockMovementWithUpdateItem(StockMovementDTO stockMovementDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException {
+        return m_threadPool.submit(() -> {
+                    m_stockService.saveStock(stockMovementDTO.getStock());
+                    return m_stockMovementService.saveNewStockMovementWithUpdate(
+                            stockMovementDTO, m_currentUser.getUser(), productDTO);
+                }).get();
+    }
+    public List<ProductDTO> findAllProductsByContains(String productName) throws ExecutionException, InterruptedException {
+        return m_threadPool.submit(() -> m_productService.findAllProductsByContains(productName)).get();
+    }
 }

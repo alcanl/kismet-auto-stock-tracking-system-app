@@ -84,4 +84,15 @@ class ProductService {
             throw new ServiceException(ex.getMessage());
         }
     }
+
+    public List<ProductDTO> findAllProductsByContains(String productName)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllProductsByContains(productName).spliterator(), false)
+                    .map(m_productMapper::productToProductDTO).toList();
+        } catch (RepositoryException ex) {
+            log.error("ProductService::findAllProductsByContains : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
 }

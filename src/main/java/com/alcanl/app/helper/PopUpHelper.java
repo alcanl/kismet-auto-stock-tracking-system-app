@@ -47,17 +47,29 @@ public final class PopUpHelper {
     {
         m_dialogHelper.showProductRegisterDialog();
     }
+    public void newStockInputWithProduct()
+    {
+        m_dialogHelper.showAdditionFastStockDialogWithProduct();
+    }
     public void newStockInput()
     {
-
+        m_dialogHelper.showAdditionFastStockDialog();
     }
     public void newStockOutput()
     {
 
     }
+    public void newStockOutputWithProduct()
+    {
+
+    }
+    public void newProductCardWithProduct()
+    {
+        m_dialogHelper.showProductCardDialogWithProduct();
+    }
     public void newProductCard()
     {
-        m_dialogHelper.showProductCardDialog();
+
     }
     public void editProduct()
     {
