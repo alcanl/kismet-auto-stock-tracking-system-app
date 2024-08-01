@@ -71,17 +71,8 @@ public class DialogAddNewProduct extends JDialog {
     @PostConstruct
     private void postConstruct()
     {
-        setTitle(ms_title);
-        setContentPane(contentPaneMain);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setModal(true);
-        setResizable(false);
-        setModalityType(ModalityType.APPLICATION_MODAL);
-        getRootPane().setDefaultButton(buttonSave);
-        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.add.new.product",
-                ImageIcon.class).getImage());
-        pack();
-        setLocationRelativeTo(null);
+        m_dialogHelper.initializeDialog(this, contentPaneMain, ms_title, buttonSave,
+                m_applicationContext.getBean("bean.image.icon.dialog.add.new.product", ImageIcon.class));
         initializeButtons();
         registerKeys();
         initializeTextArea();

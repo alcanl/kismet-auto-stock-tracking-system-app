@@ -1,13 +1,12 @@
 package com.alcanl.app.helper;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
-import com.alcanl.app.application.ui.view.dialog.DialogAddNewProduct;
-import com.alcanl.app.application.ui.view.dialog.DialogFastStockAddition;
-import com.alcanl.app.application.ui.view.dialog.DialogFastStockRelease;
-import com.alcanl.app.application.ui.view.dialog.DialogProductCard;
+import com.alcanl.app.application.ui.view.dialog.*;
 import com.alcanl.app.repository.entity.StockMovement;
+import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.alcanl.app.service.dto.StockMovementDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,6 +16,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
 import java.util.Arrays;
@@ -115,5 +117,39 @@ public final class DialogHelper {
         m_applicationService.findAllProductsByContains(productSearch).forEach(listModel::addElement);
         jList.setModel(listModel);
         jList.updateUI();
+    }
+    public void initializeDialog(JDialog dialog, Container contentPane, String title,
+                                 JButton defaultButton, ImageIcon icon)
+    {
+        dialog.setTitle(title);
+        dialog.setContentPane(contentPane);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.getRootPane().setDefaultButton(defaultButton);
+        dialog.setModal(true);
+        dialog.setResizable(false);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setIconImage(icon.getImage());
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                dialog.dispose();
+            }
+        });
+        dialog.dispose();
+    }
+    public StockMovement saveNewStockMovement(ProductDTO productDTO, int stockMovementAmount, StockMovementType stockMovementType) throws ExecutionException, InterruptedException {
+        var stockMovementDTO = new StockMovementDTO();
+        stockMovementDTO.setStock(productDTO.getStock());
+        stockMovementDTO.setStockMovementType(stockMovementType);
+        stockMovementDTO.setAmount(stockMovementAmount);
+
+        return m_applicationService.saveNewStockMovementWithUpdateItem(stockMovementDTO, productDTO);
+
+    }
+    public void showNewProductCardDialog()
+    {
+        m_applicationContext.getBean("bean.dialog.card.product.search", DialogProductSearch.class)
+                .setVisible(true);
     }
 }

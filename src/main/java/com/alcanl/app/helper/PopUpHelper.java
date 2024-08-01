@@ -2,12 +2,13 @@ package com.alcanl.app.helper;
 
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -16,7 +17,6 @@ import javax.swing.*;
 @Component
 public final class PopUpHelper {
     private final Resources m_resources;
-    private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
     private final DialogHelper m_dialogHelper;
     @Getter
@@ -57,11 +57,11 @@ public final class PopUpHelper {
     }
     public void newStockOutput()
     {
-
+        m_dialogHelper.showReleaseFastStockDialog();
     }
     public void newStockOutputWithProduct()
     {
-
+        m_dialogHelper.showReleaseFastStockDialogWithProduct();
     }
     public void newProductCardWithProduct()
     {
@@ -69,7 +69,7 @@ public final class PopUpHelper {
     }
     public void newProductCard()
     {
-
+        m_dialogHelper.showNewProductCardDialog();
     }
     public void editProduct()
     {
@@ -81,11 +81,13 @@ public final class PopUpHelper {
     }
     public void lightTheme()
     {
-
+        FlatLightLaf.setup();
+        FlatDarkLaf.updateUI();
     }
     public void darkTheme()
     {
-
+        FlatDarkLaf.setup();
+        FlatDarkLaf.updateUI();
     }
     public void deleteSelectedProduct()
     {

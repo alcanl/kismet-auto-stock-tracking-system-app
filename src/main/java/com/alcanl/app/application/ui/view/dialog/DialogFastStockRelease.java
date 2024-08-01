@@ -2,9 +2,7 @@ package com.alcanl.app.application.ui.view.dialog;
 
 import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.repository.entity.type.StockMovementType;
-import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
-import com.alcanl.app.service.dto.StockMovementDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,35 +35,19 @@ public class DialogFastStockRelease extends JDialog {
     private final DefaultListModel<ProductDTO> m_listModel;
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
-    private final ApplicationService m_applicationService;
     private final Vector<ProductDTO> m_listData = new Vector<>();
     private static final String ms_title = "Hızlı Stok Çık";
 
     @PostConstruct
     private void postConstruct()
     {
-        setTitle(ms_title);
-        setContentPane(contentPane);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        getRootPane().setDefaultButton(buttonOK);
-        setModal(true);
-        setResizable(false);
-        setModalityType(ModalityType.APPLICATION_MODAL);
-        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.release.stock",
-                ImageIcon.class).getImage());
-        pack();
-        setLocationRelativeTo(null);
+        m_dialogHelper.initializeDialog(this, contentPane, ms_title, buttonOK,
+                m_applicationContext.getBean("bean.image.icon.dialog.release.stock",
+                        ImageIcon.class));
         registerKeys();
         initializeButtons();
         initializeJList();
         buttonSearch.addActionListener(this::onSearchButtonClickedCallback);
-        dispose();
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                dispose();
-            }
-        });
-
     }
 
     public void initializeTextFields()
@@ -119,7 +101,7 @@ public class DialogFastStockRelease extends JDialog {
         buttonCancel.addActionListener(this::onCancel);
     }
 
-    private void onOK(ActionEvent event)
+    private void onOK(ActionEvent ignored)
     {
         try {
             var stockAdditionAmountText = textFieldReleaseStock.getText();
@@ -138,14 +120,8 @@ public class DialogFastStockRelease extends JDialog {
                 }
 
                 productDTO.getStock().setAmount(productDTO.getStock().getAmount() - stockReleaseAmount);
-
-                var stockMovementDTO = new StockMovementDTO();
-                stockMovementDTO.setStock(productDTO.getStock());
-                stockMovementDTO.setStockMovementType(StockMovementType.STOCK_INPUT);
-                stockMovementDTO.setAmount(stockReleaseAmount);
-
-                var newStockMovement = m_applicationService.saveNewStockMovementWithUpdateItem(stockMovementDTO, productDTO);
-                m_dialogHelper.showProductSaveSuccess(newStockMovement);
+                m_dialogHelper.showProductSaveSuccess(m_dialogHelper.saveNewStockMovement(productDTO,
+                        stockReleaseAmount, StockMovementType.STOCK_OUTPUT));
                 m_dialogHelper.notifyTables();
                 dispose();
             }

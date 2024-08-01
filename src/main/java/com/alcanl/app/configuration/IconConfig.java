@@ -129,4 +129,15 @@ public class IconConfig {
             throw new RuntimeException(e);
         }
     }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.search.product")
+    public ImageIcon createSearchProductDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_dialog_search.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
