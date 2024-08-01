@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -16,6 +17,7 @@ class StockService {
     private final IStockMapper m_stockMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
 
+    @Transactional
     public Stock saveStock(Stock stock)
     {
         try {
@@ -23,6 +25,16 @@ class StockService {
         }
         catch (RepositoryException ex) {
             log.error("error while saving Stock : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    @Transactional
+    public void deleteStock(Stock stock)
+    {
+        try {
+            m_repositoryDataHelper.deleteStockById(stock.getStockId());
+        }catch (RepositoryException ex) {
+            log.error("error while deleting Stock : {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }

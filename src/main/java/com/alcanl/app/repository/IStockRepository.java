@@ -20,4 +20,5 @@ public interface IStockRepository extends CrudRepository<Stock, Long> {
 
     @Query("FROM Stock s WHERE s.amount >= :greater")
     Iterable<Stock> findAllByGreaterThan(int greater);
+
 }

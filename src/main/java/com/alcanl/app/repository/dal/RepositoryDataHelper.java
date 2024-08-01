@@ -6,8 +6,10 @@ import com.alcanl.app.repository.exception.RepositoryException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Component
@@ -210,6 +212,35 @@ public class RepositoryDataHelper {
             return m_productRepository.findByProductNameContaining(productName);
         } catch (Throwable ex) {
             log.error("Error while finding product by contains {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public void deleteStockMovementsByStock(Stock stock)
+    {
+        try {
+            var movementList = m_stockMovementRepository.findAllByStockIs(stock);
+            StreamSupport.stream(movementList.spliterator(), false).forEach(m_stockMovementRepository::delete);
+
+        } catch (Throwable ex) {
+            log.error("Error while deleting stock movements : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public void deleteStockById(long id)
+    {
+        try {
+            m_stockRepository.deleteById(id);
+        }catch (Throwable ex) {
+            log.error("Error while deleting stock id : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public void deleteStockMovementsByStockId(long id)
+    {
+        try {
+            m_stockMovementRepository.deleteByStockId(id);
+        } catch (Throwable ex) {
+            log.error("Error while deleting stockMovements by stock id : {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }

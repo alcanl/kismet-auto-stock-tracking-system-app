@@ -21,17 +21,17 @@ import java.util.concurrent.ExecutionException;
 
 @SwingContainer
 @Slf4j
-@Component("bean.dialog.fast.stock.addition")
+@Component("bean.dialog.fast.stock.release")
 @Scope("prototype")
 @Lazy
 @RequiredArgsConstructor
-public class DialogFastStockAddition extends JDialog {
+public class DialogFastStockRelease extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JList<ProductDTO> listProductName;
     private JTextField textFieldActiveStock;
-    private JTextField textFieldAdditionStock;
+    private JTextField textFieldReleaseStock;
     private JTextField textFieldSearch;
     private JButton buttonSearch;
     private final DefaultListModel<ProductDTO> m_listModel;
@@ -39,12 +39,11 @@ public class DialogFastStockAddition extends JDialog {
     private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
     private final Vector<ProductDTO> m_listData = new Vector<>();
-    private static final String ms_title = "Hızlı Stok Ekle";
+    private static final String ms_title = "Hızlı Stok Çık";
 
     @PostConstruct
     private void postConstruct()
     {
-        setLocationRelativeTo(null);
         setTitle(ms_title);
         setContentPane(contentPane);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -52,7 +51,7 @@ public class DialogFastStockAddition extends JDialog {
         setModal(true);
         setResizable(false);
         setModalityType(ModalityType.APPLICATION_MODAL);
-        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.add.stock",
+        setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.release.stock",
                 ImageIcon.class).getImage());
         pack();
         setLocationRelativeTo(null);
@@ -94,7 +93,7 @@ public class DialogFastStockAddition extends JDialog {
 
         } catch (ExecutionException | InterruptedException ex)
         {
-            log.error("DialogFastStockAddition::onSearchButtonClicked : {}", ex.getMessage());
+            log.error("DialogFastStockRelease::onSearchButtonClicked : {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessage();
         }
 
@@ -123,13 +122,9 @@ public class DialogFastStockAddition extends JDialog {
     private void onOK(ActionEvent event)
     {
         try {
-            var stockAdditionAmountText = textFieldAdditionStock.getText();
+            var stockAdditionAmountText = textFieldReleaseStock.getText();
             if (m_dialogHelper.areFieldsValid(stockAdditionAmountText)) {
-                var stockAdditionAmount = Integer.parseInt(stockAdditionAmountText);
-                if (stockAdditionAmount <= 0) {
-                    m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı '0' 'dan Küçük Olamaz!");
-                    return;
-                }
+                var stockReleaseAmount = Integer.parseInt(stockAdditionAmountText);
                 var productDTO = listProductName.getSelectedValue();
 
                 if (productDTO == null) {
@@ -137,12 +132,17 @@ public class DialogFastStockAddition extends JDialog {
                     return;
                 }
 
-                productDTO.getStock().setAmount(productDTO.getStock().getAmount() + stockAdditionAmount);
+                if (stockReleaseAmount <= 0 || (productDTO.getStock().getAmount() - stockReleaseAmount) < 0) {
+                    m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı '0' 'dan Küçük Olamaz!");
+                    return;
+                }
+
+                productDTO.getStock().setAmount(productDTO.getStock().getAmount() - stockReleaseAmount);
 
                 var stockMovementDTO = new StockMovementDTO();
                 stockMovementDTO.setStock(productDTO.getStock());
                 stockMovementDTO.setStockMovementType(StockMovementType.STOCK_INPUT);
-                stockMovementDTO.setAmount(stockAdditionAmount);
+                stockMovementDTO.setAmount(stockReleaseAmount);
 
                 var newStockMovement = m_applicationService.saveNewStockMovementWithUpdateItem(stockMovementDTO, productDTO);
                 m_dialogHelper.showProductSaveSuccess(newStockMovement);
@@ -152,17 +152,17 @@ public class DialogFastStockAddition extends JDialog {
         }
         catch (NumberFormatException ex)
         {
-            log.error("DialogFastStockAddition::onOK : {}", ex.getMessage());
-            m_dialogHelper.showUnSupportedFormatMessage(textFieldAdditionStock.getText());
+            log.error("DialogFastStockRelease::onOK : {}", ex.getMessage());
+            m_dialogHelper.showUnSupportedFormatMessage(textFieldReleaseStock.getText());
 
         } catch (ExecutionException | InterruptedException ex)
         {
-            log.error("DialogFastStockAddition::onOk : {}", ex.getMessage());
+            log.error("DialogFastStockRelease::onOk : {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessage();
         }
     }
 
-    private void onCancel(ActionEvent ignored)
+    private void onCancel(ActionEvent event)
     {
         dispose();
     }

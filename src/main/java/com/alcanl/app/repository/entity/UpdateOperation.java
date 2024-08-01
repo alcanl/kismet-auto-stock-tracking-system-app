@@ -28,7 +28,7 @@ public class UpdateOperation {
     private UpdateOperationType updateOperationType;
 
     @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;
 

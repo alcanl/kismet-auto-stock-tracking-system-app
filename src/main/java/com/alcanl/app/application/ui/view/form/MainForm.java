@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.form;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -54,4 +55,9 @@ public class MainForm extends JFrame {
     private JPanel panelUserOperations;
     private JPanel panelStockOperations;
 
+    @PostConstruct
+    private void postConstruct()
+    {
+        dispose();
+    }
 }

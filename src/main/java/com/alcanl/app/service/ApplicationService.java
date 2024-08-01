@@ -32,12 +32,6 @@ public class ApplicationService {
     private final ApplicationEventPublisher m_applicationEventPublisher;
 
     @Transactional
-    public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO) throws ExecutionException, InterruptedException
-    {
-        return m_threadPool.submit(() -> m_productService.saveProduct(productDTO, stockDTO,
-                m_currentUser.getUser())).get();
-    }
-    @Transactional
     public void saveUser(UserDTO userDTO)
     {
         m_userService.saveUser(userDTO);
@@ -64,12 +58,16 @@ public class ApplicationService {
         return m_productService.findProductById(productId);
     }
 
-    public void deleteProduct(String productId)
+    public void deleteProduct(ProductDTO productDTO)
     {
         try {
-            m_threadPool.submit(() -> m_productService.deleteProductById(productId)).get();
+            m_threadPool.submit(() -> {
+                m_stockMovementService.deleteStockMovementsByProduct(productDTO);
+                m_productService.deleteProductById(productDTO.getOriginalCode());
+            }).get();
+
         } catch (InterruptedException | RuntimeException | ExecutionException ex){
-            log.error("Error while deleting product {}, {}", productId, ex.getMessage());
+            log.error("Error while deleting product {}, {}", productDTO.getOriginalCode(), ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
 
@@ -90,4 +88,5 @@ public class ApplicationService {
     public List<ProductDTO> findAllProductsByContains(String productName) throws ExecutionException, InterruptedException {
         return m_threadPool.submit(() -> m_productService.findAllProductsByContains(productName)).get();
     }
+
 }

@@ -41,11 +41,11 @@ class StockMovementService {
             var user = m_userMapper.userDTOToUser(userDTO);
             var stockMovement = m_stockMovementMapper.stockMovementDTOToStockMovement(stockMovementDTO);
             stock.setProduct(product);
+            var savedStock = m_repositoryDataHelper.saveStock(stock);
+            stockMovement.setStock(savedStock);
             stockMovement.setUser(user);
-            stockMovement.setStock(stock);
             stockMovement.setAmount(stock.getAmount());
             stockMovement.setStockMovementType(StockMovementType.STOCK_REGISTER);
-
             return m_repositoryDataHelper.saveStockMovement(stockMovement);
         } catch (RepositoryException ex) {
             log.error("Error while saving stock movement {}", ex.getMessage());
@@ -63,7 +63,17 @@ class StockMovementService {
             var stockMovement = m_stockMovementMapper.stockMovementDTOToStockMovement(stockMovementDTO);
             return m_repositoryDataHelper.saveStockMovement(stockMovement);
         } catch (RepositoryException ex) {
-            log.error("Error while saving stock movement with update {}", ex.getMessage());
+            log.error("Error while saving stockMovement with update {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    @Transactional
+    public void deleteStockMovementsByProduct(ProductDTO productDTO)
+    {
+        try {
+            m_repositoryDataHelper.deleteStockMovementsByStockId(productDTO.getStock().getStockId());
+        }catch (RepositoryException ex) {
+            log.error("Error while deleting stock movement {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }

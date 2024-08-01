@@ -91,7 +91,7 @@ public final class PopUpHelper {
     {
         try {
             if (m_resources.showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
-                m_applicationService.deleteProduct(m_selectedProduct.getOriginalCode());
+                m_applicationService.deleteProduct(m_selectedProduct);
 
         } catch (ServiceException ex) {
             m_resources.showCustomErrorDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));

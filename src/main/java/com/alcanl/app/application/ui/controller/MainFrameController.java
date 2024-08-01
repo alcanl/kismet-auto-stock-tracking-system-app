@@ -62,7 +62,7 @@ public class MainFrameController extends JFrame {
     @EventListener
     public void onTableEventReceived(UpdateTablesEvent ignore)
     {
-        initializeTables();
+        reInitTables();
     }
 
     private void initializeWindowListener()
@@ -225,6 +225,12 @@ public class MainFrameController extends JFrame {
             }
         });
     }
+    private void reInitTables()
+    {
+        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold());
+        m_tableInitializer.reInitTables();
+        m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
+    }
 
     private void initializeTables()
     {
@@ -258,6 +264,11 @@ public class MainFrameController extends JFrame {
         m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 m_dialogHelper.showAdditionFastStockDialog();
+            }
+        });
+        m_mainForm.getButtonReleaseStock().addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                m_dialogHelper.showReleaseFastStockDialog();
             }
         });
     }

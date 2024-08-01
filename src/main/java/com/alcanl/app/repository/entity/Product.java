@@ -36,7 +36,7 @@ public class Product {
     @Column
     private String description;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Stock stock;
 
 }

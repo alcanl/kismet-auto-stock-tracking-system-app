@@ -3,6 +3,7 @@ package com.alcanl.app.service.dto;
 import com.alcanl.app.repository.entity.Stock;
 import com.alcanl.app.repository.entity.User;
 import com.alcanl.app.repository.entity.type.StockMovementType;
+import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -20,7 +21,7 @@ public class UpdateOperationDTO {
 
     private LocalDate m_recordDate = LocalDate.now();
 
-    private StockMovementType m_updateOperationType;
+    private UpdateOperationType m_updateOperationType;
 
     private Stock m_stock;
 

@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.form;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -28,4 +29,10 @@ public class LoginForm extends JFrame {
     @Getter
     private JLabel labelVisibility;
     private JLabel labelBalance;
+
+    @PostConstruct
+    private void postConstruct()
+    {
+        dispose();
+    }
 }

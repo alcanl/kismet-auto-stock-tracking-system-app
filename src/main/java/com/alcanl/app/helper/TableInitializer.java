@@ -56,22 +56,38 @@ public final class TableInitializer {
         Arrays.stream(tables).forEach(table -> m_tablePairsList.add(Pair.of(table,
                 (DefaultTableModel)m_applicationContext.getBean("bean.table.model.default"))));
     }
+    public void reInitTables()
+    {
+        try {
+            initializeTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
+            m_tablePairsList.forEach(pair -> {
+                pair.getFirst().setModel(pair.getSecond());
+                m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
+            });
+            criticalStockCount += m_tablePairsList.getFirst().getSecond().getRowCount() + m_tablePairsList.get(1).getSecond().getRowCount();
+
+        } catch (ExecutionException | InterruptedException ex) {
+            log.error("MainFrameController::reInitializeTables: {}", ex.getMessage());
+        }
+    }
     public void initializeTables()
     {
-
         try {
-            initializeStockOutTableModel(m_tablePairsList.getFirst().getSecond());
-            initializeStockLesserTableModel(m_tablePairsList.get(1).getSecond());
-            fillStockOutTable(m_threadPool.submit(m_applicationService::getAllStockOutProducts).get(),
-                    m_tablePairsList.getFirst().getSecond());
-            fillStockThresholdTable(m_threadPool.submit(m_applicationService::getAllLesserThanThresholdStockProducts).get(),
-                    m_tablePairsList.get(1).getSecond());
-
+            initializeTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
             m_tablePairsList.forEach(this::initializeTablesCallback);
 
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeTables: {}", ex.getMessage());
         }
+
+    }
+    public void initializeTables(DefaultTableModel tableModelStockOut, DefaultTableModel tableModelLesserThan) throws ExecutionException, InterruptedException {
+        initializeStockOutTableModel(tableModelStockOut);
+        initializeStockLesserTableModel(tableModelLesserThan);
+        fillStockOutTable(m_threadPool.submit(m_applicationService::getAllStockOutProducts).get(),
+                tableModelStockOut);
+        fillStockThresholdTable(m_threadPool.submit(m_applicationService::getAllLesserThanThresholdStockProducts).get(),
+                tableModelLesserThan);
 
     }
     private void initializeTablesCallback(Pair<JTable, DefaultTableModel> pair)
@@ -84,7 +100,7 @@ public final class TableInitializer {
         pair.getFirst().getTableHeader().setFont(new Font("calibri", Font.BOLD, 13));
         pair.getFirst().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 try {
                     Point point = e.getPoint();
                     int currentRow = pair.getFirst().rowAtPoint(point);

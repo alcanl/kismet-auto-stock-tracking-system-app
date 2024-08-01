@@ -78,10 +78,10 @@ public class DialogAddNewProduct extends JDialog {
         setResizable(false);
         setModalityType(ModalityType.APPLICATION_MODAL);
         getRootPane().setDefaultButton(buttonSave);
-        setLocationRelativeTo(null);
         setIconImage(m_applicationContext.getBean("bean.image.icon.dialog.add.new.product",
                 ImageIcon.class).getImage());
         pack();
+        setLocationRelativeTo(null);
         initializeButtons();
         registerKeys();
         initializeTextArea();
