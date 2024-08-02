@@ -18,7 +18,7 @@ public class UpdateOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "update_operation_id")
-    private long stockMovementId;
+    private long updateOperationId;
 
     @Column(name = "update_operation_date", nullable = false)
     private LocalDate recordDate = LocalDate.now();

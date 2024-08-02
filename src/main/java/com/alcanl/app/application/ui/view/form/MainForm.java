@@ -54,6 +54,19 @@ public class MainForm extends JFrame {
     private JPanel panelStockMoves;
     private JPanel panelUserOperations;
     private JPanel panelStockOperations;
+    private JTable table1;
+    private JTable table2;
+    private JTextField textField4;
+    private JTextField textField5;
+    private JTextField textField6;
+    private JTextField textField1;
+    private JButton listeleButton;
+    private JButton başlangıçButton;
+    private JButton bitişButton;
+    private JLabel labelDateBegin;
+    private JTextField textField2;
+    private JTextField textField3;
+    private JTextField textField7;
 
     @PostConstruct
     private void postConstruct()

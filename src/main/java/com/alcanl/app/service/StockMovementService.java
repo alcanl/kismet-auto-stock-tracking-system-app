@@ -77,4 +77,14 @@ class StockMovementService {
             throw new ServiceException(ex.getMessage());
         }
     }
+
+    public boolean existsStockMovementsByProduct(ProductDTO productDTO)
+    {
+        try {
+            return m_repositoryDataHelper.existsStockMovementsByStockId(productDTO.getStock().getStockId());
+        }catch (RepositoryException ex) {
+            log.error("Error while checking stock movements {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
 }

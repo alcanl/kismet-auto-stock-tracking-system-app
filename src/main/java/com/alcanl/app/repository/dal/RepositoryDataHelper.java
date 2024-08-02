@@ -6,10 +6,8 @@ import com.alcanl.app.repository.exception.RepositoryException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Component
@@ -19,6 +17,7 @@ public class RepositoryDataHelper {
     private final IProductRepository m_productRepository;
     private final IUserRepository m_userRepository;
     private final IStockMovementRepository m_stockMovementRepository;
+    private final IUpdateOperationRepository m_updateOperationRepository;
 
     public Optional<Stock > findProductStock(Product product)
     {
@@ -30,24 +29,6 @@ public class RepositoryDataHelper {
         }
     }
 
-    public boolean existByUsernameAndPassword(String username, String password)
-    {
-        try {
-            return m_userRepository.existsByUsernameAndPassword(username, password);
-        } catch (Throwable ex) {
-            log.error("Error while existing user by username and password: {}", ex.getMessage());
-            return false;
-        }
-    }
-    public Optional<User> findUserByUsernameAndPassword(String username, String password)
-    {
-        try {
-            return m_userRepository.findByUsernameAndPassword(username, password);
-        } catch (Throwable ex) {
-            log.error("Error while finding user by username and password: {}", ex.getMessage());
-            return Optional.empty();
-        }
-    }
     public Optional<User> findUserByUsername(String username)
     {
         try {
@@ -215,17 +196,7 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public void deleteStockMovementsByStock(Stock stock)
-    {
-        try {
-            var movementList = m_stockMovementRepository.findAllByStockIs(stock);
-            StreamSupport.stream(movementList.spliterator(), false).forEach(m_stockMovementRepository::delete);
 
-        } catch (Throwable ex) {
-            log.error("Error while deleting stock movements : {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
     public void deleteStockById(long id)
     {
         try {
@@ -244,4 +215,41 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    public void deleteUpdateOperationsByStockId(long id)
+    {
+        try {
+            m_updateOperationRepository.deleteByStockId(id);
+        } catch (Throwable ex) {
+            log.error("Error while deleting update operations by stock id : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public UpdateOperation saveUpdateOperation(UpdateOperation updateOperation)
+    {
+        try {
+            return m_updateOperationRepository.save(updateOperation);
+        }catch (Throwable ex) {
+            log.error("Error while saving update operation : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public boolean existsUpdateOperationByStockId(long stockId)
+    {
+        try {
+            return m_updateOperationRepository.existsByStockStockId(stockId);
+        }catch (Throwable ex) {
+            log.error("Error while checking update operations by stockId : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public boolean existsStockMovementsByStockId(long stockId)
+    {
+        try {
+            return m_stockMovementRepository.existsByStockStockId(stockId);
+        }catch (Throwable ex) {
+            log.error("Error while checking stock movements by stockId : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+
 }

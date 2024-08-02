@@ -73,11 +73,11 @@ public final class PopUpHelper {
     }
     public void editProduct()
     {
-
+        m_dialogHelper.showNewEditProductDialog();
     }
     public void editUser()
     {
-
+        m_dialogHelper.showNewEditUserDialog();
     }
     public void lightTheme()
     {
@@ -102,6 +102,6 @@ public final class PopUpHelper {
     }
     public void editSelectedProduct()
     {
-
+        m_dialogHelper.showNewEditProductDialog();
     }
 }

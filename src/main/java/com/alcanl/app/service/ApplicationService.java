@@ -2,12 +2,10 @@ package com.alcanl.app.service;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.configuration.CurrentUserConfig;
-import com.alcanl.app.repository.entity.Product;
 import com.alcanl.app.repository.entity.StockMovement;
-import com.alcanl.app.service.dto.ProductDTO;
-import com.alcanl.app.service.dto.StockDTO;
-import com.alcanl.app.service.dto.StockMovementDTO;
-import com.alcanl.app.service.dto.UserDTO;
+import com.alcanl.app.repository.entity.UpdateOperation;
+import com.alcanl.app.repository.entity.type.UpdateOperationType;
+import com.alcanl.app.service.dto.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
@@ -27,6 +25,7 @@ public class ApplicationService {
     private final StockService m_stockService;
     private final StockMovementService m_stockMovementService;
     private final ProductService m_productService;
+    private final UpdateOperationService m_updateOperationService;
     private final CurrentUserConfig m_currentUser;
     private final ExecutorService m_threadPool;
     private final ApplicationEventPublisher m_applicationEventPublisher;
@@ -44,6 +43,7 @@ public class ApplicationService {
     {
         return m_userService.findUserByUsernameAndPassword(username, password);
     }
+
     public List<ProductDTO> getAllStockOutProducts()
     {
         return m_productService.getAllStockOutProducts();
@@ -62,7 +62,12 @@ public class ApplicationService {
     {
         try {
             m_threadPool.submit(() -> {
-                m_stockMovementService.deleteStockMovementsByProduct(productDTO);
+                if (m_stockMovementService.existsStockMovementsByProduct(productDTO))
+                    m_stockMovementService.deleteStockMovementsByProduct(productDTO);
+
+                if (m_updateOperationService.existsUpdateOperationsByProduct(productDTO))
+                    m_updateOperationService.deleteUpdateOperationsByProduct(productDTO);
+
                 m_productService.deleteProductById(productDTO.getOriginalCode());
             }).get();
 
@@ -74,19 +79,28 @@ public class ApplicationService {
         m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
     }
 
-    public StockMovement saveNewStockMovement(StockMovementDTO stockMovementDTO, StockDTO stockDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException {
+    public StockMovement saveNewStockMovement(StockMovementDTO stockMovementDTO, StockDTO stockDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException
+    {
         return m_threadPool.submit(() -> m_stockMovementService.saveNewStockMovement(
                 stockMovementDTO, m_currentUser.getUser(), stockDTO, productDTO)).get();
     }
-    public StockMovement saveNewStockMovementWithUpdateItem(StockMovementDTO stockMovementDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException {
+    public StockMovement saveNewStockMovementWithUpdateItem(StockMovementDTO stockMovementDTO, ProductDTO productDTO) throws ExecutionException, InterruptedException
+    {
         return m_threadPool.submit(() -> {
                     m_stockService.saveStock(stockMovementDTO.getStock());
                     return m_stockMovementService.saveNewStockMovementWithUpdate(
                             stockMovementDTO, m_currentUser.getUser(), productDTO);
                 }).get();
     }
-    public List<ProductDTO> findAllProductsByContains(String productName) throws ExecutionException, InterruptedException {
+    public List<ProductDTO> findAllProductsByContains(String productName) throws ExecutionException, InterruptedException
+    {
         return m_threadPool.submit(() -> m_productService.findAllProductsByContains(productName)).get();
+    }
+
+    public UpdateOperation updateProduct(ProductDTO productDTO, UpdateOperationType updateOperationType) throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(() -> m_updateOperationService.saveNewUpdateOperation(
+                productDTO, m_currentUser.getUser(), updateOperationType)).get();
     }
 
 }

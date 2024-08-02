@@ -120,7 +120,8 @@ public class DialogFastStockAddition extends JDialog {
 
                 productDTO.getStock().setAmount(productDTO.getStock().getAmount() + stockAdditionAmount);
                 m_dialogHelper.showProductSaveSuccess(m_dialogHelper.saveNewStockMovement(productDTO,
-                        stockAdditionAmount, StockMovementType.STOCK_INPUT));
+                        stockAdditionAmount, StockMovementType.STOCK_INPUT).getStock()
+                        .getProduct().getOriginalCode());
                 m_dialogHelper.notifyTables();
                 dispose();
             }
