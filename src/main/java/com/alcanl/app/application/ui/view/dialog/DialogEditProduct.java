@@ -1,9 +1,10 @@
 package com.alcanl.app.application.ui.view.dialog;
 
 import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
+import com.alcanl.app.service.dto.StockDTO;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
@@ -17,65 +18,100 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+
 
 @SuppressWarnings("ALL")
 @Slf4j
 @SwingContainer
-@Component("bean.dialog.add.new.product")
+@Component("bean.dialog.edit.product")
 @Scope("prototype")
 @Lazy
 @RequiredArgsConstructor
-public class DialogAddNewProduct extends JDialog {
-
-    @Getter
-    private JPanel contentPaneMain;
-    private JButton buttonSave;
+public class DialogEditProduct extends JDialog {
+    private JPanel contentPane;
+    private JButton buttonOK;
     private JButton buttonCancel;
-    private JPanel panelSaveProcess;
+    private JPanel mainPanel;
     private JPanel panelDialog;
     private JTextField textFieldProductName;
     private JTextField textFieldStockAmount;
     private JTextField textFieldProductShelfCode;
+    private JButton buttonAddFile;
     private JLabel labelStockCode;
     private JLabel labelStockAmount;
-    private JLabel labelProductImage;
-    private JPanel mainPanel;
     private JLabel labelShelfCode;
-    private JLabel labelProductName;
+    private JLabel labelProductImage;
     private JLabel labelProductOriginalCode;
+    private JLabel labelProductName;
+    private JLabel labelThreshold;
+    private JLabel labelDescription;
     private JTextField textFieldStockCode;
     private JTextField textFieldProductOriginalCode;
-    private JButton buttonAddFile;
     private JTextField textFieldThreshold;
-    private JLabel labelThreshold;
     private JTextArea textFieldDescription;
-    private JLabel labelDescription;
+    private JPanel panelSaveProcess;
+    private JButton buttonSave;
+    private JComboBox<UpdateOperationType> comboBoxUpdateType;
     private File m_imageFile;
+    private UpdateOperationType m_updateOperationType;
     private final JFileChooser m_fileChooser;
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
-    private static final String ms_title = "Yeni Ürün Ekle";
+    private static final String ms_title = "Ürün Bilgilerini Düzenle";
 
     @PostConstruct
     private void postConstruct()
     {
-        m_dialogHelper.initializeDialog(this, contentPaneMain, ms_title, buttonSave,
-                m_applicationContext.getBean("bean.image.icon.dialog.add.new.product", ImageIcon.class));
+        m_dialogHelper.initializeDialog(this, contentPane, ms_title, buttonSave,
+                m_applicationContext.getBean("bean.image.icon.dialog.edit.product", ImageIcon.class));
         initializeButtons();
         registerKeys();
         initializeTextArea();
+        fillTextFields();
+        initializeComboBox();
         dispose();
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 dispose();
             }
         });
+    }
+    private void initializeButtons()
+    {
+        buttonSave.addActionListener(this::onOK);
+        buttonCancel.addActionListener(this::onCancel);
+        buttonAddFile.addActionListener(this::getSelectedFileCallback);
+    }
+    private void registerKeys()
+    {
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
+        contentPane.registerKeyboardAction(e -> onCancel(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onOK(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+    private void fillTextFields()
+    {
+        var productDTO = m_dialogHelper.getSelectedProduct();
+        textFieldProductName.setText(productDTO.getProductName());
+        textFieldDescription.setText(productDTO.getDescription());
+        textFieldProductOriginalCode.setText(productDTO.getOriginalCode());
+        textFieldStockCode.setText(productDTO.getStockCode());
+        textFieldStockAmount.setText("%d".formatted(productDTO.getStock().getAmount()));
+        textFieldThreshold.setText("%d".formatted(productDTO.getStock().getThreshold()));
+        textFieldProductShelfCode.setText(productDTO.getStock().getShelfNumber());
+
+        if (productDTO.getImageFile() != null)
+            buttonAddFile.setIcon(m_applicationContext.getBean("bean.image.icon.info.success.tick", ImageIcon.class));
     }
     private void initializeTextArea()
     {
@@ -98,28 +134,21 @@ public class DialogAddNewProduct extends JDialog {
             }
         });
     }
-    private void initializeButtons()
+
+    private void initializeComboBox()
     {
-        buttonSave.addActionListener(this::onOK);
-        buttonCancel.addActionListener(this::onCancel);
-        buttonAddFile.addActionListener(this::getSelectedFileCallback);
-    }
-    private void registerKeys()
-    {
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                dispose();
+        comboBoxUpdateType.addItem(UpdateOperationType.PRODUCT_UPDATE);
+        comboBoxUpdateType.addItem(UpdateOperationType.STOCK_UPDATE);
+        comboBoxUpdateType.addItem(UpdateOperationType.BOTH);
+        comboBoxUpdateType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent e) {
+                m_updateOperationType = (UpdateOperationType) e.getItem();
             }
         });
-        contentPaneMain.registerKeyboardAction(e -> onCancel(e),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        contentPaneMain.registerKeyboardAction(e -> onOK(e),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void getSelectedFileCallback(ActionEvent e) {
+    private void getSelectedFileCallback(ActionEvent e)
+    {
         var returnVal = m_fileChooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             m_imageFile = m_fileChooser.getSelectedFile();
@@ -128,7 +157,7 @@ public class DialogAddNewProduct extends JDialog {
         }
     }
 
-    private void onOK(ActionEvent e) {
+    private void onOK(ActionEvent ignored) {
         try {
             var productName = textFieldProductName.getText();
             var stockAmount = textFieldStockAmount.getText();
@@ -141,6 +170,7 @@ public class DialogAddNewProduct extends JDialog {
             if (m_dialogHelper.areFieldsValid(productName, stockAmount, productShelfCode,
                     stockCode, productOriginalCode, stockThreshold)) {
 
+                var stockDTO = new StockDTO();
                 var stockAmountInt = Integer.parseInt(stockAmount);
                 var stockThresholdInt = Integer.parseInt(stockThreshold);
 
@@ -150,9 +180,13 @@ public class DialogAddNewProduct extends JDialog {
                     return;
                 }
 
+                if (m_updateOperationType == null)
+                    m_updateOperationType = UpdateOperationType.PRODUCT_UPDATE;
+
                 m_dialogHelper.showProductSaveSuccess(
-                        m_dialogHelper.saveNewStockMovementWithProductCreate(stockAmountInt, stockThresholdInt, productShelfCode, productOriginalCode,
-                                stockCode, productName, m_imageFile, description).getStock().getProduct().getOriginalCode());
+                        m_dialogHelper.saveNewUpdateOperation(stockAmountInt, stockThresholdInt, productShelfCode,
+                                productOriginalCode, stockCode, productName, m_imageFile, description, m_updateOperationType)
+                                .getStock().getProduct().getOriginalCode());
                 m_dialogHelper.notifyTables();
                 dispose();
             }
@@ -160,7 +194,7 @@ public class DialogAddNewProduct extends JDialog {
         catch (NumberFormatException ex)
         {
             m_dialogHelper.showUnSupportedFormatMessage(textFieldProductName.getText());
-            log.error("DialogAddNewProduct::onOk : NumberFormatEx : {} ",ex.getMessage());
+            log.error("DailogEditProduct::onOk : {} ",ex.getMessage());
         }
         catch (ExecutionException | InterruptedException ex)
         {
@@ -169,15 +203,15 @@ public class DialogAddNewProduct extends JDialog {
             else
                 m_dialogHelper.showUnknownErrorMessage();
 
-            log.error("DialogAddNewProduct::onOk : Execution,InterruptedEx : {} ",ex.getMessage());
+            log.error("DailogEditProduct::onOk : {} ",ex.getMessage());
         }
         catch (ServiceException ex) {
             m_dialogHelper.showUnknownErrorMessage();
-            log.error("DialogAddNewProduct::onOk : ServiceEx : {} ",ex.getMessage());
+            log.error("DailogEditProduct::onOk : {} ",ex.getMessage());
         }
     }
 
-    private void onCancel(ActionEvent e)
+    private void onCancel(ActionEvent ignored)
     {
         dispose();
     }

@@ -13,4 +13,6 @@ public interface IStockMovementRepository extends CrudRepository<StockMovement, 
     @Modifying
     @Query(value = "DELETE FROM stock_movement_info WHERE stock_id = :id ", nativeQuery = true)
     void deleteByStockId(Long id);
+
+    boolean existsByStockStockId(Long id);
 }

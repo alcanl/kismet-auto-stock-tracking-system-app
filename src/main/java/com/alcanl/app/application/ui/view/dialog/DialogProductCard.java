@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 @SwingContainer
 @Component("bean.dialog.card.product")
@@ -36,8 +37,10 @@ public class DialogProductCard extends JDialog {
     private JButton buttonPrintCart;
     private JTextArea textFieldDescription;
     private JLabel labelProductImage;
+    private JTextField textFieldProductRegisterDate;
     private final DialogHelper m_dialogHelper;
     private final ApplicationContext m_applicationContext;
+    private final DateTimeFormatter m_dateTimeFormatter;
     private static final String ms_title = "Ürün Kartı";
 
     @PostConstruct
@@ -101,6 +104,7 @@ public class DialogProductCard extends JDialog {
         textFieldStockThreshold.setText("%d".formatted(m_dialogHelper.getSelectedProduct().getStock().getThreshold()));
         textFieldDescription.setText(m_dialogHelper.getSelectedProduct().getDescription());
         textFieldShelfCode.setText(m_dialogHelper.getSelectedProduct().getStock().getShelfNumber());
+        textFieldProductRegisterDate.setText(m_dateTimeFormatter.format(m_dialogHelper.getSelectedProduct().getRegisterDate()));
         textFieldProductName.setEditable(false);
         textFieldProductOriginalCode.setEditable(false);
         textFieldStockCode.setEditable(false);
@@ -108,6 +112,7 @@ public class DialogProductCard extends JDialog {
         textFieldStockThreshold.setEditable(false);
         textFieldDescription.setEditable(false);
         textFieldShelfCode.setEditable(false);
+        textFieldProductRegisterDate.setEditable(false);
         var imageFile = m_dialogHelper.getSelectedProduct().getImageFile();
         if (imageFile != null) {
             var image = new ImageIcon(Files.toByteArray(imageFile)).getImage();

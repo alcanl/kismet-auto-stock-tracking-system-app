@@ -3,9 +3,12 @@ package com.alcanl.app.helper;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.dialog.*;
 import com.alcanl.app.repository.entity.StockMovement;
+import com.alcanl.app.repository.entity.UpdateOperation;
 import com.alcanl.app.repository.entity.type.StockMovementType;
+import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.alcanl.app.service.dto.StockDTO;
 import com.alcanl.app.service.dto.StockMovementDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
@@ -55,9 +60,9 @@ public final class DialogHelper {
     {
         m_resources.showCustomErrorDialog("%s Orjinal Koduna Sahip Ürün Daha Önceden Kaydedilmiştir.".formatted(originalCode));
     }
-    public void showProductSaveSuccess(StockMovement stockMovement)
+    public void showProductSaveSuccess(String originalCode)
     {
-        m_resources.showCustomInfoDialog("%s Orjinal Kodlu Ürün Kaydedildi.".formatted(stockMovement.getStock().getProduct().getOriginalCode()));
+        m_resources.showCustomInfoDialog("%s Orjinal Kodlu Ürün Kaydedildi.".formatted(originalCode));
     }
     public void showUnSupportedFormatMessage(String format)
     {
@@ -107,7 +112,7 @@ public final class DialogHelper {
     }
     public void showNoSelectedProductMessage()
     {
-        m_resources.showCustomWarningDialog("Seçili Bir Ürün Bulunmamaktadır. Lütfen Kayıt İçin Listeden İlgili Ürünü Seçiniz.");
+        m_resources.showCustomWarningDialog("Seçili Bir Ürün Bulunmamaktadır. Lütfen Devam Etmek İçin Listeden İlgili Ürünü Seçiniz.");
     }
     public void addOrReleaseDialogOnSearchButtonClickedCallback(Vector<ProductDTO> listData, DefaultListModel<ProductDTO> listModel,
                                                                 String productSearch, JList<ProductDTO> jList) throws ExecutionException, InterruptedException
@@ -147,9 +152,58 @@ public final class DialogHelper {
         return m_applicationService.saveNewStockMovementWithUpdateItem(stockMovementDTO, productDTO);
 
     }
+    public StockMovement saveNewStockMovementWithProductCreate(int stockAmount, int stockThreshold, String productShelfCode, String productOriginalCode,
+                                                               String stockCode, String productName, File imageFile, String description) throws ExecutionException, InterruptedException {
+        var stockDTO = new StockDTO();
+        stockDTO.setAmount(stockAmount);
+        stockDTO.setThreshold(stockThreshold);
+        stockDTO.setShelfNumber(productShelfCode);
+
+        var productDTO = new ProductDTO( productOriginalCode, stockCode, LocalDate.now(), productName,
+                imageFile, null, description);
+
+        return m_applicationService.saveNewStockMovement(new StockMovementDTO(), stockDTO, productDTO);
+    }
+    public UpdateOperation saveNewUpdateOperation(int stockAmount, int stockThreshold, String productShelfCode, String productOriginalCode,
+                                                  String stockCode, String productName, File imageFile, String description,
+                                                  UpdateOperationType updateOperationType) throws ExecutionException, InterruptedException
+    {
+        var productDTO = m_applicationService.findProductById(productOriginalCode);
+
+        if (productDTO.isPresent()) {
+
+            productDTO.map(dto -> {
+               dto.setDescription(description);
+               dto.setImageFile(imageFile);
+               dto.setProductName(productName);
+               dto.setStockCode(stockCode);
+               dto.getStock().setShelfNumber(productShelfCode);
+               dto.getStock().setAmount(stockAmount);
+               dto.getStock().setThreshold(stockThreshold);
+               return dto;
+            });
+
+            return m_applicationService.updateProduct(productDTO.get(), updateOperationType);
+        }
+        return null;
+    }
     public void showNewProductCardDialog()
     {
         m_applicationContext.getBean("bean.dialog.card.product.search", DialogProductSearch.class)
                 .setVisible(true);
+    }
+    public void showNewEditProductDialog()
+    {
+        m_applicationContext.getBean("bean.dialog.product.search.for.edit", DialogProductSearchForEdit.class)
+                .setVisible(true);
+    }
+    public void showEditProductDialogWithProduct()
+    {
+        m_applicationContext.getBean("bean.dialog.edit.product", DialogEditProduct.class)
+                .setVisible(true);
+    }
+    public void showNewEditUserDialog()
+    {
+
     }
 }

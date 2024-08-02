@@ -121,7 +121,8 @@ public class DialogFastStockRelease extends JDialog {
 
                 productDTO.getStock().setAmount(productDTO.getStock().getAmount() - stockReleaseAmount);
                 m_dialogHelper.showProductSaveSuccess(m_dialogHelper.saveNewStockMovement(productDTO,
-                        stockReleaseAmount, StockMovementType.STOCK_OUTPUT));
+                        stockReleaseAmount, StockMovementType.STOCK_OUTPUT)
+                        .getStock().getProduct().getOriginalCode());
                 m_dialogHelper.notifyTables();
                 dispose();
             }
