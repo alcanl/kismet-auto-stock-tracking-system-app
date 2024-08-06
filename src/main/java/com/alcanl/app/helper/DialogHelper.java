@@ -114,6 +114,10 @@ public final class DialogHelper {
     {
         m_resources.showCustomWarningDialog("Seçili Bir Ürün Bulunmamaktadır. Lütfen Devam Etmek İçin Listeden İlgili Ürünü Seçiniz.");
     }
+    public void showNoSelectedSearchMessage()
+    {
+        m_resources.showCustomWarningDialog("Seçili Bir Arama Kriteri Bulunmamaktadır. Lütfen Devam Etmek İçin Bir Kriter Seçiniz.");
+    }
     public void addOrReleaseDialogOnSearchButtonClickedCallback(Vector<ProductDTO> listData, DefaultListModel<ProductDTO> listModel,
                                                                 String productSearch, JList<ProductDTO> jList) throws ExecutionException, InterruptedException
     {
@@ -205,5 +209,9 @@ public final class DialogHelper {
     public void showNewEditUserDialog()
     {
 
+    }
+    public void showEmptyFieldsWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Seçili Kriterlerde Arama Yapmak İçin Zorunlu Alanlar Boş Bırakılamaz!");
     }
 }

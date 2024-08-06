@@ -148,6 +148,15 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    public Optional<Product> findProductByStockCode(String stockCode)
+    {
+        try {
+            return m_productRepository.findByStockCode(stockCode);
+        } catch (Throwable ex) {
+            log.error("Error while finding product by stock code: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
 
     public Iterable<Stock> findAllStockByLesserThan(int lesser)
     {

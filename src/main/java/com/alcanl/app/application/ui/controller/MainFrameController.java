@@ -10,6 +10,7 @@ import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
 import com.alcanl.app.service.ApplicationService;
+import com.alcanl.app.service.dto.ProductDTO;
 import com.formdev.flatlaf.FlatClientProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.function.Consumer;
+
+import static com.alcanl.app.helper.Resources.EMPTY_STRING;
 
 @Slf4j
 @Controller
@@ -51,6 +54,7 @@ public class MainFrameController extends JFrame {
         initializeFrame();
         initializeTables();
         initializeBars();
+        initializeStockMovementsTab();
         m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
@@ -274,8 +278,128 @@ public class MainFrameController extends JFrame {
             }
         });
     }
-    private void initializeMainTabs()
+    private void initializeStockMovementsTab()
     {
+        initializeCheckBoxes();
 
+        m_mainForm.getButtonSearch().addActionListener(e -> {
+            if (m_mainForm.getCheckBoxByProduct().isSelected() && m_mainForm.getCheckBoxByUser().isSelected() && m_mainForm.getCheckBoxByDate().isSelected())
+                buttonSearchAllCheckBoxesSelected();
+            else if (m_mainForm.getCheckBoxByProduct().isSelected() && m_mainForm.getCheckBoxByUser().isSelected())
+                buttonSearchProductAndUserSelected();
+            else if (m_mainForm.getCheckBoxByProduct().isSelected() && m_mainForm.getCheckBoxByDate().isSelected())
+                buttonSearchProductAndDateSelected();
+            else if (m_mainForm.getCheckBoxByDate().isSelected() && m_mainForm.getCheckBoxByUser().isSelected())
+                buttonSearchDateAndUserSelected();
+            else if (m_mainForm.getCheckBoxByProduct().isSelected())
+                buttonSearchProductSelected();
+            else if (m_mainForm.getCheckBoxByUser().isSelected())
+                buttonSearchUserSelected();
+            else if (m_mainForm.getCheckBoxByDate().isSelected())
+                buttonSearchDateSelected();
+            else
+                m_dialogHelper.showNoSelectedSearchMessage();
+        });
+    }
+    private void buttonSearchProductAndUserSelected()
+    {
+        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT_AND_USER);
+    }
+    private void buttonSearchProductSelected()
+    {
+        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT);
+    }
+    private void buttonSearchUserSelected()
+    {
+        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.USER);
+    }
+    private void buttonSearchDateSelected()
+    {
+        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
+        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.DATE);
+    }
+    private void buttonSearchDateAndUserSelected()
+    {
+        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
+        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.USER_AND_DATE);
+    }
+    private void buttonSearchProductAndDateSelected()
+    {
+        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
+        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT_AND_DATE);
+    }
+    private void buttonSearchAllCheckBoxesSelected()
+    {
+        if (m_mainForm.getTextFieldStockCode().getText().isEmpty() && m_mainForm.getTextFieldOriginalCode().getText().isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+        else if (!m_mainForm.getTextFieldOriginalCode().getText().isEmpty())
+            StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+        else {
+            StockMovementSearchType.setProductId(m_applicationService.findProductByStockCode(
+                    m_mainForm.getTextFieldStockCode().getText()
+            ).map(ProductDTO::getOriginalCode).orElse(EMPTY_STRING));
+        }
+        if (m_mainForm.getTextFieldUserName().getText().isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+        if (!m_mainForm.getButtonStartDate().isTextFieldValid() || m_mainForm.getButtonEndDate().isTextFieldValid()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
+        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL);
+    }
+    private void initializeCheckBoxes()
+    {
+        m_mainForm.getCheckBoxByDate().addActionListener(e -> {
+            if (m_mainForm.getCheckBoxByDate().isSelected()) {
+                m_mainForm.getButtonEndDate().setEnabled(true);
+                m_mainForm.getButtonStartDate().setEnabled(true);
+            }
+            else {
+                m_mainForm.getButtonEndDate().setEnabled(false);
+                m_mainForm.getButtonStartDate().setEnabled(false);
+            }
+        });
+
+        m_mainForm.getCheckBoxByUser().addActionListener(e -> {
+            if (m_mainForm.getCheckBoxByUser().isSelected()) {
+                m_mainForm.getTextFieldUserName().setEnabled(true);
+                m_mainForm.getTextFieldUserName().setEditable(true);
+            }
+            else {
+                m_mainForm.getTextFieldUserName().setEnabled(false);
+                m_mainForm.getTextFieldUserName().setEditable(false);
+            }
+        });
+
+        m_mainForm.getCheckBoxByProduct().addActionListener(e -> {
+            if (m_mainForm.getCheckBoxByProduct().isSelected()) {
+                m_mainForm.getTextFieldOriginalCode().setEnabled(true);
+                m_mainForm.getTextFieldOriginalCode().setEditable(true);
+                m_mainForm.getTextFieldStockCode().setEnabled(true);
+                m_mainForm.getTextFieldStockCode().setEditable(true);
+            }
+            else {
+                m_mainForm.getTextFieldOriginalCode().setEnabled(false);
+                m_mainForm.getTextFieldOriginalCode().setEditable(false);
+                m_mainForm.getTextFieldStockCode().setEnabled(false);
+                m_mainForm.getTextFieldStockCode().setEditable(false);
+            }
+        });
     }
 }

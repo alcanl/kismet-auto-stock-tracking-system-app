@@ -61,6 +61,11 @@ public class ApplicationService {
         return m_productService.findProductById(productId);
     }
 
+    public Optional<ProductDTO> findProductByStockCode(String stockCode)
+    {
+        return m_productService.findProductByStockCode(stockCode);
+    }
+
     public void deleteProduct(ProductDTO productDTO)
     {
         try {
@@ -121,5 +126,28 @@ public class ApplicationService {
         return m_threadPool.submit(() ->
                 m_stockMovementService.findAllByDateBetween(startDate, endDate)).get();
     }
-
+    public List<StockMovementDTO> findAllStockMovementsByProductAndDate(LocalDate startDate, LocalDate endDate, String originalCode) throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(() ->
+                m_stockMovementService.findAllByProductIdAndDateBetween(originalCode, startDate, endDate)).get();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByProductAndUser(String userName, String originalCode) throws ExecutionException, InterruptedException {
+        var user = m_userService.findUserByUsername(userName);
+        return user.isPresent() ? m_threadPool.submit(() ->
+                m_stockMovementService.findAllByUserIdAndProductId(user.get().getUserId(), originalCode)).get()
+                : new ArrayList<>();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByUserAndDate(String userName, LocalDate startDate, LocalDate endDate) throws ExecutionException, InterruptedException {
+        var user = m_userService.findUserByUsername(userName);
+        return user.isPresent() ? m_threadPool.submit(() ->
+                m_stockMovementService.findAllByUserIdAndDateBetween(user.get().getUserId(), startDate, endDate)).get()
+                : new ArrayList<>();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByAllCriteria(String userName, String originalCode, LocalDate startDate, LocalDate endDate) throws ExecutionException, InterruptedException
+    {
+         var user = m_userService.findUserByUsername(userName);
+         return user.isPresent() ? m_threadPool.submit(() ->
+                 m_stockMovementService.findAllByUserIdAndProductIdAndDateBetween(
+                         user.get().getUserId(), originalCode, startDate, endDate)).get() : new ArrayList<>();
+    }
 }

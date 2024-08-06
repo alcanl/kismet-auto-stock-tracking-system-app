@@ -107,27 +107,31 @@ public final class TableInitializer {
         initializeStockInputMovementsTableModel(m_tablePairsList.get(2).getSecond());
         initializeStockOutputMovementsTableModel(m_tablePairsList.get(3).getSecond());
         try {
-            switch (type) {
-                case USER -> {
-                    var list = m_threadPool.submit(() -> m_applicationService.findAllStockMovementsByUser(
-                            StockMovementSearchType.getUserName())).get();
-                    fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
-                    fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
-                }
-                case PRODUCT -> {
-                    var list = m_threadPool.submit(() -> m_applicationService.findAllStockMovementsByProduct(
-                            StockMovementSearchType.getProductId())).get();
-                    fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
-                    fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
-                }
-                case DATE -> {
-                    var list = m_threadPool.submit(() -> m_applicationService.findAllStockMovementsByDateBetween(
-                            StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate())).get();
-                    fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
-                    fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
-                }
-                default -> {}
-            }
+            var list = switch (type) {
+                case USER ->
+                    m_applicationService.findAllStockMovementsByUser(StockMovementSearchType.getUserName());
+                case PRODUCT -> m_applicationService.findAllStockMovementsByProduct(
+                        StockMovementSearchType.getProductId());
+                case DATE ->
+                        m_applicationService.findAllStockMovementsByDateBetween(StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate());
+                case USER_AND_DATE ->
+                        m_applicationService.findAllStockMovementsByUserAndDate(
+                                StockMovementSearchType.getUserName(), StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate());
+                case PRODUCT_AND_DATE ->
+                        m_applicationService.findAllStockMovementsByProductAndDate(
+                            StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate(), StockMovementSearchType.getProductId());
+                case PRODUCT_AND_USER ->
+                        m_applicationService.findAllStockMovementsByProductAndUser(
+                            StockMovementSearchType.getProductId(), StockMovementSearchType.getUserName());
+                case ALL ->
+                        m_applicationService.findAllStockMovementsByAllCriteria(
+                            StockMovementSearchType.getUserName(), StockMovementSearchType.getProductId(),
+                            StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate());
+                default -> new ArrayList<StockMovementDTO>();
+            };
+
+            fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
+            fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
         } catch (InterruptedException | ExecutionException ex) {
             log.error("MainFrameController::initializeStockMovementTables: {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessage();

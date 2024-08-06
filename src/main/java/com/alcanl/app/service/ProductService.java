@@ -74,6 +74,15 @@ class ProductService {
             throw new ServiceException(ex.getMessage());
         }
     }
+    public Optional<ProductDTO> findProductByStockCode(String stockCode)
+    {
+        try {
+            return m_repositoryDataHelper.findProductByStockCode(stockCode).map(m_productMapper::productToProductDTO);
+        } catch (RepositoryException ex) {
+            log.error("ProductService::findProductByStockCode: {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
     @Transactional
     public void deleteProductById(String productId)
     {

@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.form;
 
+import com.github.lgooddatepicker.components.DatePicker;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -50,28 +51,28 @@ public class MainForm extends JFrame {
     private JPanel panelMainContainer;
     private JTable tableStockOut;
     private JTabbedPane tabbedPaneMain;
-    private JPanel panelProducts;
-    private JPanel panelStockMoves;
-    private JPanel panelUserOperations;
     private JPanel panelStockOperations;
+    private JPanel panelStockMoves;
     private JTable tableStockInput;
     private JTable tableStockOutput;
+    private JCheckBox checkBoxByDate;
+    private DatePicker buttonEndDate;
+    private DatePicker buttonStartDate;
+    private JCheckBox checkBoxByUser;
+    private JTextField textFieldUserName;
+    private JTextField textFieldOriginalCode;
+    private JTextField textFieldStockCode;
+    private JCheckBox checkBoxByProduct;
+    private JButton buttonSearch;
+    private JPanel panelProducts;
+    private JScrollPane scrollPaneProductList;
     private JTable tableProductList;
     private JButton buttonAddProduct;
     private JButton buttonRemoveProduct;
-    private JScrollPane scrollPaneProductList;
     private JButton buttonAddFastStock;
     private JButton buttonReleaseFastStock;
+    private JPanel panelUserOperations;
     private JTable tableUserOperations;
-    private JCheckBox checkBoxByProduct;
-    private JTextField textFieldOriginalCode;
-    private JCheckBox checkBoxByUser;
-    private JCheckBox checkBoxByDate;
-    private JTextField textFieldUserName;
-    private JTextField textFieldName;
-    private JButton buttonEndDate;
-    private JButton buttonStartDate;
-    private JTextField textFieldStockCode;
 
     @PostConstruct
     private void postConstruct()
