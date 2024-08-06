@@ -63,10 +63,15 @@ public class MainForm extends JFrame {
     private JButton buttonAddFastStock;
     private JButton buttonReleaseFastStock;
     private JTable tableUserOperations;
-    private JCheckBox ürüneGöreCheckBox;
-    private JTextField textField1;
-    private JCheckBox kullanıcıyaGöreCheckBox;
-    private JCheckBox tariheGöreCheckBox;
+    private JCheckBox checkBoxByProduct;
+    private JTextField textFieldOriginalCode;
+    private JCheckBox checkBoxByUser;
+    private JCheckBox checkBoxByDate;
+    private JTextField textFieldUserName;
+    private JTextField textFieldName;
+    private JButton buttonEndDate;
+    private JButton buttonStartDate;
+    private JTextField textFieldStockCode;
 
     @PostConstruct
     private void postConstruct()

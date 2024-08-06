@@ -44,10 +44,9 @@ public final class TableInitializer {
     private static final String TABLE_HEADER_PRODUCT_STOCK_CODE = "STOK KODU";
     private static final String TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER = "RAF NUMARASI";
     private static final String TABLE_HEADER_PRODUCT_REGISTER_DATE = "ÜRÜN KAYIT TARİHİ";
-    private static final String TABLE_HEADER_STOCK_INPUT_REGISTER_DATE = "STOK GİRİŞ TARİHİ";
-    private static final String TABLE_HEADER_STOCK_OUTPUT_REGISTER_DATE = "STOK ÇIKIŞ TARİHİ;";
+    private static final String TABLE_HEADER_STOCK_REGISTER_DATE = "KAYIT TARİHİ";
     private static final String TABLE_HEADER_RECORD_OWNER = "İŞLEM SAHİBİ";
-    private static final String TABLE_HEADER_RECORD_AMOUNT = "HAREKET MİKTARI";
+    private static final String TABLE_HEADER_RECORD_AMOUNT = "KAYIT MİKTARI";
 
     public static int criticalStockCount = 0;
     public TableInitializer(ApplicationService applicationService, ExecutorService threadPool,
@@ -103,7 +102,7 @@ public final class TableInitializer {
                 tableModelLesserThan);
 
     }
-    private void initializeStockMovementTables(StockMovementSearchType type)
+    public void initializeStockMovementTables(StockMovementSearchType type)
     {
         initializeStockInputMovementsTableModel(m_tablePairsList.get(2).getSecond());
         initializeStockOutputMovementsTableModel(m_tablePairsList.get(3).getSecond());
@@ -127,6 +126,7 @@ public final class TableInitializer {
                     fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
                     fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
                 }
+                default -> {}
             }
         } catch (InterruptedException | ExecutionException ex) {
             log.error("MainFrameController::initializeStockMovementTables: {}", ex.getMessage());
@@ -185,16 +185,16 @@ public final class TableInitializer {
     private void initializeStockInputMovementsTableModel(DefaultTableModel model)
     {
         Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_STOCK_CODE,
-            TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_PRODUCT_REGISTER_DATE, TABLE_HEADER_STOCK,
-            TABLE_HEADER_STOCK_INPUT_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
+            TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK,
+                TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
 
         model.setColumnIdentifiers(tableHeaders);
     }
     private void initializeStockOutputMovementsTableModel(DefaultTableModel model)
     {
         Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_STOCK_CODE,
-                TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_PRODUCT_REGISTER_DATE, TABLE_HEADER_STOCK,
-                TABLE_HEADER_STOCK_OUTPUT_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
+                TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK,
+                TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
 
         model.setColumnIdentifiers(tableHeaders);
     }

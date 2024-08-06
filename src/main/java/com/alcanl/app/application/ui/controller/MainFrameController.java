@@ -8,6 +8,7 @@ import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
+import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
 import com.alcanl.app.service.ApplicationService;
 import com.formdev.flatlaf.FlatClientProperties;
 import jakarta.annotation.PostConstruct;
@@ -234,8 +235,9 @@ public class MainFrameController extends JFrame {
 
     private void initializeTables()
     {
-        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold());
+        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(), m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput());
         m_tableInitializer.initializeStockOutTables();
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.NONE);
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
     private void initializeRightSideBar()
