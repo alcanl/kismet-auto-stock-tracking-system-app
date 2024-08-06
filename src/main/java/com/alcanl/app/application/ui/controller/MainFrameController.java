@@ -3,7 +3,7 @@ package com.alcanl.app.application.ui.controller;
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
-import com.alcanl.app.helper.TableInitializer;
+import com.alcanl.app.helper.table.TableInitializer;
 import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
@@ -235,7 +235,7 @@ public class MainFrameController extends JFrame {
     private void initializeTables()
     {
         m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold());
-        m_tableInitializer.initializeTables();
+        m_tableInitializer.initializeStockOutTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
     private void initializeRightSideBar()

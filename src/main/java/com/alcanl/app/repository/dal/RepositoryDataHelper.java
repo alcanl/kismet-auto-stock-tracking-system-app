@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Slf4j
@@ -19,6 +20,69 @@ public class RepositoryDataHelper {
     private final IStockMovementRepository m_stockMovementRepository;
     private final IUpdateOperationRepository m_updateOperationRepository;
 
+    public Iterable<StockMovement> findAllStockMovementsByProductId(String productId)
+    {
+        try {
+            return m_stockMovementRepository.findAllByProductId(productId);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by product Id: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByProductIdAndDateBetween(String productId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return m_stockMovementRepository.findAllByStockProductOriginalCodeAndRecordDateBetween(productId, startDate, endDate);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by product Id And Date Between: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByProductIdAndUserId(String productId, long userId)
+    {
+        try {
+            return m_stockMovementRepository.findAllByStockProductOriginalCodeAndUserUserId(productId, userId);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by product Id and User id: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByProductIdAndUserIdAndDateBetween(String productId, long userId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return m_stockMovementRepository.findAllByStockProductOriginalCodeAndRecordDateBetweenAndUserUserId(productId, startDate, endDate, userId);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by product Id and user id and date between: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByUserIdAndDateBetween(long userId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return m_stockMovementRepository.findAllByUserUserIdAndRecordDateBetween(userId, startDate, endDate);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by user id and date between: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByUserId(long userId)
+    {
+        try {
+            return m_stockMovementRepository.findAllByUserId(userId);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by user Id: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<StockMovement> findAllStockMovementsByDateBetween(LocalDate from, LocalDate to)
+    {
+        try {
+            return m_stockMovementRepository.findAllByRecordDateBetween(from, to);
+        }catch (Throwable ex) {
+            log.error("Error while finding all StockMovements by date between: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
     public Optional<Stock > findProductStock(Product product)
     {
         try {

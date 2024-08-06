@@ -12,6 +12,9 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -101,6 +104,22 @@ public class ApplicationService {
     {
         return m_threadPool.submit(() -> m_updateOperationService.saveNewUpdateOperation(
                 productDTO, m_currentUser.getUser(), updateOperationType)).get();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByUser(String username) throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(() -> {
+            var user = m_userService.findUserByUsername(username);
+            return user.isPresent() ? m_stockMovementService.findAllByUserId(user.get().getUserId()) : new ArrayList<StockMovementDTO>();
+        }).get();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByProduct(String originalCode) throws ExecutionException, InterruptedException {
+        return m_threadPool.submit(() ->
+                m_stockMovementService.findAllByProductId(originalCode)).get();
+    }
+    public List<StockMovementDTO> findAllStockMovementsByDateBetween(LocalDate startDate, LocalDate endDate) throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(() ->
+                m_stockMovementService.findAllByDateBetween(startDate, endDate)).get();
     }
 
 }

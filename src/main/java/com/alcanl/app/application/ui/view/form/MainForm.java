@@ -54,19 +54,19 @@ public class MainForm extends JFrame {
     private JPanel panelStockMoves;
     private JPanel panelUserOperations;
     private JPanel panelStockOperations;
-    private JTable table1;
-    private JTable table2;
-    private JTextField textField4;
-    private JTextField textField5;
-    private JTextField textField6;
+    private JTable tableStockInput;
+    private JTable tableStockOutput;
+    private JTable tableProductList;
+    private JButton buttonAddProduct;
+    private JButton buttonRemoveProduct;
+    private JScrollPane scrollPaneProductList;
+    private JButton buttonAddFastStock;
+    private JButton buttonReleaseFastStock;
+    private JTable tableUserOperations;
+    private JCheckBox ürüneGöreCheckBox;
     private JTextField textField1;
-    private JButton listeleButton;
-    private JButton başlangıçButton;
-    private JButton bitişButton;
-    private JLabel labelDateBegin;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JTextField textField7;
+    private JCheckBox kullanıcıyaGöreCheckBox;
+    private JCheckBox tariheGöreCheckBox;
 
     @PostConstruct
     private void postConstruct()

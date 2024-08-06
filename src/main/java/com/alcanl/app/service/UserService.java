@@ -38,6 +38,10 @@ class UserService {
                 m_passwordEncoder.matches(password, userDtoOpt.get().getPassword()) ? userDtoOpt : Optional.empty();
 
     }
+    public Optional<UserDTO> findUserByUsername(String username)
+    {
+       return m_repositoryDataHelper.findUserByUsername(username).map(m_userMapper::userToUserDTO);
+    }
     public boolean isUserExist(String username)
     {
         try {

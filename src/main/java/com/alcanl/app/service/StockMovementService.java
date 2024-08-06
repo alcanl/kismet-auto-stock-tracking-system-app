@@ -19,6 +19,10 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 @AllArgsConstructor
 @Service
 @Slf4j
@@ -84,6 +88,78 @@ class StockMovementService {
             return m_repositoryDataHelper.existsStockMovementsByStockId(productDTO.getStock().getStockId());
         }catch (RepositoryException ex) {
             log.error("Error while checking stock movements {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByProductId(String productId)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByProductId(productId)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO)
+                    .toList();
+        } catch (RepositoryException ex) {
+            log.error("Error while finding stock movement by product {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByDateBetween(LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByDateBetween(
+                    startDate, endDate).spliterator(), false)
+                    .map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movement by date between {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByUserId(long userId)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByUserId(userId)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movement by user {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByUserIdAndProductId(long userId, String productId)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByProductIdAndUserId(productId, userId)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movements by user and product {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByUserIdAndDateBetween(long userId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByUserIdAndDateBetween(userId, startDate, endDate)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movements by user and date between {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByUserIdAndProductIdAndDateBetween(long userId, String productId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByProductIdAndUserIdAndDateBetween(productId, userId, startDate, endDate)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movement by all filters {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<StockMovementDTO> findAllByProductIdAndDateBetween(String productId, LocalDate startDate, LocalDate endDate)
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovementsByProductIdAndDateBetween(productId, startDate, endDate)
+                    .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        }catch (RepositoryException ex) {
+            log.error("Error while finding stock movements by product and date between {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }
