@@ -3,9 +3,9 @@ package com.alcanl.app.application.ui.controller;
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
+import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.helper.table.TableInitializer;
 import com.alcanl.app.helper.DialogHelper;
-import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.Resources;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
@@ -248,7 +248,7 @@ public class MainFrameController extends JFrame {
         initializeBars(m_mainForm.getButtonAddStock());
         initializeBars(m_mainForm.getButtonReleaseStock());
 
-        m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
+        /*m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (m_mainForm.getPanelStockState().getWidth() > 0) {
@@ -264,7 +264,7 @@ public class MainFrameController extends JFrame {
                     m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.close"));
                 }
             }
-        });
+        });*/
         m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 m_dialogHelper.showAdditionFastStockDialog();
