@@ -325,4 +325,14 @@ public class RepositoryDataHelper {
         }
     }
 
+    public Iterable<StockMovement> findAllStockMovements()
+    {
+        try {
+            return m_stockMovementRepository.findAll();
+        }catch (Throwable ex) {
+            log.error("Error while finding all stock movements : {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+
 }

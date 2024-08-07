@@ -232,16 +232,14 @@ public class MainFrameController extends JFrame {
     }
     private void reInitTables()
     {
-        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold());
-        m_tableInitializer.reInitTables();
+        m_tableInitializer.reInitStockOutTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
 
     private void initializeTables()
     {
         m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(), m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput());
-        m_tableInitializer.initializeStockOutTables();
-        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.NONE);
+        m_tableInitializer.initializeTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
     private void initializeRightSideBar()
@@ -300,79 +298,157 @@ public class MainFrameController extends JFrame {
             else
                 m_dialogHelper.showNoSelectedSearchMessage();
         });
+
+        m_mainForm.getButtonGetAllStockMovementRecords().addActionListener(e ->
+                m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL_RECORDS));
+
+        m_mainForm.getButtonClearFields().addActionListener(e -> {
+            m_mainForm.getTextFieldUserName().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldOriginalCode().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldStockCode().setText(EMPTY_STRING);
+            m_mainForm.getButtonStartDate().setText(EMPTY_STRING);
+            m_mainForm.getButtonEndDate().setText(EMPTY_STRING);
+        });
     }
     private void buttonSearchProductAndUserSelected()
     {
-        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
-        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        var originalCode = m_mainForm.getTextFieldOriginalCode().getText().trim();
+        var stockCode = m_mainForm.getTextFieldStockCode().getText().trim();
+        var userName = m_mainForm.getTextFieldUserName().getText().trim();
+        if (originalCode.isEmpty() && stockCode.isEmpty() || userName.isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+
+        if (originalCode.isEmpty())
+            StockMovementSearchType.setProductId(
+                    m_applicationService.findProductByStockCode(stockCode)
+                            .map(ProductDTO::getOriginalCode)
+                            .orElse(EMPTY_STRING));
+        else
+            StockMovementSearchType.setProductId(originalCode);
+
+        StockMovementSearchType.setUserName(userName);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT_AND_USER);
     }
     private void buttonSearchProductSelected()
     {
-        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+        var originalCode = m_mainForm.getTextFieldOriginalCode().getText().trim();
+        var stockCode = m_mainForm.getTextFieldStockCode().getText().trim();
+        if (originalCode.isEmpty() && stockCode.isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+
+        if (originalCode.isEmpty())
+            StockMovementSearchType.setProductId(m_applicationService
+                    .findProductByStockCode(stockCode)
+                    .map(ProductDTO::getOriginalCode)
+                    .orElse(EMPTY_STRING));
+        else
+            StockMovementSearchType.setProductId(originalCode);
+
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT);
     }
     private void buttonSearchUserSelected()
     {
-        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        var userName = m_mainForm.getTextFieldUserName().getText().trim();
+        if (userName.isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+        StockMovementSearchType.setUserName(userName);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.USER);
     }
     private void buttonSearchDateSelected()
     {
-        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
-        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        var startDate = m_mainForm.getButtonStartDate().getDate();
+        var endDate = m_mainForm.getButtonEndDate().getDate();
+        if (startDate == null || endDate == null) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+
+        StockMovementSearchType.setStartDate(startDate);
+        StockMovementSearchType.setEndDate(endDate);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.DATE);
     }
     private void buttonSearchDateAndUserSelected()
     {
-        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
-        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
-        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
+        var userName = m_mainForm.getTextFieldUserName().getText().trim();
+        var startDate = m_mainForm.getButtonStartDate().getDate();
+        var endDate = m_mainForm.getButtonEndDate().getDate();
+
+        if (userName.isEmpty() || startDate == null|| endDate == null) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+
+        StockMovementSearchType.setStartDate(startDate);
+        StockMovementSearchType.setEndDate(endDate);
+        StockMovementSearchType.setUserName(userName);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.USER_AND_DATE);
     }
     private void buttonSearchProductAndDateSelected()
     {
-        StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
-        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
-        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+        var originalCode = m_mainForm.getTextFieldOriginalCode().getText().trim();
+        var stockCode = m_mainForm.getTextFieldStockCode().getText().trim();
+        var startDate = m_mainForm.getButtonStartDate().getDate();
+        var endDate = m_mainForm.getButtonEndDate().getDate();
+
+        if (originalCode.isEmpty() && stockCode.isEmpty() || startDate == null || endDate == null) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return;
+        }
+
+        if (originalCode.isEmpty())
+            StockMovementSearchType.setProductId(
+                    m_applicationService.findProductByStockCode(stockCode)
+                            .map(ProductDTO::getOriginalCode)
+                            .orElse(EMPTY_STRING));
+        else
+            StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
+
+        StockMovementSearchType.setStartDate(startDate);
+        StockMovementSearchType.setEndDate(endDate);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.PRODUCT_AND_DATE);
     }
     private void buttonSearchAllCheckBoxesSelected()
     {
-        if (m_mainForm.getTextFieldStockCode().getText().isEmpty() && m_mainForm.getTextFieldOriginalCode().getText().isEmpty()) {
+        var originalCode = m_mainForm.getTextFieldOriginalCode().getText().trim();
+        var stockCode = m_mainForm.getTextFieldStockCode().getText().trim();
+        var username = m_mainForm.getTextFieldUserName().getText().trim();
+        var startDate = m_mainForm.getButtonStartDate().getDate();
+        var endDate = m_mainForm.getButtonEndDate().getDate();
+
+        if (originalCode.isEmpty() && stockCode.isEmpty() || username.isEmpty() || startDate == null || endDate == null) {
             m_dialogHelper.showEmptyFieldsWarningDialog();
             return;
         }
-        else if (!m_mainForm.getTextFieldOriginalCode().getText().isEmpty())
-            StockMovementSearchType.setProductId(m_mainForm.getTextFieldOriginalCode().getText());
-        else {
-            StockMovementSearchType.setProductId(m_applicationService.findProductByStockCode(
-                    m_mainForm.getTextFieldStockCode().getText()
-            ).map(ProductDTO::getOriginalCode).orElse(EMPTY_STRING));
-        }
-        if (m_mainForm.getTextFieldUserName().getText().isEmpty()) {
-            m_dialogHelper.showEmptyFieldsWarningDialog();
-            return;
-        }
-        if (!m_mainForm.getButtonStartDate().isTextFieldValid() || m_mainForm.getButtonEndDate().isTextFieldValid()) {
-            m_dialogHelper.showEmptyFieldsWarningDialog();
-            return;
-        }
-        StockMovementSearchType.setUserName(m_mainForm.getTextFieldUserName().getText());
-        StockMovementSearchType.setStartDate(m_mainForm.getButtonStartDate().getDate());
-        StockMovementSearchType.setEndDate(m_mainForm.getButtonEndDate().getDate());
+
+        if (originalCode.isEmpty())
+            StockMovementSearchType.setProductId(
+                    m_applicationService.findProductByStockCode(stockCode)
+                            .map(ProductDTO::getOriginalCode)
+                            .orElse(EMPTY_STRING));
+        else
+            StockMovementSearchType.setProductId(originalCode);
+
+        StockMovementSearchType.setUserName(username);
+        StockMovementSearchType.setStartDate(startDate);
+        StockMovementSearchType.setEndDate(endDate);
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL);
     }
     private void initializeCheckBoxes()
     {
         m_mainForm.getCheckBoxByDate().addActionListener(e -> {
             if (m_mainForm.getCheckBoxByDate().isSelected()) {
-                m_mainForm.getButtonEndDate().setEnabled(true);
                 m_mainForm.getButtonStartDate().setEnabled(true);
+                m_mainForm.getButtonEndDate().setEnabled(true);
             }
             else {
-                m_mainForm.getButtonEndDate().setEnabled(false);
                 m_mainForm.getButtonStartDate().setEnabled(false);
+                m_mainForm.getButtonEndDate().setEnabled(false);
             }
         });
 

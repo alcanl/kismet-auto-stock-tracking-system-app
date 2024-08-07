@@ -25,6 +25,7 @@ public final class PopUpHelper {
     private ProductDTO m_selectedProduct;
 
     public static final String FAST_STOCK_ADD_TEXT = "Hızlı Stok Ekle";
+    public static final String FAST_STOCK_RELEASE_TEXT = "Hızlı Stok Düş";
     public static final String EDIT_PRODUCT_TEXT = "Ürün Düzenle";
     public static final String DELETE_PRODUCT_TEXT = "Ürün Kaydını Sil";
     public static final String GET_PRODUCT_CART_TEXT = "Ürün Kartını Getir";
@@ -102,6 +103,6 @@ public final class PopUpHelper {
     }
     public void editSelectedProduct()
     {
-        m_dialogHelper.showNewEditProductDialog();
+        m_dialogHelper.showEditProductDialogWithProduct();
     }
 }

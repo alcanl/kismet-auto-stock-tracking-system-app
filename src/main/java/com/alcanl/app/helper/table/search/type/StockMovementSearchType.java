@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Accessors(prefix = "ms_")
 public enum StockMovementSearchType {
-    PRODUCT, USER, DATE, PRODUCT_AND_DATE, PRODUCT_AND_USER, USER_AND_DATE, ALL, NONE;
+    PRODUCT, USER, DATE, PRODUCT_AND_DATE, PRODUCT_AND_USER, USER_AND_DATE, ALL, NONE, ALL_RECORDS;
 
     @Setter
     @Getter

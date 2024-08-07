@@ -163,4 +163,14 @@ class StockMovementService {
             throw new ServiceException(ex.getMessage());
         }
     }
+    public List<StockMovementDTO> findAllStockMovements()
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStockMovements().spliterator(), false)
+                    .map(m_stockMovementMapper::stockMovementToStockMovementDTO).toList();
+        } catch (RepositoryException ex) {
+            log.error("Error while finding all stock movements in service : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
 }

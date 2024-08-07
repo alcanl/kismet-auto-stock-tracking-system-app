@@ -150,4 +150,8 @@ public class ApplicationService {
                  m_stockMovementService.findAllByUserIdAndProductIdAndDateBetween(
                          user.get().getUserId(), originalCode, startDate, endDate)).get() : new ArrayList<>();
     }
+    public List<StockMovementDTO> findAllStockMovements() throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(m_stockMovementService::findAllStockMovements).get();
+    }
 }

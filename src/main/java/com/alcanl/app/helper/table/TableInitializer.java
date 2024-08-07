@@ -63,30 +63,35 @@ public final class TableInitializer {
     }
     public void setTables(JTable... tables)
     {
-        m_tablePairsList.clear();
-        criticalStockCount = 0;
         Arrays.stream(tables).forEach(table -> m_tablePairsList.add(Pair.of(table,
-                (DefaultTableModel)m_applicationContext.getBean("bean.table.model.default"))));
+                m_applicationContext.getBean("bean.table.model.default", DefaultTableModel.class))));
     }
-    public void reInitTables()
+    public void reInitStockOutTables()
     {
         try {
+            criticalStockCount = 0;
+            m_tablePairsList.getFirst().getSecond().getDataVector().clear();
+            m_tablePairsList.get(1).getSecond().getDataVector().clear();
             initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
             m_tablePairsList.forEach(pair -> {
                 pair.getFirst().setModel(pair.getSecond());
                 m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
             });
-            criticalStockCount += m_tablePairsList.getFirst().getSecond().getRowCount() + m_tablePairsList.get(1).getSecond().getRowCount();
 
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::reInitializeTables: {}", ex.getMessage());
         }
     }
-    public void initializeStockOutTables()
+    public void initializeTables()
+    {
+        initializeStockOutTables();
+        initializeStockMovementTables(StockMovementSearchType.NONE);
+        m_tablePairsList.forEach(this::initializeTablesCallback);
+    }
+    private void initializeStockOutTables()
     {
         try {
             initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
-            m_tablePairsList.forEach(this::initializeTablesCallback);
 
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeTables: {}", ex.getMessage());
@@ -100,12 +105,17 @@ public final class TableInitializer {
                 tableModelStockOut);
         fillStockThresholdTable(m_threadPool.submit(m_applicationService::getAllLesserThanThresholdStockProducts).get(),
                 tableModelLesserThan);
-
+        criticalStockCount += tableModelStockOut.getRowCount() + tableModelLesserThan.getRowCount();
     }
     public void initializeStockMovementTables(StockMovementSearchType type)
     {
+        m_tablePairsList.get(2).getSecond().getDataVector().clear();
+        m_tablePairsList.get(3).getSecond().getDataVector().clear();
         initializeStockInputMovementsTableModel(m_tablePairsList.get(2).getSecond());
         initializeStockOutputMovementsTableModel(m_tablePairsList.get(3).getSecond());
+        m_resources.setCellsAlignment(m_tablePairsList.get(2).getFirst(), SwingConstants.CENTER);
+        m_resources.setCellsAlignment(m_tablePairsList.get(3).getFirst(), SwingConstants.CENTER);
+
         try {
             var list = switch (type) {
                 case USER ->
@@ -127,6 +137,8 @@ public final class TableInitializer {
                         m_applicationService.findAllStockMovementsByAllCriteria(
                             StockMovementSearchType.getUserName(), StockMovementSearchType.getProductId(),
                             StockMovementSearchType.getStartDate(), StockMovementSearchType.getEndDate());
+                case ALL_RECORDS -> m_applicationService.findAllStockMovements();
+
                 default -> new ArrayList<StockMovementDTO>();
             };
 
@@ -165,7 +177,6 @@ public final class TableInitializer {
             });
         pair.getFirst().setModel(pair.getSecond());
         m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
-        criticalStockCount += pair.getSecond().getRowCount();
     }
     private void tableItemClickedCallback(JTable table, int currentRow)
     {
@@ -216,8 +227,7 @@ public final class TableInitializer {
     private void fillStockMovementsTableCallback(StockMovementDTO stockMovementDTO, DefaultTableModel defaultTableModel)
     {
         Object[] data = {stockMovementDTO.getStock().getProduct().getOriginalCode(), stockMovementDTO.getStock().getProduct().getProductName(),
-            stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(),
-            stockMovementDTO.getStock().getProduct().getRegisterDate(), stockMovementDTO.getStock().getAmount(),
+            stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(), stockMovementDTO.getStock().getAmount(),
             stockMovementDTO.getRecordDate(), stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
 
         defaultTableModel.addRow(data);
