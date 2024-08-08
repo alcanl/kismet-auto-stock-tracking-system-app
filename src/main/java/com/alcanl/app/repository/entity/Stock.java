@@ -29,11 +29,11 @@ public class Stock {
     private String shelfNumber;
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<StockMovement> stockMovements;
 
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UpdateOperation> updateOperations;
 
     @EqualsAndHashCode.Exclude

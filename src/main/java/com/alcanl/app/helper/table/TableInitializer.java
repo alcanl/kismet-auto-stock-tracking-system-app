@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import java.util.List;
@@ -61,6 +62,10 @@ public final class TableInitializer {
         m_applicationContext = applicationContext;
         m_popUpHelper = popUpHelper;
     }
+    public void doFilterForTableProducts(ArrayList<ProductDTO> products)
+    {
+        initializeProductListTable(products);
+    }
     public void setTables(JTable... tables)
     {
         Arrays.stream(tables).forEach(table -> m_tablePairsList.add(Pair.of(table,
@@ -86,6 +91,7 @@ public final class TableInitializer {
     {
         initializeStockOutTables();
         initializeStockMovementTables(StockMovementSearchType.NONE);
+        initializeProductListTable();
         m_tablePairsList.forEach(this::initializeTablesCallback);
     }
     private void initializeStockOutTables()
@@ -107,14 +113,29 @@ public final class TableInitializer {
                 tableModelLesserThan);
         criticalStockCount += tableModelStockOut.getRowCount() + tableModelLesserThan.getRowCount();
     }
+    private void initializeProductListTable(List<ProductDTO> list)
+    {
+        m_tablePairsList.get(4).getSecond().getDataVector().clear();
+        initializeProductListTableModel(m_tablePairsList.get(4).getSecond());
+        fillProductListTable(list, m_tablePairsList.get(4).getSecond());
+        m_resources.setCellsAlignment(m_tablePairsList.get(4).getFirst(), SwingConstants.CENTER);
+    }
+    public void initializeProductListTable()
+    {
+        try {
+            initializeProductListTable(m_applicationService.findAllProducts());
+        }
+        catch (ExecutionException | InterruptedException ex) {
+            log.error("MainFrameController::initializeProductListTable: {}", ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessage();
+        }
+    }
     public void initializeStockMovementTables(StockMovementSearchType type)
     {
         m_tablePairsList.get(2).getSecond().getDataVector().clear();
         m_tablePairsList.get(3).getSecond().getDataVector().clear();
         initializeStockInputMovementsTableModel(m_tablePairsList.get(2).getSecond());
         initializeStockOutputMovementsTableModel(m_tablePairsList.get(3).getSecond());
-        m_resources.setCellsAlignment(m_tablePairsList.get(2).getFirst(), SwingConstants.CENTER);
-        m_resources.setCellsAlignment(m_tablePairsList.get(3).getFirst(), SwingConstants.CENTER);
 
         try {
             var list = switch (type) {
@@ -144,6 +165,8 @@ public final class TableInitializer {
 
             fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
             fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
+            m_resources.setCellsAlignment(m_tablePairsList.get(2).getFirst(), SwingConstants.CENTER);
+            m_resources.setCellsAlignment(m_tablePairsList.get(3).getFirst(), SwingConstants.CENTER);
         } catch (InterruptedException | ExecutionException ex) {
             log.error("MainFrameController::initializeStockMovementTables: {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessage();
@@ -181,19 +204,19 @@ public final class TableInitializer {
     private void tableItemClickedCallback(JTable table, int currentRow)
     {
         var selectedProductDTO = m_applicationService.findProductById(table
-                .getValueAt(currentRow, 1).toString()).orElse(null);
+                .getValueAt(currentRow, 0).toString()).orElse(null);
         table.setRowSelectionInterval(currentRow, currentRow);
         m_dialogHelper.setSelectedProduct(selectedProductDTO);
         m_popUpHelper.setSelectedProduct(selectedProductDTO);
     }
     private void initializeStockOutTableModel(DefaultTableModel model)
     {
-        Object[] tableHeaders = {TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_STOCK};
+        Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_STOCK};
         model.setColumnIdentifiers(tableHeaders);
     }
     private void initializeStockLesserTableModel(DefaultTableModel model)
     {
-        Object[] tableHeaders = {TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_ORIGINAL_CODE,
+        Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME,
                 TABLE_HEADER_PRODUCT_THRESHOLD, TABLE_HEADER_STOCK};
         model.setColumnIdentifiers(tableHeaders);
     }
@@ -213,6 +236,13 @@ public final class TableInitializer {
 
         model.setColumnIdentifiers(tableHeaders);
     }
+    private void initializeProductListTableModel(DefaultTableModel model)
+    {
+        Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_REGISTER_DATE,
+                TABLE_HEADER_PRODUCT_STOCK_CODE, TABLE_HEADER_STOCK, TABLE_HEADER_PRODUCT_THRESHOLD};
+
+        model.setColumnIdentifiers(tableHeaders);
+    }
     private void fillStockInputMovementsTable(List<StockMovementDTO> list, DefaultTableModel defaultTableModel)
     {
         list.stream().filter(stockMovementDTO -> stockMovementDTO.getStockMovementType() == StockMovementType.STOCK_INPUT
@@ -224,14 +254,11 @@ public final class TableInitializer {
         list.stream().filter(stockMovementDTO -> stockMovementDTO.getStockMovementType() == StockMovementType.STOCK_OUTPUT)
                 .forEach(stockMovementDTO -> fillStockMovementsTableCallback(stockMovementDTO, defaultTableModel));
     }
-    private void fillStockMovementsTableCallback(StockMovementDTO stockMovementDTO, DefaultTableModel defaultTableModel)
+    private void fillProductListTable(List<ProductDTO> list, DefaultTableModel defaultTableModel)
     {
-        Object[] data = {stockMovementDTO.getStock().getProduct().getOriginalCode(), stockMovementDTO.getStock().getProduct().getProductName(),
-            stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(), stockMovementDTO.getStock().getAmount(),
-            stockMovementDTO.getRecordDate(), stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
-
-        defaultTableModel.addRow(data);
+        list.forEach(productDTO -> fillProductListTableCallback(productDTO, defaultTableModel));
     }
+
     private void fillStockOutTable(List<ProductDTO> list,DefaultTableModel defaultTableModel)
     {
         list.forEach(productDTO -> fillTableStockOutCallback(productDTO, defaultTableModel));
@@ -243,12 +270,29 @@ public final class TableInitializer {
 
     private void fillTableStockOutCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
     {
-        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().getAmount()};
+        Object[] data = {productDTO.getOriginalCode(), productDTO.getProductName(),  productDTO.getStock().getAmount()};
         defaultTableModel.addRow(data);
     }
     private void fillTableLesserCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
     {
-        Object[] data = {productDTO.getProductName(), productDTO.getOriginalCode(), productDTO.getStock().getThreshold(), productDTO.getStock().getAmount()};
+        Object[] data = {productDTO.getOriginalCode(), productDTO.getProductName(), productDTO.getStock().getThreshold(), productDTO.getStock().getAmount()};
+        defaultTableModel.addRow(data);
+    }
+    private void fillStockMovementsTableCallback(StockMovementDTO stockMovementDTO, DefaultTableModel defaultTableModel)
+    {
+        Object[] data = {stockMovementDTO.getStock().getProduct().getOriginalCode(), stockMovementDTO.getStock().getProduct().getProductName(),
+                stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(), stockMovementDTO.getStock().getAmount(),
+                stockMovementDTO.getRecordDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
+
+        defaultTableModel.addRow(data);
+    }
+    private void fillProductListTableCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
+    {
+        Object[] data = {productDTO.getOriginalCode(), productDTO.getProductName(),
+                productDTO.getRegisterDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                productDTO.getStockCode(), productDTO.getStock().getAmount(), productDTO.getStock().getThreshold()};
+
         defaultTableModel.addRow(data);
     }
 }

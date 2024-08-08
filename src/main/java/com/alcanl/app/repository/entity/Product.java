@@ -36,7 +36,7 @@ public class Product {
     @Column
     private String description;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Stock stock;
 
 }

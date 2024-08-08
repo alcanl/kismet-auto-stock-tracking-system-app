@@ -121,10 +121,10 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public Iterable<Product> findAllProducts()
+    public Iterable<Stock> findAllStocks()
     {
         try {
-            return m_productRepository.findAll();
+            return m_stockRepository.findAllStocks();
         } catch (Throwable ex) {
             log.error("Error while finding all product: {}", ex.getMessage());
             throw new RepositoryException(ex);

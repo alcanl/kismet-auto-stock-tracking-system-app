@@ -10,6 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface IStockRepository extends CrudRepository<Stock, Long> {
+
+    @Query(value = "SELECT * FROM stock_info", nativeQuery = true)
+    Iterable<Stock> findAllStocks();
+
     Optional<Stock> findByProduct(Product product);
 
     @Query("FROM Stock s WHERE s.amount <= :lesser")

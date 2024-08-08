@@ -21,12 +21,6 @@ import java.io.IOException;
 @PropertySource(value = "classpath:values.properties", encoding = "UTF-8")
 public final class Resources {
 
-    @Value("${kismet.auto.stock.tracking.system.double.threshold}")
-    private double m_doubleThreshold;
-
-    @Value("${kismet.auto.stock.tracking.system.default.icon}")
-    private String m_defaultIconPath;
-
     @Value("${kismet.auto.stock.tracking.system.warning.message.sure.to.logout}")
     private String m_warningMessageSureToLogout;
 
@@ -54,17 +48,11 @@ public final class Resources {
     @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
     private String m_errorMessageEmptyEntry;
 
-    @Value("${kismet.auto.stock.tracking.system.dialog.message.stock.amount}")
-    private String m_dialogStockInputText;
-
     @Value("${kismet.auto.stock.tracking.system.warning.message.no.selected.item}")
     private String m_warningNoSelectedItemText;
 
     @Value("${kismet.auto.stock.tracking.system.warning.message.delete.item}")
     private String m_warningDeleteItemText;
-
-    @Value("${kismet.auto.stock.tracking.system.title.amount}")
-    private String m_warningTitleAmount;
 
     @Value("${kismet.auto.stock.tracking.system.info.title}")
     private String m_infoMessageTitle;
@@ -112,7 +100,6 @@ public final class Resources {
             log.error("Resources::initializeLogo: {}", ex.getMessage());
         }
     }
-
     public void showUnsupportedFormatWarningMessageDialog()
     {
         JOptionPane.showMessageDialog(null, m_errorUnsupportedFormat, m_errorMessageTitle,
@@ -149,25 +136,6 @@ public final class Resources {
         JOptionPane.showMessageDialog(null, m_errorMessageUnknown + "\n" + errMessage,
                 m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
-    public int showAmountInputDialog()
-    {
-        var amount = JOptionPane.showInputDialog(null,m_dialogStockInputText, m_warningTitleAmount,
-                JOptionPane.PLAIN_MESSAGE, null, null, 1);
-        if (amount == null)
-            return -1;
-        try {
-            var amountInt = Integer.parseInt((String)amount);
-            if (amountInt <= 0) {
-                showUnsupportedFormatWarningMessageDialog();
-                return -1;
-            }
-            else
-                return amountInt;
-        } catch (NumberFormatException ignore) {
-            showUnsupportedFormatWarningMessageDialog();
-            return -1;
-        }
-    }
 
     public void showNoSelectedProductMessage()
     {
@@ -185,10 +153,6 @@ public final class Resources {
     public void showCustomInfoDialog(String message)
     {
         JOptionPane.showMessageDialog(null, message, m_infoMessageTitle, JOptionPane.INFORMATION_MESSAGE);
-    }
-    public String showCustomInputWarningDialog(String message)
-    {
-        return JOptionPane.showInputDialog(null, message, m_warningTitle, JOptionPane.WARNING_MESSAGE);
     }
     public void showNoSuchUserWarningDialog()
     {

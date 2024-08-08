@@ -104,7 +104,10 @@ public class ApplicationService {
     {
         return m_threadPool.submit(() -> m_productService.findAllProductsByContains(productName)).get();
     }
-
+    public List<ProductDTO> findAllProducts() throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(m_productService::findAllProducts).get();
+    }
     public UpdateOperation updateProduct(ProductDTO productDTO, UpdateOperationType updateOperationType) throws ExecutionException, InterruptedException
     {
         return m_threadPool.submit(() -> m_updateOperationService.saveNewUpdateOperation(

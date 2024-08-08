@@ -4,6 +4,7 @@ import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.form.MainForm;
+import com.alcanl.app.application.ui.view.popup.notification.CriticalStockNotificationPopUp;
 import com.alcanl.app.helper.table.TableInitializer;
 import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.configuration.CurrentUserConfig;
@@ -55,6 +56,7 @@ public class MainFrameController extends JFrame {
         initializeTables();
         initializeBars();
         initializeStockMovementsTab();
+        initializeProductListTab();
         m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
@@ -104,7 +106,7 @@ public class MainFrameController extends JFrame {
                 m_mainForm.getButtonExit().setBackground((Color)m_applicationContext.getBean("bean.color.default"));
             }
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e) &&
                         m_resources.showEnsureExitMessageDialog() == JOptionPane.YES_OPTION) {
                     MainFrameController.this.dispose();
@@ -119,7 +121,7 @@ public class MainFrameController extends JFrame {
         m_mainForm.getButtonMinimize().addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e))
                     MainFrameController.this.setState(Frame.ICONIFIED);
             }
@@ -131,7 +133,7 @@ public class MainFrameController extends JFrame {
         m_mainForm.getButtonMaximize().addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 maximizeButtonOnClickedCallback(e);
             }
         });
@@ -166,7 +168,7 @@ public class MainFrameController extends JFrame {
     {
         panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 consumer.accept(e);
             }
         });
@@ -234,11 +236,14 @@ public class MainFrameController extends JFrame {
     {
         m_tableInitializer.reInitStockOutTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
+        m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL_RECORDS);
+        m_tableInitializer.initializeProductListTable();
     }
 
     private void initializeTables()
     {
-        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(), m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput());
+        m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(),
+                m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput(), m_mainForm.getTableProductList());
         m_tableInitializer.initializeTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
@@ -248,30 +253,35 @@ public class MainFrameController extends JFrame {
         initializeBars(m_mainForm.getButtonAddStock());
         initializeBars(m_mainForm.getButtonReleaseStock());
 
-        /*m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
+        m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (m_mainForm.getPanelStockState().getWidth() > 0) {
-                    m_mainForm.getPanelStockState().setSize(0, m_mainForm.getPanelStockState().getHeight());
-                    m_mainForm.getPanelMainContainer().setSize(
-                            m_mainForm.getPanelMainContainer().getWidth() + 350, m_mainForm.getPanelMainContainer().getHeight());
-                    m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.open"));
-                }
-                else {
-                    m_mainForm.getPanelStockState().setSize(350, m_mainForm.getPanelStockState().getHeight());
-                    m_mainForm.getPanelMainContainer().setSize(
-                            m_mainForm.getPanelMainContainer().getWidth() - 350, m_mainForm.getPanelMainContainer().getHeight());
-                    m_mainForm.getIconBar().setIcon((Icon)m_applicationContext.getBean("bean.image.icon.right.bar.close"));
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    var notificationPopUp = m_applicationContext.getBean(
+                            "bean.notification.critical.stock", CriticalStockNotificationPopUp.class);
+
+                    if (!notificationPopUp.isNotificationPopUpActive()) {
+                        notificationPopUp.getLabelMessage().setText(notificationPopUp.getLabelMessage()
+                                .getText().formatted(TableInitializer.criticalStockCount));
+                        notificationPopUp.setLocation((int) e.getLocationOnScreen().getX(),
+                                (int) (e.getLocationOnScreen().getY() - notificationPopUp.getHeight()));
+                        notificationPopUp.setVisible(true);
+                        notificationPopUp.setNotificationPopUpActive(true);
+                    }
+                    else {
+                        notificationPopUp.setVisible(false);
+                        notificationPopUp.setNotificationPopUpActive(false);
+                    }
                 }
             }
-        });*/
+        });
         m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 m_dialogHelper.showAdditionFastStockDialog();
             }
         });
         m_mainForm.getButtonReleaseStock().addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 m_dialogHelper.showReleaseFastStockDialog();
             }
         });
@@ -476,6 +486,28 @@ public class MainFrameController extends JFrame {
                 m_mainForm.getTextFieldStockCode().setEnabled(false);
                 m_mainForm.getTextFieldStockCode().setEditable(false);
             }
+        });
+    }
+    private void initializeProductListTab()
+    {
+        initializeProductListTabButtons();
+    }
+    private void initializeProductListTabButtons()
+    {
+        m_mainForm.getButtonFilter().addActionListener(e -> {
+
+        });
+        m_mainForm.getButtonClear().addActionListener(e -> {
+            m_mainForm.getTextFieldStockEquals().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldStockGreater().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldStockLesser().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldPaneProductName().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldPaneProductOriginalCode().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldPaneStockCode().setText(EMPTY_STRING);
+            m_mainForm.getTextFieldPaneShelfNumber().setText(EMPTY_STRING);
+            m_mainForm.getDateRecordDateAfter().setText(EMPTY_STRING);
+            m_mainForm.getDateRecordDateBefore().setText(EMPTY_STRING);
+            m_mainForm.getDateRecordDateEquals().setText(EMPTY_STRING);
         });
     }
 }

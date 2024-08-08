@@ -1,14 +1,10 @@
 package com.alcanl.app.service;
 
 import com.alcanl.app.repository.dal.RepositoryDataHelper;
-import com.alcanl.app.repository.entity.Product;
+import com.alcanl.app.repository.entity.Stock;
 import com.alcanl.app.repository.exception.RepositoryException;
 import com.alcanl.app.service.dto.ProductDTO;
-import com.alcanl.app.service.dto.StockDTO;
-import com.alcanl.app.service.dto.UserDTO;
 import com.alcanl.app.service.mapper.IProductMapper;
-import com.alcanl.app.service.mapper.IStockMapper;
-import com.alcanl.app.service.mapper.IUserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
@@ -25,8 +21,6 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 class ProductService {
     private final IProductMapper m_productMapper;
-    private final IStockMapper m_stockMapper;
-    private final IUserMapper m_userMapper;
     private final RepositoryDataHelper m_repositoryDataHelper;
 
     public List<ProductDTO> getAllStockOutProducts()
@@ -52,17 +46,6 @@ class ProductService {
         } catch (RepositoryException ex) {
             log.error("ProductService::getAllStockLesserThanThresholdProducts: {}", ex.getMessage());
             return new ArrayList<>();
-        }
-    }
-
-    public Product saveProduct(ProductDTO productDTO, StockDTO stockDTO, UserDTO userDTO)
-    {
-        try {
-            return null;
-        }
-        catch (RepositoryException ex) {
-            log.error("ProductService::saveProduct: {}", ex.getMessage());
-            throw new ServiceException(ex.getMessage());
         }
     }
     public Optional<ProductDTO> findProductById(String productId)
@@ -101,6 +84,16 @@ class ProductService {
                     .map(m_productMapper::productToProductDTO).toList();
         } catch (RepositoryException ex) {
             log.error("ProductService::findAllProductsByContains : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<ProductDTO> findAllProducts()
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllStocks().spliterator(), false)
+                    .map(Stock::getProduct).map(m_productMapper::productToProductDTO).toList();
+        } catch (RepositoryException ex) {
+            log.error("ProductService::findAllProducts : {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }
