@@ -167,12 +167,12 @@ public class DialogAddNewProduct extends JDialog {
             if (ex.getCause() instanceof ProductAlreadyExistException)
                 m_dialogHelper.showProductAlreadyExistMessage(textFieldProductOriginalCode.getText());
             else
-                m_dialogHelper.showUnknownErrorMessage();
+                m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
 
             log.error("DialogAddNewProduct::onOk : Execution,InterruptedEx : {} ",ex.getMessage());
         }
         catch (ServiceException ex) {
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
             log.error("DialogAddNewProduct::onOk : ServiceEx : {} ",ex.getMessage());
         }
     }

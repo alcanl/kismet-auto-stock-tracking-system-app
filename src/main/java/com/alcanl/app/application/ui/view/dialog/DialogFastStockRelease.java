@@ -76,7 +76,7 @@ public class DialogFastStockRelease extends JDialog {
         } catch (ExecutionException | InterruptedException ex)
         {
             log.error("DialogFastStockRelease::onSearchButtonClicked : {}", ex.getMessage());
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
         }
 
     }
@@ -135,7 +135,7 @@ public class DialogFastStockRelease extends JDialog {
         } catch (ExecutionException | InterruptedException ex)
         {
             log.error("DialogFastStockRelease::onOk : {}", ex.getMessage());
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
         }
     }
 

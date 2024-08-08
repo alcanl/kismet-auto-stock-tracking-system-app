@@ -16,14 +16,14 @@ import javax.swing.*;
 @RequiredArgsConstructor
 @Component
 public final class PopUpHelper {
-    private final Resources m_resources;
-    private final ApplicationService m_applicationService;
-    private final DialogHelper m_dialogHelper;
+
     @Getter
     @Setter
     @Accessors(prefix = "m_")
     private ProductDTO m_selectedProduct;
-
+    private final Resources m_resources;
+    private final ApplicationService m_applicationService;
+    private final DialogHelper m_dialogHelper;
     public static final String FAST_STOCK_ADD_TEXT = "Hızlı Stok Ekle";
     public static final String FAST_STOCK_RELEASE_TEXT = "Hızlı Stok Düş";
     public static final String EDIT_PRODUCT_TEXT = "Ürün Düzenle";

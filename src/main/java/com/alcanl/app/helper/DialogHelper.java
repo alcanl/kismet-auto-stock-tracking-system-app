@@ -52,7 +52,7 @@ public final class DialogHelper {
         }
         return true;
     }
-    public void showUnknownErrorMessage()
+    public void showUnknownErrorMessageWhileSavingProduct()
     {
         m_resources.showUnknownErrorMessageDialog("Ürün Kaydedilirken Bilinmeyen Bir Hata Oluştu.");
     }
@@ -213,5 +213,43 @@ public final class DialogHelper {
     public void showEmptyFieldsWarningDialog()
     {
         m_resources.showCustomWarningDialog("Seçili Kriterlerde Arama Yapmak İçin Zorunlu Alanlar Boş Bırakılamaz!");
+    }
+    public void showEmptyFilteredListWarningDialog()
+    {
+        m_resources.showEmptyListWarningMessageDialog();
+    }
+    public int showEnsureDeleteWarningDialog()
+    {
+        return m_resources.showEnsureWarningMessageDialog();
+    }
+    public void centerFrame(JFrame frame)
+    {
+        var x = Toolkit.getDefaultToolkit().getScreenSize().width / 2 - frame.getSize().width / 2;
+        var y = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - frame.getSize().height / 2;
+        frame.setLocation(x, y);
+    }
+    public void setLayout()
+    {
+        m_resources.setLayout();
+    }
+    public void initializeLogo(JFrame frame)
+    {
+        m_resources.initializeLogo(frame);
+    }
+    public int showEnsureExitMessageDialog()
+    {
+        return m_resources.showEnsureExitMessageDialog();
+    }
+    public int showEnsureLogoutMessageDialog(String userInfo)
+    {
+        return m_resources.showEnsureLogoutMessageDialog(userInfo);
+    }
+    public void showUnknownErrorMessageDialog(String errMessage)
+    {
+        m_resources.showUnknownErrorMessageDialog(errMessage);
+    }
+    public void showNoSuchUserWarningDialog()
+    {
+        m_resources.showNoSuchUserWarningDialog();
     }
 }

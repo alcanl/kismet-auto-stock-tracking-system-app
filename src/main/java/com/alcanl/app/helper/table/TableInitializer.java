@@ -2,7 +2,6 @@ package com.alcanl.app.helper.table;
 
 import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.helper.PopUpHelper;
-import com.alcanl.app.helper.Resources;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
 import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.service.ApplicationService;
@@ -14,7 +13,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,7 +37,6 @@ public final class TableInitializer {
     private final ExecutorService m_threadPool;
     private final PopUpHelper m_popUpHelper;
     private final DialogHelper m_dialogHelper;
-    private final Resources m_resources;
 
     private static final String TABLE_HEADER_PRODUCT_NAME = "ÜRÜN ADI";
     private static final String TABLE_HEADER_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
@@ -51,20 +51,24 @@ public final class TableInitializer {
 
     public static int criticalStockCount = 0;
     public TableInitializer(ApplicationService applicationService, ExecutorService threadPool,
-                            Resources resources, ApplicationContext applicationContext, DialogHelper dialogHelper,
-                            PopUpHelper popUpHelper)
+                            ApplicationContext applicationContext, DialogHelper dialogHelper, PopUpHelper popUpHelper)
     {
         m_tablePairsList = new ArrayList<>();
         m_applicationService = applicationService;
         m_threadPool = threadPool;
-        m_resources = resources;
         m_dialogHelper = dialogHelper;
         m_applicationContext = applicationContext;
         m_popUpHelper = popUpHelper;
     }
-    public void doFilterForTableProducts(ArrayList<ProductDTO> products)
+    public void doFilterForTableProducts(List<ProductDTO> products)
     {
+        if (products == null)
+            return;
+
         initializeProductListTable(products);
+
+        if (products.isEmpty())
+            m_dialogHelper.showEmptyFilteredListWarningDialog();
     }
     public void setTables(JTable... tables)
     {
@@ -80,7 +84,7 @@ public final class TableInitializer {
             initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
             m_tablePairsList.forEach(pair -> {
                 pair.getFirst().setModel(pair.getSecond());
-                m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
+                setCellsAlignment(pair.getFirst());
             });
 
         } catch (ExecutionException | InterruptedException ex) {
@@ -118,7 +122,7 @@ public final class TableInitializer {
         m_tablePairsList.get(4).getSecond().getDataVector().clear();
         initializeProductListTableModel(m_tablePairsList.get(4).getSecond());
         fillProductListTable(list, m_tablePairsList.get(4).getSecond());
-        m_resources.setCellsAlignment(m_tablePairsList.get(4).getFirst(), SwingConstants.CENTER);
+        setCellsAlignment(m_tablePairsList.get(4).getFirst());
     }
     public void initializeProductListTable()
     {
@@ -127,7 +131,7 @@ public final class TableInitializer {
         }
         catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeProductListTable: {}", ex.getMessage());
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
     public void initializeStockMovementTables(StockMovementSearchType type)
@@ -165,11 +169,11 @@ public final class TableInitializer {
 
             fillStockInputMovementsTable(list, m_tablePairsList.get(2).getSecond());
             fillStockOutputMovementsTable(list, m_tablePairsList.get(3).getSecond());
-            m_resources.setCellsAlignment(m_tablePairsList.get(2).getFirst(), SwingConstants.CENTER);
-            m_resources.setCellsAlignment(m_tablePairsList.get(3).getFirst(), SwingConstants.CENTER);
+            setCellsAlignment(m_tablePairsList.get(2).getFirst());
+            setCellsAlignment(m_tablePairsList.get(3).getFirst());
         } catch (InterruptedException | ExecutionException ex) {
             log.error("MainFrameController::initializeStockMovementTables: {}", ex.getMessage());
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
     private void initializeTablesCallback(Pair<JTable, DefaultTableModel> pair)
@@ -199,7 +203,7 @@ public final class TableInitializer {
                 }
             });
         pair.getFirst().setModel(pair.getSecond());
-        m_resources.setCellsAlignment(pair.getFirst(), SwingConstants.CENTER);
+        setCellsAlignment(pair.getFirst());
     }
     private void tableItemClickedCallback(JTable table, int currentRow)
     {
@@ -294,5 +298,17 @@ public final class TableInitializer {
                 productDTO.getStockCode(), productDTO.getStock().getAmount(), productDTO.getStock().getThreshold()};
 
         defaultTableModel.addRow(data);
+    }
+    private void setCellsAlignment(JTable table)
+    {
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        TableModel tableModel = table.getModel();
+
+        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); columnIndex++)
+        {
+            table.getColumnModel().getColumn(columnIndex).setCellRenderer(rightRenderer);
+        }
     }
 }

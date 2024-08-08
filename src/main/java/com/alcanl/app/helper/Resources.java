@@ -10,9 +10,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
-import java.awt.*;
 import java.io.IOException;
 
 @Slf4j
@@ -85,12 +82,7 @@ public final class Resources {
             JOptionPane.showMessageDialog(null, m_errorMessageUnknown, m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
         }
     }
-    public void centerFrame(JFrame frame)
-    {
-        var x = Toolkit.getDefaultToolkit().getScreenSize().width / 2 - frame.getSize().width / 2;
-        var y = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - frame.getSize().height / 2;
-        frame.setLocation(x, y);
-    }
+
     public void initializeLogo(JFrame frame)
     {
         try {
@@ -157,17 +149,5 @@ public final class Resources {
     public void showNoSuchUserWarningDialog()
     {
         JOptionPane.showMessageDialog(null, m_warningWrongUsernameOrPasswordText, m_warningTitle, JOptionPane.WARNING_MESSAGE);
-    }
-    public void setCellsAlignment(JTable table, int alignment)
-    {
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(alignment);
-
-        TableModel tableModel = table.getModel();
-
-        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); columnIndex++)
-        {
-            table.getColumnModel().getColumn(columnIndex).setCellRenderer(rightRenderer);
-        }
     }
 }

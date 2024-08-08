@@ -68,18 +68,21 @@ public class MainForm extends JFrame {
     private JButton buttonDeleteProduct;
     private JButton buttonFastStockAdd;
     private JButton buttonFastReleaseStock;
+    private JPanel panelFields;
     private JTextField textFieldPaneProductOriginalCode;
     private JTextField textFieldPaneProductName;
+    private JCheckBox checkBoxIncludeContainsProduct;
     private JTextField textFieldPaneStockCode;
     private JTextField textFieldPaneShelfNumber;
+    private JCheckBox checkBoxIncludeContainsStock;
     private JTextField textFieldStockEquals;
     private JTextField textFieldStockGreater;
     private JTextField textFieldStockLesser;
     private DatePicker dateRecordDateEquals;
     private DatePicker dateRecordDateAfter;
     private DatePicker dateRecordDateBefore;
-    private JButton buttonClear;
     private JButton buttonFilter;
+    private JButton buttonClear;
     private JPanel panelUserOperations;
     private JTable tableUserOperations;
 

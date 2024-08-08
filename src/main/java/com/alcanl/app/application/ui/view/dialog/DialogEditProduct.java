@@ -201,12 +201,12 @@ public class DialogEditProduct extends JDialog {
             if (ex.getCause() instanceof ProductAlreadyExistException)
                 m_dialogHelper.showProductAlreadyExistMessage(textFieldProductOriginalCode.getText());
             else
-                m_dialogHelper.showUnknownErrorMessage();
+                m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
 
             log.error("DailogEditProduct::onOk : {} ",ex.getMessage());
         }
         catch (ServiceException ex) {
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
             log.error("DailogEditProduct::onOk : {} ",ex.getMessage());
         }
     }

@@ -72,7 +72,7 @@ public class DialogProductSearch extends JDialog {
         }
         catch (ExecutionException | InterruptedException ex) {
             log.error("DialogProductSearch::buttonSearchOnClickedCallback : {}", ex.getMessage());
-            m_dialogHelper.showUnknownErrorMessage();
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
         }
     }
     private void onOK(ActionEvent ignored)

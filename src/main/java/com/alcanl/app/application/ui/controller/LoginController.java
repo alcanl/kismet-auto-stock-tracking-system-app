@@ -6,7 +6,7 @@ import com.alcanl.app.application.ui.view.form.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
 
 import com.alcanl.app.configuration.CurrentUserConfig;
-import com.alcanl.app.helper.Resources;
+import com.alcanl.app.helper.DialogHelper;
 import com.alcanl.app.service.ApplicationService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -43,20 +43,21 @@ public class LoginController extends JFrame {
     private String m_setPasswordHiddenIconPath;
 
     private final LoginForm m_loginForm;
-    private final Resources m_resources;
+    private final DialogHelper m_dialogHelper;
     private final ExecutorService m_threadPool;
     private final ApplicationService m_applicationService;
     private final ApplicationContext m_applicationContext;
     private final MainFrameController m_mainFrameController;
     private final CurrentUserConfig m_currentUserConfig;
 
-    public LoginController(Resources resources, ExecutorService threadPool, ApplicationService applicationService,
-                           ApplicationContext applicationContext, LoginForm loginForm, MainFrameController mainFrameController,
-                           CurrentUserConfig currentUserConfig)
+    public LoginController(ExecutorService threadPool, ApplicationService applicationService,
+                           ApplicationContext applicationContext, LoginForm loginForm,
+                           MainFrameController mainFrameController, CurrentUserConfig currentUserConfig,
+                           DialogHelper dialogHelper)
     {
         m_loginForm = loginForm;
-        m_resources = resources;
         m_threadPool = threadPool;
+        m_dialogHelper = dialogHelper;
         m_applicationService = applicationService;
         m_applicationContext = applicationContext;
         m_mainFrameController = mainFrameController;
@@ -96,9 +97,9 @@ public class LoginController extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initializeWindowListener();
         pack();
-        m_resources.setLayout();
-        m_resources.initializeLogo(this);
-        m_resources.centerFrame(this);
+        m_dialogHelper.setLayout();
+        m_dialogHelper.initializeLogo(this);
+        m_dialogHelper.centerFrame(this);
     }
     private void buttonLoginOnClickListenerCallback(ActionEvent event) {
         var username = m_loginForm.getTextFieldUserName().getText();
@@ -110,7 +111,7 @@ public class LoginController extends JFrame {
                     .get(5, TimeUnit.SECONDS);
 
             if (userDtoOpt.isEmpty()) {
-                m_resources.showNoSuchUserWarningDialog();
+                m_dialogHelper.showNoSuchUserWarningDialog();
                 clearEditTexts();
             }
             else {
@@ -121,7 +122,7 @@ public class LoginController extends JFrame {
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
             log.error(ex.getMessage());
-            m_resources.showUnknownErrorMessageDialog(ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
     private void textFieldsOnEnterKeyClicked(KeyEvent e)
@@ -168,7 +169,7 @@ public class LoginController extends JFrame {
             }
         } catch (IOException ex) {
             log.error("setPasswordFieldVisibleOrInvisibleCallback", ex);
-            m_resources.showUnknownErrorMessageDialog(ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
 
     }
