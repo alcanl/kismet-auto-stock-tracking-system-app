@@ -49,7 +49,7 @@
             <properties>
               <background color="-1"/>
             </properties>
-            <border type="line" title="Kullanıcı Giriş Paneli" title-justification="1" title-position="2">
+            <border type="line" title-resource-bundle="values" title-key="panel.login.title" title-justification="1" title-position="2">
               <font name="Segoe UI Semibold" size="12"/>
               <title-color color="-12169629"/>
               <color color="-11709338"/>
@@ -64,7 +64,7 @@
                   <foreground color="-12169629"/>
                   <horizontalTextPosition value="10"/>
                   <icon value="icons/icon_user.png"/>
-                  <text value="Kullanıcı Adı"/>
+                  <text resource-bundle="values" key="panel.login.user.name"/>
                 </properties>
               </component>
               <component id="e558a" class="javax.swing.JTextField" binding="textFieldUserName">
@@ -88,7 +88,7 @@
                   <horizontalAlignment value="10"/>
                   <horizontalTextPosition value="10"/>
                   <icon value="icons/icon_password.png"/>
-                  <text value="  Şifre"/>
+                  <text resource-bundle="values" key="panel.login.password"/>
                   <verticalTextPosition value="0"/>
                 </properties>
               </component>
@@ -113,7 +113,7 @@
                   <foreground color="-12169629"/>
                   <horizontalTextPosition value="0"/>
                   <icon value="icons/icon_login.png"/>
-                  <text value="Giriş"/>
+                  <text resource-bundle="values" key="button.login"/>
                   <verticalAlignment value="0"/>
                   <verticalTextPosition value="3"/>
                 </properties>
@@ -152,7 +152,7 @@
         </constraints>
         <properties>
           <font size="8"/>
-          <text value="version 1.0.0"/>
+          <text resource-bundle="values" key="kismet.auto.stock.tracking.system.app.version"/>
         </properties>
       </component>
       <component id="6a30a" class="javax.swing.JLabel" binding="labelRights">
@@ -161,7 +161,7 @@
         </constraints>
         <properties>
           <font size="8"/>
-          <text value="Tüm hakları saklıdır. Kısmet Oto Kaporta A.Ş. adına com.alcanl tarafından geliştirilmiştir."/>
+          <text resource-bundle="values" key="panel.login.rights.info"/>
         </properties>
       </component>
     </children>

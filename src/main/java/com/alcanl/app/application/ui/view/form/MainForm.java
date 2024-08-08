@@ -85,6 +85,21 @@ public class MainForm extends JFrame {
     private JButton buttonClear;
     private JPanel panelUserOperations;
     private JTable tableUserOperations;
+    private JLabel labelStockMovesProductOriginalCode;
+    private JLabel labelStockMovesStockCode;
+    private JPanel panelByProduct;
+    private JPanel panelByUser;
+    private JPanel panelByDate;
+    private JPanel panelStockMoveQuery;
+    private JScrollPane paneQueryTables;
+    private JPanel panelQueryTables;
+    private JPanel panelStockInput;
+    private JPanel panelStockOutput;
+    private JLabel labelStartDate;
+    private JLabel labelEndDate;
+    private JLabel labelUsername;
+    private JPanel panelProductSearch;
+    private JPanel panelByProductRecords;
 
     @PostConstruct
     private void postConstruct()
