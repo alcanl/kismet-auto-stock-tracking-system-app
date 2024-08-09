@@ -11,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -48,6 +50,16 @@ class UserService {
             return m_repositoryDataHelper.isUserExistByUsername(username);
         } catch (RepositoryException ex) {
             log.error("Error in UserService.isUserExist : {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+    public List<UserDTO> findAllUsers()
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findAllUsers().spliterator(), false)
+                    .map(m_userMapper::userToUserDTO).toList();
+        } catch (RepositoryException ex) {
+            log.error("Error in UserService.findAllUsers : {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
     }

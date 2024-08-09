@@ -130,15 +130,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public Iterable<User> findAllUsers()
-    {
-        try {
-            return m_userRepository.findAll();
-        } catch (Throwable ex) {
-            log.error("Error while finding all users: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
     public Optional<Product> findProductByName(String productName)
     {
         try {
@@ -174,6 +165,15 @@ public class RepositoryDataHelper {
             return m_stockRepository.findAllByLesserThanThreshold();
         } catch (Throwable ex) {
             log.error("Error while finding product by lesser than threshold: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
+    public Iterable<User> findAllUsers()
+    {
+        try {
+            return m_userRepository.findAllUsers();
+        } catch (Throwable ex) {
+            log.error("Error while finding all users : {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }

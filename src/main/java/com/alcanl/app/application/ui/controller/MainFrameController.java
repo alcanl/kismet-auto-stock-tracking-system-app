@@ -250,7 +250,8 @@ public class MainFrameController extends JFrame {
     private void initializeTables()
     {
         m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(),
-                m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput(), m_mainForm.getTableProductList());
+                m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput(), m_mainForm.getTableProductList(),
+                m_mainForm.getTableActiveUsers());
         m_tableInitializer.initializeTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }

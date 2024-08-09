@@ -10,10 +10,12 @@ import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockDTO;
 import com.alcanl.app.service.dto.StockMovementDTO;
+import com.alcanl.app.service.dto.UserDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,10 @@ public final class DialogHelper {
     @Setter
     @Accessors(prefix = "m_")
     private ProductDTO m_selectedProduct;
+    @Getter
+    @Setter
+    @Accessors(prefix = "m_")
+    private UserDTO m_selectedUser;
     private final Resources m_resources;
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final ApplicationContext m_applicationContext;
@@ -251,5 +257,20 @@ public final class DialogHelper {
     public void showNoSuchUserWarningDialog()
     {
         m_resources.showNoSuchUserWarningDialog();
+    }
+    public int showEnsureWarningMessageDialog()
+    {
+        return m_resources.showEnsureWarningMessageDialog();
+    }
+    public void deleteSelectedProduct()
+    {
+        try {
+            if (showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
+                m_applicationService.deleteProduct(m_selectedProduct);
+
+        } catch (ServiceException ex) {
+            showUnknownErrorMessageDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
+        }
+
     }
 }

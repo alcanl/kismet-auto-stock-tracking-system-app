@@ -46,7 +46,10 @@ public class ApplicationService {
     {
         return m_userService.findUserByUsernameAndPassword(username, password);
     }
-
+    public Optional<UserDTO> findByUsername(String username)
+    {
+        return m_userService.findUserByUsername(username);
+    }
     public List<ProductDTO> getAllStockOutProducts()
     {
         return m_productService.getAllStockOutProducts();
@@ -156,5 +159,9 @@ public class ApplicationService {
     public List<StockMovementDTO> findAllStockMovements() throws ExecutionException, InterruptedException
     {
         return m_threadPool.submit(m_stockMovementService::findAllStockMovements).get();
+    }
+    public List<UserDTO> findAllUsers() throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(m_userService::findAllUsers).get();
     }
 }
