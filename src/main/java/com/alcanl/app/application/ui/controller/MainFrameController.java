@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.chrono.ChronoLocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -61,7 +62,7 @@ public class MainFrameController extends JFrame {
         initializeBars();
         initializeStockMovementsTab();
         initializeProductListTab();
-        m_mainForm.getButtonRightBar().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
+        m_mainForm.getButtonNotification().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         setMinimumSize(new Dimension(m_mainFrameStartDimensionX, m_mainFrameStartDimensionY));
@@ -86,6 +87,24 @@ public class MainFrameController extends JFrame {
                 m_mainForm.getLabelWelcomeUser().setText(String.format(text, m_currentUserConfig.getUser().toString()));
             }
         });
+
+        m_threadPool.execute(() -> addWheelListenerCallback(m_mainForm.getPanelMain()));
+    }
+    private void addWheelListenerCallback(JComponent jComponent)
+    {
+        if (jComponent instanceof JTable || jComponent instanceof JComboBox)
+            return;
+
+        if (jComponent.getComponentCount() > 0)
+            Arrays.stream(jComponent.getComponents()).forEach(component -> addWheelListenerCallback ((JComponent)component));
+
+        jComponent.addMouseWheelListener(e -> {
+            if (e.isControlDown())
+                if (e.getWheelRotation() < 0)
+                    m_threadPool.execute(() -> m_dialogHelper.setFontLarger(jComponent.getFont()));
+                else
+                    m_threadPool.execute(() -> m_dialogHelper.setFontSmaller(jComponent.getFont()));
+        });
     }
 
     private void initializeFrame()
@@ -100,15 +119,22 @@ public class MainFrameController extends JFrame {
 
     private void initializeExitButton()
     {
-        m_mainForm.getButtonExit().addMouseListener(new MouseAdapter() {
+        m_mainForm.getButtonExit().addMouseListener(exitButtonClickedCallback());
+        m_mainForm.getIconExit().addMouseListener(exitButtonClickedCallback());
+    }
+    private MouseAdapter exitButtonClickedCallback()
+    {
+        return new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                m_mainForm.getButtonExit().setBackground((Color)m_applicationContext.getBean("bean.color.button.exit"));
+                m_mainForm.getButtonExit().setBackground((Color) m_applicationContext.getBean("bean.color.button.exit"));
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
-                m_mainForm.getButtonExit().setBackground((Color)m_applicationContext.getBean("bean.color.default"));
+                m_mainForm.getButtonExit().setBackground((Color) m_applicationContext.getBean("bean.color.default"));
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e) &&
@@ -117,13 +143,20 @@ public class MainFrameController extends JFrame {
                     m_applicationEventPublisher.publishEvent(new DisposeEvent(this));
                 }
             }
-        });
+        };
     }
 
     private void initializeMinimizeButton()
     {
         m_mainForm.getButtonMinimize().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (SwingUtilities.isLeftMouseButton(e))
+                            MainFrameController.this.setState(Frame.ICONIFIED);
+                    }
+                });
 
+        m_mainForm.getIconMinimize().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e))
@@ -136,6 +169,12 @@ public class MainFrameController extends JFrame {
     {
         m_mainForm.getButtonMaximize().addMouseListener(new MouseAdapter() {
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                maximizeButtonOnClickedCallback(e);
+            }
+        });
+        m_mainForm.getIconMaximize().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 maximizeButtonOnClickedCallback(e);
@@ -176,6 +215,14 @@ public class MainFrameController extends JFrame {
                 consumer.accept(e);
             }
         });
+
+        Arrays.stream(panel.getComponents()).forEach(
+                component -> component.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        consumer.accept(e);
+                    }
+                }));
     }
 
     private void initializeButtonLogout()
@@ -191,7 +238,7 @@ public class MainFrameController extends JFrame {
     private void initializeBars()
     {
         initializeTopBar();
-        initializeRightSideBar();
+        initializeBottomBar();
         m_mainForm.getTabbedPaneMain().setFont(new Font("calibri", Font.PLAIN, 18));
         m_mainForm.getCheckBoxIncludeContainsStock().setFont(new Font("calibri", Font.PLAIN, 10));
         m_mainForm.getCheckBoxIncludeContainsProduct().setFont(new Font("calibri", Font.PLAIN, 10));
@@ -227,6 +274,19 @@ public class MainFrameController extends JFrame {
 
     private void initializeBars(JPanel jPanel)
     {
+        Arrays.stream(jPanel.getComponents()).forEach(
+                component -> component.addMouseListener(new MouseAdapter() {
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        jPanel.setBackground(Color.LIGHT_GRAY);
+                    }
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        jPanel.setBackground((Color)m_applicationContext.getBean("bean.color.default"));
+                    }
+                }));
+
         jPanel.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -238,6 +298,7 @@ public class MainFrameController extends JFrame {
                 jPanel.setBackground((Color)m_applicationContext.getBean("bean.color.default"));
             }
         });
+
     }
     private void reInitTables()
     {
@@ -255,13 +316,39 @@ public class MainFrameController extends JFrame {
         m_tableInitializer.initializeTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }
-    private void initializeRightSideBar()
+    private void initializeBottomBar()
     {
-        initializeBars(m_mainForm.getButtonRightBar());
+        initializeBars(m_mainForm.getButtonNotification());
         initializeBars(m_mainForm.getButtonAddStock());
         initializeBars(m_mainForm.getButtonReleaseStock());
 
-        m_mainForm.getButtonRightBar().addMouseListener(new MouseAdapter() {
+        m_mainForm.getButtonNotification().addMouseListener(buttonNotificationClickedCallback());
+        m_mainForm.getIconNotification().addMouseListener(buttonNotificationClickedCallback());
+        m_mainForm.getLabelCount().addMouseListener(buttonNotificationClickedCallback());
+        m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.showAdditionFastStockDialog();
+            }
+        });
+        m_mainForm.getButtonReleaseStock().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.showReleaseFastStockDialog();
+            }
+        });
+        m_mainForm.getIconAdd().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.showAdditionFastStockDialog();
+            }
+        });
+        m_mainForm.getIconRelease().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.showReleaseFastStockDialog();
+            }
+        });
+    }
+    private MouseAdapter buttonNotificationClickedCallback()
+    {
+        return new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
@@ -282,17 +369,7 @@ public class MainFrameController extends JFrame {
                     }
                 }
             }
-        });
-        m_mainForm.getButtonAddStock().addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                m_dialogHelper.showAdditionFastStockDialog();
-            }
-        });
-        m_mainForm.getButtonReleaseStock().addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                m_dialogHelper.showReleaseFastStockDialog();
-            }
-        });
+        };
     }
     private void initializeStockMovementsTab()
     {

@@ -7,8 +7,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.alcanl.app.helper.PopUpHelper.DARK_THEME_TEXT;
-import static com.alcanl.app.helper.PopUpHelper.LIGHT_THEME_TEXT;
+import static com.alcanl.app.helper.PopUpHelper.*;
 
 @Component("bean.menu.popup.top.bar.settings")
 public class TopBarSettingsButtonPopUpMenu extends JPopupMenu implements ActionListener {
@@ -36,7 +35,7 @@ public class TopBarSettingsButtonPopUpMenu extends JPopupMenu implements ActionL
     {
         if (e.getSource() == m_lightThemeMenuItem)
             m_popUpHelper.lightTheme();
-        else
+        else if (e.getSource() == m_darkThemeMenuItem)
             m_popUpHelper.darkTheme();
     }
 }

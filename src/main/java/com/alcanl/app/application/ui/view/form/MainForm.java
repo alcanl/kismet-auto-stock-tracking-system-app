@@ -34,9 +34,9 @@ public class MainForm extends JFrame {
     private JLabel labelWelcomeUser;
     private JPanel buttonReleaseStock;
     private JLabel iconRelease;
-    private JPanel buttonRightBar;
+    private JPanel buttonNotification;
     private JLabel labelCount;
-    private JLabel iconBar;
+    private JLabel iconNotification;
     private JPanel buttonAddStock;
     private JLabel iconAdd;
     private JScrollPane paneMain;

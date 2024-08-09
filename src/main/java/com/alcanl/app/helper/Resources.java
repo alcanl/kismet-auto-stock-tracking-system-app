@@ -1,5 +1,6 @@
 package com.alcanl.app.helper;
 
+import com.alcanl.app.application.ui.view.form.MainForm;
 import com.formdev.flatlaf.FlatLightLaf;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -60,10 +64,25 @@ public final class Resources {
     public static final String EMPTY_STRING = "";
 
     private final ApplicationContext m_applicationContext;
+
+    private void setTextFont(Font font, JComponent jComponent)
+    {
+        for (var component : jComponent.getComponents())
+            if (component instanceof JLabel || component instanceof JButton || component instanceof JCheckBox
+                    || component instanceof JTextComponent || component instanceof JComboBox)
+                component.setFont(font);
+
+            else if (component instanceof JScrollPane jScrollPane) {
+                Arrays.stream(jScrollPane.getViewport().getComponents()).forEach(c -> setTextFont(font, (JComponent)c));
+            }
+            else if (component instanceof JPanel || component instanceof JTabbedPane)
+                setTextFont(font, (JComponent)component);
+    }
     public Resources(ApplicationContext applicationContext)
     {
         m_applicationContext = applicationContext;
     }
+
     @PostConstruct
     public void initializeDialogLanguage()
     {
@@ -150,4 +169,11 @@ public final class Resources {
     {
         JOptionPane.showMessageDialog(null, m_warningWrongUsernameOrPasswordText, m_warningTitle, JOptionPane.WARNING_MESSAGE);
     }
+    public synchronized void setTextFont(Font font)
+    {
+        var form = m_applicationContext.getBean("bean.form.main", MainForm.class);
+        setTextFont(font, form.getPanelMain());
+        form.getLabelCount().setFont(new Font("calibri", Font.BOLD, 14));
+    }
+
 }

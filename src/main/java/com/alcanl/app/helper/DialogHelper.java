@@ -45,6 +45,7 @@ public final class DialogHelper {
     @Accessors(prefix = "m_")
     private UserDTO m_selectedUser;
     private final Resources m_resources;
+    private final FontChangeHelper m_fontChangeHelper;
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
@@ -272,5 +273,13 @@ public final class DialogHelper {
             showUnknownErrorMessageDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
         }
 
+    }
+    public void setFontLarger(Font font)
+    {
+        m_resources.setTextFont(m_fontChangeHelper.getLargerSize(font));
+    }
+    public void setFontSmaller(Font font)
+    {
+        m_resources.setTextFont(m_fontChangeHelper.getSmallerSize(font));
     }
 }

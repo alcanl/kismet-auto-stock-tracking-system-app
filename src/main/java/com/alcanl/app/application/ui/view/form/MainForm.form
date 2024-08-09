@@ -214,7 +214,7 @@
           </grid>
         </children>
       </grid>
-      <grid id="9e86b" binding="panelBottomBar" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+      <grid id="9e86b" binding="panelBottomBar" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
         <margin top="0" left="20" bottom="0" right="20"/>
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false">
@@ -227,38 +227,10 @@
         </properties>
         <border type="none"/>
         <children>
-          <component id="81180" class="javax.swing.JLabel" binding="labelVersion">
+          <grid id="1237d" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="20" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="80"/>
             <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Segoe UI Semibold" size="9"/>
-              <text resource-bundle="values" key="kismet.auto.stock.tracking.system.app.version"/>
-            </properties>
-          </component>
-          <component id="c0c38" class="javax.swing.JLabel" binding="labelWelcomeUser">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Segoe UI Semibold" size="9"/>
-              <text resource-bundle="values" key="bottom.bar.welcome"/>
-            </properties>
-          </component>
-          <hspacer id="28cee">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
-          <hspacer id="67f56">
-            <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
-          <grid id="1237d" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="true" same-size-vertically="true" hgap="20" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <background color="-8682348"/>
@@ -290,7 +262,7 @@
                   </component>
                 </children>
               </grid>
-              <grid id="c95a5" binding="buttonRightBar" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
+              <grid id="c95a5" binding="buttonNotification" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="0">
                 <margin top="0" left="0" bottom="14" right="0"/>
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
@@ -315,7 +287,7 @@
                       <text value=""/>
                     </properties>
                   </component>
-                  <component id="eeca0" class="javax.swing.JLabel" binding="iconBar">
+                  <component id="eeca0" class="javax.swing.JLabel" binding="iconNotification">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -351,6 +323,49 @@
                   </component>
                 </children>
               </grid>
+            </children>
+          </grid>
+          <grid id="f086e" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-8682348"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="c0c38" class="javax.swing.JLabel" binding="labelWelcomeUser">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <font name="Segoe UI Semibold" size="9"/>
+                  <text resource-bundle="values" key="bottom.bar.welcome"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="f86c4" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-8682348"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="81180" class="javax.swing.JLabel" binding="labelVersion">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <font name="Segoe UI Semibold" size="9"/>
+                  <horizontalAlignment value="11"/>
+                  <text resource-bundle="values" key="kismet.auto.stock.tracking.system.app.version"/>
+                </properties>
+              </component>
             </children>
           </grid>
         </children>
