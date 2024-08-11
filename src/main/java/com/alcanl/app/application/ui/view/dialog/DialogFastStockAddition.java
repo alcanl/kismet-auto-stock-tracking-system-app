@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.service.dto.ProductDTO;
 import jakarta.annotation.PostConstruct;
@@ -105,7 +105,7 @@ public class DialogFastStockAddition extends JDialog {
     {
         try {
             var stockAdditionAmountText = textFieldAdditionStock.getText();
-            if (m_dialogHelper.areFieldsValid(stockAdditionAmountText)) {
+            if (m_dialogHelper.areProductFieldsValid(stockAdditionAmountText)) {
                 var stockAdditionAmount = Integer.parseInt(stockAdditionAmountText);
                 if (stockAdditionAmount <= 0) {
                     m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı '0' 'dan Küçük Olamaz!");

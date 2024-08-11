@@ -30,6 +30,29 @@ class UserService {
             m_repositoryDataHelper.saveUser(m_userMapper.userDTOToUser(userDTO));
         } catch (RepositoryException ex) {
             log.error(ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public UserDTO updateUser(UserDTO userDTO)
+    {
+        try {
+            var user = m_repositoryDataHelper.findUserByUsername(userDTO.getUsername());
+            user.ifPresent(u -> {
+                u.setFirstName(userDTO.getFirstName());
+                u.setLastName(userDTO.getLastName());
+                u.setAdmin(userDTO.isAdmin());
+                u.setPassword(m_passwordEncoder.encode(userDTO.getPassword()));
+                u.setDescription(userDTO.getDescription());
+                u.setEMail(userDTO.getEMail());
+                m_repositoryDataHelper.saveUser(u);
+            });
+
+            return m_userMapper.userToUserDTO(user.orElseThrow(() -> new ServiceException("User not found")));
+        } catch (RepositoryException ex) {
+            log.error(ex.getMessage());
+            throw new ServiceException(ex.getMessage());
         }
     }
     public Optional<UserDTO> findUserByUsernameAndPassword(String username, String password)
@@ -62,5 +85,9 @@ class UserService {
             log.error("Error in UserService.findAllUsers : {}", ex.getMessage());
             throw new ServiceException(ex.getMessage());
         }
+    }
+    public boolean isOldPasswordTrue(UserDTO currentUser, String oldPassword)
+    {
+        return m_passwordEncoder.matches( oldPassword, currentUser.getPassword());
     }
 }

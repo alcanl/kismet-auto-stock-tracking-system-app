@@ -1,14 +1,14 @@
 package com.alcanl.app.application.ui.view.popup;
 
-import com.alcanl.app.helper.PopUpHelper;
+import com.alcanl.app.helper.popup.PopUpHelper;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.alcanl.app.helper.PopUpHelper.EDIT_PRODUCT_TEXT;
-import static com.alcanl.app.helper.PopUpHelper.EDIT_USER_TEXT;
+import static com.alcanl.app.helper.popup.PopUpHelper.EDIT_PRODUCT_TEXT;
+import static com.alcanl.app.helper.popup.PopUpHelper.EDIT_USER_TEXT;
 
 @Component("bean.menu.popup.top.bar.edit")
 public class TopBarEditButtonPopUpMenu extends JPopupMenu implements ActionListener {

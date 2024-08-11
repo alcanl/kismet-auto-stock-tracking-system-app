@@ -2,7 +2,9 @@ package com.alcanl.app.repository.dal;
 
 import com.alcanl.app.repository.*;
 import com.alcanl.app.repository.entity.*;
+import com.alcanl.app.repository.exception.EmailAlreadyInUseException;
 import com.alcanl.app.repository.exception.RepositoryException;
+import com.alcanl.app.repository.exception.UsernameAlreadyInUseException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -199,6 +201,11 @@ public class RepositoryDataHelper {
     public void saveUser(User user)
     {
         try {
+            if (m_userRepository.existsUserByeMail(user.getEMail()))
+                throw new EmailAlreadyInUseException("Girilen Email Adresi Sistemde Kayıtlı!");
+
+            if (m_userRepository.existsByUsername(user.getUsername()))
+                throw new UsernameAlreadyInUseException("Girilen Kullanıcı Adı Sistemde Kayıtlı!");
             m_userRepository.save(user);
 
         } catch (Throwable ex) {

@@ -1,7 +1,10 @@
-package com.alcanl.app.helper;
+package com.alcanl.app.helper.dialog;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.dialog.*;
+import com.alcanl.app.configuration.CurrentUserConfig;
+import com.alcanl.app.helper.font.FontChangeHelper;
+import com.alcanl.app.helper.Resources;
 import com.alcanl.app.repository.entity.StockMovement;
 import com.alcanl.app.repository.entity.UpdateOperation;
 import com.alcanl.app.repository.entity.type.StockMovementType;
@@ -50,14 +53,20 @@ public final class DialogHelper {
     private final ApplicationContext m_applicationContext;
     private final ApplicationService m_applicationService;
     private final PrinterJob m_printerJob;
+    private final CurrentUserConfig m_currentUserConfig;
 
-    public boolean areFieldsValid(String... varargs)
+    public boolean areProductFieldsValid(String... varargs)
     {
         if (Arrays.stream(varargs).anyMatch(String::isBlank)) {
             m_resources.showEmptyProductFieldTextErrorMessageDialog();
             return false;
         }
         return true;
+    }
+    public boolean isThereAnyFieldEmpty(String... varargs)
+    {
+        return Arrays.stream(varargs).anyMatch(String::isEmpty)
+                && Arrays.stream(varargs).anyMatch(it -> it.contains(" "));
     }
     public void showUnknownErrorMessageWhileSavingProduct()
     {
@@ -78,6 +87,11 @@ public final class DialogHelper {
     public void notifyTables()
     {
         m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
+    }
+    public void showSaveUserProcessSuccessInfoDialog()
+    {
+        m_resources.showCustomInfoDialog("İşlem Başarılı");
+        notifyTables();
     }
     public void showProductRegisterDialog()
     {
@@ -221,6 +235,10 @@ public final class DialogHelper {
     {
         m_resources.showCustomWarningDialog("Seçili Kriterlerde Arama Yapmak İçin Zorunlu Alanlar Boş Bırakılamaz!");
     }
+    public void showEmptyUserFieldsWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Kullanıcı Kaydı İçin Zorunlu Alanlar Boş Bırakılamaz!");
+    }
     public void showEmptyFilteredListWarningDialog()
     {
         m_resources.showEmptyListWarningMessageDialog();
@@ -263,11 +281,18 @@ public final class DialogHelper {
     {
         return m_resources.showEnsureWarningMessageDialog();
     }
+    public void showNoAuthorizationWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Bu İşlem İçin Yetkiniz Bulunmamaktadır!");
+    }
     public void deleteSelectedProduct()
     {
         try {
             if (showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
-                m_applicationService.deleteProduct(m_selectedProduct);
+                if (m_currentUserConfig.getUser().isAdmin())
+                    m_applicationService.deleteProduct(m_selectedProduct);
+                else
+                    showNoAuthorizationWarningDialog();
 
         } catch (ServiceException ex) {
             showUnknownErrorMessageDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
@@ -281,5 +306,39 @@ public final class DialogHelper {
     public void setFontSmaller(Font font)
     {
         m_resources.setTextFont(m_fontChangeHelper.getSmallerSize(font));
+    }
+    public void disableComponents(JPanel jPanel)
+    {
+        m_resources.disableComponents(jPanel);
+    }
+    public void showConfirmPasswordNotEqualsWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Hatalı Şifre!");
+    }
+    public void showShortLengthPasswordWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Şire En Az 8 Karakterden Oluşmalıdır.");
+    }
+    public void setPasswordFieldVisibleOrInvisibleCallback(JPasswordField passwordField ,JLabel passwordLabel)
+    {
+        try {
+            var hiddenChar = (char)0x2022;
+            if (passwordField.echoCharIsSet()) {
+                passwordField.setEchoChar('\0');
+                passwordLabel.setIcon(m_applicationContext.getBean("bean.image.icon.password.field.visible",
+                        ImageIcon.class));
+            }
+            else {
+                passwordField.setEchoChar(hiddenChar);
+                passwordLabel.setIcon(m_applicationContext.getBean("bean.image.icon.password.field.hidden",
+                        ImageIcon.class));
+            }
+        } catch (RuntimeException ex) {
+            showUnknownErrorMessageDialog(ex.getMessage());
+        }
+    }
+    public boolean isValidEMail(String eMail)
+    {
+        return m_resources.isValidEmail(eMail);
     }
 }

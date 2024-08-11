@@ -14,6 +14,8 @@ public interface IUserRepository extends CrudRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
+    boolean existsUserByeMail(String email);
+
     @Query(value = "SELECT * FROM user_info", nativeQuery = true)
     Iterable<User> findAllUsers();
 }

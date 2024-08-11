@@ -1,7 +1,7 @@
 package com.alcanl.app.helper.table;
 
-import com.alcanl.app.helper.DialogHelper;
-import com.alcanl.app.helper.PopUpHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
+import com.alcanl.app.helper.popup.PopUpHelper;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
 import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.service.ApplicationService;

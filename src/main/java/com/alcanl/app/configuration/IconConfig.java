@@ -140,4 +140,27 @@ public class IconConfig {
             throw new RuntimeException(e);
         }
     }
+    @Lazy
+    @Bean(name = "bean.image.icon.password.field.hidden")
+    public ImageIcon createPasswordFieldHiddenIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_hidden.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Lazy
+    @Bean(name = "bean.image.icon.password.field.visible")
+    public ImageIcon createPasswordFieldVisibleIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_visible.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

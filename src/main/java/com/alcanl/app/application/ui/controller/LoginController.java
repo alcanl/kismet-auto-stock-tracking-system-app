@@ -2,16 +2,17 @@ package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
+import com.alcanl.app.application.ui.event.UserLoginEvent;
 import com.alcanl.app.application.ui.view.form.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
 
 import com.alcanl.app.configuration.CurrentUserConfig;
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.service.ApplicationService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.concurrent.*;
 
 @Slf4j
@@ -36,30 +36,23 @@ public class LoginController extends JFrame {
     @Value("${kismet.auto.stock.tracking.system.app.frame.login.dimension.y}")
     private int m_frameStartDimensionY;
 
-    @Value("${kismet.auto.stock.tracking.system.app.icon.visible.path}")
-    private String m_setPasswordVisibleIconPath;
-
-    @Value("${kismet.auto.stock.tracking.system.app.icon.hidden.path}")
-    private String m_setPasswordHiddenIconPath;
-
     private final LoginForm m_loginForm;
     private final DialogHelper m_dialogHelper;
     private final ExecutorService m_threadPool;
     private final ApplicationService m_applicationService;
-    private final ApplicationContext m_applicationContext;
+    private final ApplicationEventPublisher m_applicationEventPublisher;
     private final MainFrameController m_mainFrameController;
     private final CurrentUserConfig m_currentUserConfig;
 
     public LoginController(ExecutorService threadPool, ApplicationService applicationService,
-                           ApplicationContext applicationContext, LoginForm loginForm,
-                           MainFrameController mainFrameController, CurrentUserConfig currentUserConfig,
-                           DialogHelper dialogHelper)
+                           LoginForm loginForm, MainFrameController mainFrameController, CurrentUserConfig currentUserConfig,
+                           DialogHelper dialogHelper, ApplicationEventPublisher applicationEventPublisher)
     {
         m_loginForm = loginForm;
         m_threadPool = threadPool;
         m_dialogHelper = dialogHelper;
+        m_applicationEventPublisher = applicationEventPublisher;
         m_applicationService = applicationService;
-        m_applicationContext = applicationContext;
         m_mainFrameController = mainFrameController;
         m_currentUserConfig = currentUserConfig;
     }
@@ -118,6 +111,7 @@ public class LoginController extends JFrame {
                 clearEditTexts();
                 this.setVisible(false);
                 m_currentUserConfig.setUser(userDtoOpt.get());
+                m_applicationEventPublisher.publishEvent(new UserLoginEvent(this));
                 m_mainFrameController.setVisible(true);
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
@@ -150,29 +144,12 @@ public class LoginController extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e))
-                    setPasswordFieldVisibleOrInvisibleCallback();
+                    m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                            m_loginForm.getFieldPassword(), m_loginForm.getLabelVisibility());
             }
         });
     }
-    private void setPasswordFieldVisibleOrInvisibleCallback()
-    {
-        try {
-            if (m_loginForm.getFieldPassword().echoCharIsSet()) {
-                m_loginForm.getFieldPassword().setEchoChar('\0');
-                m_loginForm.getLabelVisibility().setIcon(
-                        new ImageIcon(m_applicationContext.getResource(m_setPasswordVisibleIconPath).getContentAsByteArray()));
-            }
-            else {
-                m_loginForm.getFieldPassword().setEchoChar('*');
-                m_loginForm.getLabelVisibility().setIcon(
-                        new ImageIcon(m_applicationContext.getResource(m_setPasswordHiddenIconPath).getContentAsByteArray()));
-            }
-        } catch (IOException ex) {
-            log.error("setPasswordFieldVisibleOrInvisibleCallback", ex);
-            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
-        }
 
-    }
     @EventListener
     @Async
     public void onApplicationShowFormEvent(ShowFormEvent ignoredEvent)

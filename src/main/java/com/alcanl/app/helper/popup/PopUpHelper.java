@@ -1,5 +1,6 @@
-package com.alcanl.app.helper;
+package com.alcanl.app.helper.popup;
 
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import lombok.RequiredArgsConstructor;

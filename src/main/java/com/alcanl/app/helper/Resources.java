@@ -15,6 +15,7 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -60,6 +61,9 @@ public final class Resources {
 
     @Value("${kismet.auto.stock.tracking.system.warning.message.wrong.username.or.password}")
     private String m_warningWrongUsernameOrPasswordText;
+
+    @Value("${email.pattern.regex}")
+    private String m_eMailRegex;
 
     public static final String EMPTY_STRING = "";
 
@@ -175,5 +179,22 @@ public final class Resources {
         setTextFont(font, form.getPanelMain());
         form.getLabelCount().setFont(new Font("calibri", Font.BOLD, 14));
     }
-
+    public void disableComponents(JComponent jComponent)
+    {
+        for (var component : jComponent.getComponents())
+            if (component instanceof JPanel panel)
+                disableComponents(panel);
+            else if (component instanceof JScrollPane jScrollPane)
+                Arrays.stream(jScrollPane.getViewport().getComponents()).forEach(c -> disableComponents((JComponent)c));
+            else {
+                component.setEnabled(false);
+                component.setFocusable(false);
+            }
+    }
+    public boolean isValidEmail(String eMail)
+    {
+        return Pattern.compile(m_eMailRegex)
+                .matcher(eMail)
+                .matches();
+    }
 }

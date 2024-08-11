@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
 import jakarta.annotation.PostConstruct;

@@ -18,7 +18,7 @@ public class CurrentUserConfig {
 
     @Primary
     @Bean(name = "bean.user.current")
-    public CurrentUserConfig getCurrentUser()
+    public CurrentUserConfig createCurrentUserConfig()
     {
         return this;
     }

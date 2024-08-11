@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -138,7 +138,7 @@ public class DialogAddNewProduct extends JDialog {
             var stockThreshold = textFieldThreshold.getText();
             var description = textFieldDescription.getText();
 
-            if (m_dialogHelper.areFieldsValid(productName, stockAmount, productShelfCode,
+            if (m_dialogHelper.areProductFieldsValid(productName, stockAmount, productShelfCode,
                     stockCode, productOriginalCode, stockThreshold)) {
 
                 var stockAmountInt = Integer.parseInt(stockAmount);

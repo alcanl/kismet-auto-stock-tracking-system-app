@@ -1,5 +1,6 @@
 package com.alcanl.app.application.ui.view.form;
 
+import com.alcanl.app.helper.types.UserType;
 import com.github.lgooddatepicker.components.DatePicker;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -107,7 +108,7 @@ public class MainForm extends JFrame {
     private JTextField textFieldNewUserLastName;
     private JPasswordField passwordFieldNewUserPassword;
     private JTextArea textAreaNewUserDescription;
-    private JComboBox<String> comboBoxUserRole;
+    private JComboBox<UserType> comboBoxUserRole;
     private JButton buttonNewUserSave;
     private JLabel iconNewUserHideOrShowPassword;
     private JPanel panelEditUser;
@@ -117,7 +118,7 @@ public class MainForm extends JFrame {
     private JTextField textFieldEditUserLastName;
     private JPasswordField passwordFieldEditUserOldPassword;
     private JLabel iconEditUserOldPassword;
-    private JTextArea textAreEditUserDescription;
+    private JTextArea textAreaEditUserDescription;
     private JButton buttonEditUserSave;
     private JPasswordField passwordFieldEditUserNewPassword;
     private JLabel iconEditUserNewPassword;
@@ -125,6 +126,7 @@ public class MainForm extends JFrame {
     private JTable tableActiveUsers;
     private JButton buttonEditUser;
     private JButton buttonDeleteUser;
+    private JPanel panelActiveUsers;
 
     @PostConstruct
     private void postConstruct()

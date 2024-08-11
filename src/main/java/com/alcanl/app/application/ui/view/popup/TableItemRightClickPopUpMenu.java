@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.popup;
 
-import com.alcanl.app.helper.PopUpHelper;
+import com.alcanl.app.helper.popup.PopUpHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.alcanl.app.helper.PopUpHelper.*;
+import static com.alcanl.app.helper.popup.PopUpHelper.*;
 
 @Component("bean.table.popup.click.right")
 @Scope("prototype")

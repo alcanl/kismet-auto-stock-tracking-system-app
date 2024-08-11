@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,15 +32,23 @@ public class ApplicationService {
     private final ExecutorService m_threadPool;
     private final ApplicationEventPublisher m_applicationEventPublisher;
 
-    @Transactional
     public void saveUser(UserDTO userDTO)
     {
         m_userService.saveUser(userDTO);
+    }
+    public UserDTO updateUser(UserDTO userDTO)
+    {
+        return m_userService.updateUser(userDTO);
     }
     public boolean isUserExist(String username)
     {
         return m_userService.isUserExist(username);
     }
+    public boolean isPasswordConfirmed(String password)
+    {
+        return m_userService.isOldPasswordTrue(m_currentUser.getUser(), password);
+    }
+
     public Optional<UserDTO> findUserByUsernameAndPassword(String username, String password)
     {
         return m_userService.findUserByUsernameAndPassword(username, password);

@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.service.dto.ProductDTO;
 import jakarta.annotation.PostConstruct;
@@ -105,7 +105,7 @@ public class DialogFastStockRelease extends JDialog {
     {
         try {
             var stockAdditionAmountText = textFieldReleaseStock.getText();
-            if (m_dialogHelper.areFieldsValid(stockAdditionAmountText)) {
+            if (m_dialogHelper.areProductFieldsValid(stockAdditionAmountText)) {
                 var stockReleaseAmount = Integer.parseInt(stockAdditionAmountText);
                 var productDTO = listProductName.getSelectedValue();
 

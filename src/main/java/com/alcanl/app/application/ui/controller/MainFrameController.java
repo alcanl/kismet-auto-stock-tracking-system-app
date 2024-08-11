@@ -3,25 +3,32 @@ package com.alcanl.app.application.ui.controller;
 import com.alcanl.app.application.ui.event.DisposeEvent;
 import com.alcanl.app.application.ui.event.ShowFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
+import com.alcanl.app.application.ui.event.UserLoginEvent;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.application.ui.view.popup.notification.CriticalStockNotificationPopUp;
+import com.alcanl.app.helper.types.UserType;
 import com.alcanl.app.helper.table.TableInitializer;
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
+import com.alcanl.app.repository.exception.EmailAlreadyInUseException;
+import com.alcanl.app.repository.exception.UsernameAlreadyInUseException;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.dto.ProductDTO;
+import com.alcanl.app.service.dto.UserDTO;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.github.lgooddatepicker.components.DatePicker;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -75,6 +82,12 @@ public class MainFrameController extends JFrame {
     public void onTableEventReceived(UpdateTablesEvent ignore)
     {
         reInitTables();
+    }
+    @Async
+    @EventListener
+    public void onUserLoginReceived(UserLoginEvent ignore)
+    {
+        initializeUserOperationsTab();
     }
 
     private void initializeWindowListener()
@@ -732,5 +745,136 @@ public class MainFrameController extends JFrame {
         }
 
         return list;
+    }
+    private void initializeUserOperationsTab()
+    {
+        m_mainForm.getIconEditUserNewPassword().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                        m_mainForm.getPasswordFieldEditUserNewPassword(), m_mainForm.getIconEditUserNewPassword()
+                );
+            }
+        });
+        m_mainForm.getIconEditUserOldPassword().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                        m_mainForm.getPasswordFieldEditUserOldPassword(), m_mainForm.getIconEditUserOldPassword()
+                );
+            }
+        });
+        m_mainForm.getIconNewUserHideOrShowPassword().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                        m_mainForm.getPasswordFieldNewUserPassword(), m_mainForm.getIconNewUserHideOrShowPassword()
+                );
+            }
+        });
+        var currentUser = m_currentUserConfig.getUser();
+
+        if (!currentUser.isAdmin()) {
+            m_dialogHelper.disableComponents(m_mainForm.getPanelSaveNewUser());
+            m_dialogHelper.disableComponents(m_mainForm.getPanelActiveUsers());
+            m_mainForm.getTableActiveUsers().setEnabled(false);
+        }
+        else {
+            m_mainForm.getComboBoxUserRole().addItem(UserType.ADMIN);
+            m_mainForm.getComboBoxUserRole().addItem(UserType.USER);
+            m_mainForm.getTextFieldEditUserUserName().setText(currentUser.getUsername());
+            m_mainForm.getTextFieldEditUserFirstName().setText(currentUser.getFirstName());
+            m_mainForm.getTextFieldEditUserLastName().setText(currentUser.getLastName());
+            m_mainForm.getTextFieldEditUserEMail().setText(currentUser.getEMail());
+            m_mainForm.getTextAreaEditUserDescription().setText(currentUser.getDescription());
+            m_mainForm.getButtonNewUserSave().addActionListener(this::saveUserClickedCallback);
+            m_mainForm.getButtonEditUserSave().addActionListener(this::editUserClickedCallback);
+        }
+    }
+    private void editUserClickedCallback(ActionEvent actionEvent)
+    {
+        var currentUser = m_currentUserConfig.getUser();
+        if (!m_applicationService.isPasswordConfirmed(String.valueOf(m_mainForm.getPasswordFieldEditUserOldPassword().getPassword()))) {
+            m_dialogHelper.showConfirmPasswordNotEqualsWarningDialog();
+            return;
+        }
+        var firstName = m_mainForm.getTextFieldEditUserFirstName().getText().trim();
+        var lastName = m_mainForm.getTextFieldEditUserLastName().getText().trim();
+        var eMail = m_mainForm.getTextFieldEditUserEMail().getText().trim();
+        var description = m_mainForm.getTextAreaEditUserDescription().getText().trim();
+        var password = String.valueOf(m_mainForm.getPasswordFieldEditUserNewPassword().getPassword());
+
+        if (m_dialogHelper.isThereAnyFieldEmpty(firstName, lastName, eMail, password)) {
+            m_dialogHelper.showEmptyUserFieldsWarningDialog();
+            return;
+        }
+
+        if (!m_dialogHelper.isValidEMail(eMail)) {
+            m_dialogHelper.showUnSupportedFormatMessage("Geçersiz Mail Formatı");
+            return;
+        }
+
+        if (password.length() < 8) {
+            m_dialogHelper.showShortLengthPasswordWarningDialog();
+            return;
+        }
+
+        currentUser.setFirstName(firstName);
+        currentUser.setLastName(lastName);
+        currentUser.setEMail(eMail);
+        currentUser.setPassword(password);
+        currentUser.setDescription(description);
+        try {
+            m_currentUserConfig.setUser(m_applicationService.updateUser(currentUser));
+            m_dialogHelper.showSaveUserProcessSuccessInfoDialog();
+        } catch (ServiceException ex) {
+            log.error("Error while updating current user : {}", ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+        }
+    }
+    private void saveUserClickedCallback(ActionEvent actionEvent)
+    {
+        var username = m_mainForm.getTextFieldNewUserUsername().getText().trim();
+        var firstName = m_mainForm.getTextFieldNewUserFirstName().getText().trim();
+        var lastName = m_mainForm.getTextFieldNewUserLastName().getText().trim();
+        var eMail = m_mainForm.getTextFieldNewUserEMail().getText().trim();
+        var description = m_mainForm.getTextAreaNewUserDescription().getText().trim();
+        var password = String.valueOf(m_mainForm.getPasswordFieldNewUserPassword().getPassword());
+        var role = m_mainForm.getComboBoxUserRole().getSelectedItem();
+
+        if (m_dialogHelper.isThereAnyFieldEmpty(username, firstName, lastName, eMail, password) || role == null) {
+            m_dialogHelper.showEmptyUserFieldsWarningDialog();
+            return;
+        }
+
+        if (!m_dialogHelper.isValidEMail(eMail)) {
+            m_dialogHelper.showUnSupportedFormatMessage("Geçersiz Mail Formatı");
+            return;
+        }
+
+        if (password.length() < 8) {
+            m_dialogHelper.showShortLengthPasswordWarningDialog();
+            return;
+        }
+
+        var userDTO = new UserDTO();
+        userDTO.setUsername(username);
+        userDTO.setFirstName(firstName);
+        userDTO.setLastName(lastName);
+        userDTO.setEMail(eMail);
+        userDTO.setPassword(password);
+        userDTO.setDescription(description);
+        userDTO.setAdmin(role == UserType.ADMIN);
+        try {
+            m_applicationService.saveUser(userDTO);
+            m_dialogHelper.showSaveUserProcessSuccessInfoDialog();
+        }
+        catch (UsernameAlreadyInUseException | EmailAlreadyInUseException ex) {
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+        }
+        catch (ServiceException ex) {
+            log.error("Error while saving new user :{}", ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+        }
     }
 }

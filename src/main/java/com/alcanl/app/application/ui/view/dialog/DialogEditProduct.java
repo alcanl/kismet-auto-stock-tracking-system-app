@@ -1,6 +1,6 @@
 package com.alcanl.app.application.ui.view.dialog;
 
-import com.alcanl.app.helper.DialogHelper;
+import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import com.alcanl.app.repository.exception.ProductAlreadyExistException;
 import com.alcanl.app.service.dto.StockDTO;
@@ -167,7 +167,7 @@ public class DialogEditProduct extends JDialog {
             var stockThreshold = textFieldThreshold.getText();
             var description = textFieldDescription.getText();
 
-            if (m_dialogHelper.areFieldsValid(productName, stockAmount, productShelfCode,
+            if (m_dialogHelper.areProductFieldsValid(productName, stockAmount, productShelfCode,
                     stockCode, productOriginalCode, stockThreshold)) {
 
                 var stockDTO = new StockDTO();

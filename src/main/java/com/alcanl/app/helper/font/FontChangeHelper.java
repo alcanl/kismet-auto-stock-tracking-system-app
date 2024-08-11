@@ -1,4 +1,4 @@
-package com.alcanl.app.helper;
+package com.alcanl.app.helper.font;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
