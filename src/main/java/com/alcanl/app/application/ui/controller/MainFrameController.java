@@ -1,7 +1,7 @@
 package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
-import com.alcanl.app.application.ui.event.ShowFormEvent;
+import com.alcanl.app.application.ui.event.ShowLoginFormEvent;
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.event.UserLoginEvent;
 import com.alcanl.app.application.ui.view.form.MainForm;
@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 import static com.alcanl.app.helper.Resources.EMPTY_STRING;
 
 @Slf4j
-@Controller
+@Controller("bean.frame.controller.main")
 @RequiredArgsConstructor
 public class MainFrameController extends JFrame {
 
@@ -87,7 +87,11 @@ public class MainFrameController extends JFrame {
     @EventListener
     public void onUserLoginReceived(UserLoginEvent ignore)
     {
+        m_mainForm.getButtonClear().doClick();
+        m_mainForm.getButtonClearFields().doClick();
+        m_dialogHelper.clearFields(m_mainForm.getPanelEditUser(), m_mainForm.getPanelSaveNewUser());
         initializeUserOperationsTab();
+        m_mainForm.getTabbedPaneMain().setSelectedIndex(0);
     }
 
     private void initializeWindowListener()
@@ -242,8 +246,8 @@ public class MainFrameController extends JFrame {
     {
         setOnPanelButtonClickListener(m_mainForm.getButtonLogout(), event -> {
            if (m_dialogHelper.showEnsureLogoutMessageDialog(m_currentUserConfig.getUser().toString()) == JOptionPane.YES_OPTION) {
-               this.dispose();
-               m_applicationEventPublisher.publishEvent(new ShowFormEvent(this));
+               MainFrameController.this.dispose();
+               m_applicationEventPublisher.publishEvent(new ShowLoginFormEvent(this));
            }
         });
     }
@@ -319,6 +323,7 @@ public class MainFrameController extends JFrame {
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL_RECORDS);
         m_tableInitializer.initializeProductListTable();
+        m_tableInitializer.initializeActiveUsersTable();
     }
 
     private void initializeTables()
@@ -633,7 +638,7 @@ public class MainFrameController extends JFrame {
                 m_dialogHelper.showNoSelectedProductMessage();
                 return;
             }
-            if (m_dialogHelper.showEnsureDeleteWarningDialog() == JOptionPane.YES_OPTION)
+            if (m_dialogHelper.showEnsureDeleteItemWarningDialog() == JOptionPane.YES_OPTION)
                 m_applicationService.deleteProduct(m_dialogHelper.getSelectedProduct());
         });
         m_mainForm.getButtonFastStockAdd().addActionListener(e -> {
@@ -748,6 +753,11 @@ public class MainFrameController extends JFrame {
     }
     private void initializeUserOperationsTab()
     {
+        m_dialogHelper.disableTextAreaGrowthBehaviour(m_mainForm.getTextAreaEditUserDescription());
+        m_dialogHelper.disableTextAreaGrowthBehaviour(m_mainForm.getTextAreaNewUserDescription());
+        m_mainForm.getComboBoxUserRole().addItem(UserType.ADMIN);
+        m_mainForm.getComboBoxUserRole().addItem(UserType.USER);
+
         m_mainForm.getIconEditUserNewPassword().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -777,19 +787,28 @@ public class MainFrameController extends JFrame {
         if (!currentUser.isAdmin()) {
             m_dialogHelper.disableComponents(m_mainForm.getPanelSaveNewUser());
             m_dialogHelper.disableComponents(m_mainForm.getPanelActiveUsers());
+            m_mainForm.getTextAreaNewUserDescription().setEnabled(false);
+            m_mainForm.getTextAreaNewUserDescription().setEditable(false);
             m_mainForm.getTableActiveUsers().setEnabled(false);
         }
         else {
-            m_mainForm.getComboBoxUserRole().addItem(UserType.ADMIN);
-            m_mainForm.getComboBoxUserRole().addItem(UserType.USER);
-            m_mainForm.getTextFieldEditUserUserName().setText(currentUser.getUsername());
-            m_mainForm.getTextFieldEditUserFirstName().setText(currentUser.getFirstName());
-            m_mainForm.getTextFieldEditUserLastName().setText(currentUser.getLastName());
-            m_mainForm.getTextFieldEditUserEMail().setText(currentUser.getEMail());
-            m_mainForm.getTextAreaEditUserDescription().setText(currentUser.getDescription());
-            m_mainForm.getButtonNewUserSave().addActionListener(this::saveUserClickedCallback);
-            m_mainForm.getButtonEditUserSave().addActionListener(this::editUserClickedCallback);
+            m_dialogHelper.enableComponents(m_mainForm.getPanelSaveNewUser());
+            m_dialogHelper.enableComponents(m_mainForm.getPanelActiveUsers());
+            m_mainForm.getTextAreaNewUserDescription().setEnabled(true);
+            m_mainForm.getTextAreaNewUserDescription().setEditable(true);
+            m_mainForm.getTableActiveUsers().setEnabled(true);
         }
+
+        m_mainForm.getTextFieldEditUserUserName().setText(currentUser.getUsername());
+        m_mainForm.getTextFieldEditUserFirstName().setText(currentUser.getFirstName());
+        m_mainForm.getTextFieldEditUserLastName().setText(currentUser.getLastName());
+        m_mainForm.getTextFieldEditUserEMail().setText(currentUser.getEMail());
+        m_mainForm.getTextAreaEditUserDescription().setText(currentUser.getDescription());
+        m_mainForm.getButtonNewUserSave().addActionListener(this::saveUserClickedCallback);
+        m_mainForm.getButtonEditUserSave().addActionListener(this::editUserClickedCallback);
+        m_mainForm.getButtonDeleteUser().addActionListener(e -> m_dialogHelper.deleteUser());
+        m_mainForm.getButtonEditUser().addActionListener(e -> m_dialogHelper.showNewEditUserDialog());
+
     }
     private void editUserClickedCallback(ActionEvent actionEvent)
     {
@@ -798,6 +817,7 @@ public class MainFrameController extends JFrame {
             m_dialogHelper.showConfirmPasswordNotEqualsWarningDialog();
             return;
         }
+
         var firstName = m_mainForm.getTextFieldEditUserFirstName().getText().trim();
         var lastName = m_mainForm.getTextFieldEditUserLastName().getText().trim();
         var eMail = m_mainForm.getTextFieldEditUserEMail().getText().trim();
@@ -809,8 +829,8 @@ public class MainFrameController extends JFrame {
             return;
         }
 
-        if (!m_dialogHelper.isValidEMail(eMail)) {
-            m_dialogHelper.showUnSupportedFormatMessage("Geçersiz Mail Formatı");
+        if (m_dialogHelper.isInvalidEMail(eMail)) {
+            m_dialogHelper.showUnSupportedFormatMessage("%s".formatted(eMail));
             return;
         }
 
@@ -827,7 +847,11 @@ public class MainFrameController extends JFrame {
         try {
             m_currentUserConfig.setUser(m_applicationService.updateUser(currentUser));
             m_dialogHelper.showSaveUserProcessSuccessInfoDialog();
-        } catch (ServiceException ex) {
+        }
+        catch (EmailAlreadyInUseException | UsernameAlreadyInUseException ex) {
+            m_dialogHelper.showCustomErrorMessageDialog(ex.getMessage());
+        }
+        catch (ServiceException ex) {
             log.error("Error while updating current user : {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
@@ -847,8 +871,8 @@ public class MainFrameController extends JFrame {
             return;
         }
 
-        if (!m_dialogHelper.isValidEMail(eMail)) {
-            m_dialogHelper.showUnSupportedFormatMessage("Geçersiz Mail Formatı");
+        if (m_dialogHelper.isInvalidEMail(eMail)) {
+            m_dialogHelper.showUnSupportedFormatMessage("%s".formatted(eMail));
             return;
         }
 
@@ -867,10 +891,11 @@ public class MainFrameController extends JFrame {
         userDTO.setAdmin(role == UserType.ADMIN);
         try {
             m_applicationService.saveUser(userDTO);
+            m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
             m_dialogHelper.showSaveUserProcessSuccessInfoDialog();
         }
         catch (UsernameAlreadyInUseException | EmailAlreadyInUseException ex) {
-            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+            m_dialogHelper.showCustomErrorMessageDialog(ex.getMessage());
         }
         catch (ServiceException ex) {
             log.error("Error while saving new user :{}", ex.getMessage());

@@ -14,10 +14,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
-import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -69,7 +65,7 @@ public class DialogEditProduct extends JDialog {
                 m_applicationContext.getBean("bean.image.icon.dialog.edit.product", ImageIcon.class));
         initializeButtons();
         registerKeys();
-        initializeTextArea();
+        m_dialogHelper.disableTextAreaGrowthBehaviour(textFieldDescription);
         fillTextFields();
         initializeComboBox();
         dispose();
@@ -113,28 +109,6 @@ public class DialogEditProduct extends JDialog {
         if (productDTO.getImageFile() != null)
             buttonAddFile.setIcon(m_applicationContext.getBean("bean.image.icon.info.success.tick", ImageIcon.class));
     }
-    private void initializeTextArea()
-    {
-        textFieldDescription.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
-        textFieldDescription.setFocusTraversalKeys (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
-
-        textFieldDescription.setLineWrap(true);
-        textFieldDescription.setWrapStyleWord(true);
-        textFieldDescription.setDocument(new PlainDocument() {
-            @Override
-            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-                if (str == null || textFieldDescription.getText().length() >= 255)
-                    return;
-
-                super.insertString(offs, str, a);
-            }
-        });
-    }
-
     private void initializeComboBox()
     {
         comboBoxUpdateType.addItem(UpdateOperationType.PRODUCT_UPDATE);

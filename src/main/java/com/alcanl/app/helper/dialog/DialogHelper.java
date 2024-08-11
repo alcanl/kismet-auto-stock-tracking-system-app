@@ -24,6 +24,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,6 +38,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+
+import static com.alcanl.app.helper.Resources.EMPTY_STRING;
 
 @Component
 @RequiredArgsConstructor
@@ -55,6 +61,17 @@ public final class DialogHelper {
     private final PrinterJob m_printerJob;
     private final CurrentUserConfig m_currentUserConfig;
 
+    private void clearFields(JComponent jComponent)
+    {
+        for (var component : jComponent.getComponents())
+            if (component instanceof JPanel jPanel)
+                clearFields(jPanel);
+            else if (component instanceof JScrollPane jScrollPane)
+                Arrays.stream(jScrollPane.getViewport().getComponents()).forEach(c -> clearFields((JComponent)c ));
+            else if (component instanceof JTextComponent jTextComponent)
+                jTextComponent.setText(EMPTY_STRING);
+
+    }
     public boolean areProductFieldsValid(String... varargs)
     {
         if (Arrays.stream(varargs).anyMatch(String::isBlank)) {
@@ -67,6 +84,27 @@ public final class DialogHelper {
     {
         return Arrays.stream(varargs).anyMatch(String::isEmpty)
                 && Arrays.stream(varargs).anyMatch(it -> it.contains(" "));
+    }
+    public void disableTextAreaGrowthBehaviour(JTextArea jTextArea)
+    {
+        jTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+        jTextArea.setFocusTraversalKeys (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
+
+        jTextArea.setLineWrap(true);
+        jTextArea.setWrapStyleWord(true);
+        jTextArea.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                if (str == null || jTextArea.getText().length() >= 255)
+                    return;
+
+                super.insertString(offs, str, a);
+            }
+        });
     }
     public void showUnknownErrorMessageWhileSavingProduct()
     {
@@ -138,6 +176,10 @@ public final class DialogHelper {
     public void showNoSelectedSearchMessage()
     {
         m_resources.showCustomWarningDialog("Seçili Bir Arama Kriteri Bulunmamaktadır. Lütfen Devam Etmek İçin Bir Kriter Seçiniz.");
+    }
+    public void showNoSelectedUserMessage()
+    {
+        m_resources.showCustomWarningDialog("Seçili Bir Kullanıcı Bulunmamaktadır. Lütfen Devam Etmek İçin Bir Kullanıcı Seçiniz.");
     }
     public void addOrReleaseDialogOnSearchButtonClickedCallback(Vector<ProductDTO> listData, DefaultListModel<ProductDTO> listModel,
                                                                 String productSearch, JList<ProductDTO> jList) throws ExecutionException, InterruptedException
@@ -229,7 +271,17 @@ public final class DialogHelper {
     }
     public void showNewEditUserDialog()
     {
+        if (!m_currentUserConfig.getUser().isAdmin()) {
+            showNoAuthorizationWarningDialog();
+            return;
+        }
 
+        if (m_selectedUser == null) {
+            showNoSelectedUserMessage();
+            return;
+        }
+
+        m_applicationContext.getBean("bean.dialog.edit.user", DialogEditUser.class).setVisible(true);
     }
     public void showEmptyFieldsWarningDialog()
     {
@@ -243,9 +295,13 @@ public final class DialogHelper {
     {
         m_resources.showEmptyListWarningMessageDialog();
     }
-    public int showEnsureDeleteWarningDialog()
+    public int showEnsureDeleteItemWarningDialog()
     {
         return m_resources.showEnsureWarningMessageDialog();
+    }
+    public int showEnsureDeleteUserWarningDialog()
+    {
+        return m_resources.showEnsureWarningDeleteUserMessageDialog();
     }
     public void centerFrame(JFrame frame)
     {
@@ -273,6 +329,10 @@ public final class DialogHelper {
     {
         m_resources.showUnknownErrorMessageDialog(errMessage);
     }
+    public void showCustomErrorMessageDialog(String errMessage)
+    {
+        m_resources.showCustomErrorDialog(errMessage);
+    }
     public void showNoSuchUserWarningDialog()
     {
         m_resources.showNoSuchUserWarningDialog();
@@ -283,10 +343,15 @@ public final class DialogHelper {
     }
     public void showNoAuthorizationWarningDialog()
     {
-        m_resources.showCustomWarningDialog("Bu İşlem İçin Yetkiniz Bulunmamaktadır!");
+        m_resources.showCustomWarningDialog("Bu İşlem İçin Yetkiniz Bulunmamaktadır.");
     }
     public void deleteSelectedProduct()
     {
+        if (!m_currentUserConfig.getUser().isAdmin()) {
+            showNoAuthorizationWarningDialog();
+            return;
+        }
+
         try {
             if (showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
                 if (m_currentUserConfig.getUser().isAdmin())
@@ -310,6 +375,10 @@ public final class DialogHelper {
     public void disableComponents(JPanel jPanel)
     {
         m_resources.disableComponents(jPanel);
+    }
+    public void enableComponents(JPanel jPanel)
+    {
+        m_resources.enableComponents(jPanel);
     }
     public void showConfirmPasswordNotEqualsWarningDialog()
     {
@@ -337,8 +406,36 @@ public final class DialogHelper {
             showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
-    public boolean isValidEMail(String eMail)
+    public boolean isInvalidEMail(String eMail)
     {
-        return m_resources.isValidEmail(eMail);
+        return !m_resources.isValidEmail(eMail);
+    }
+    public void deleteUser()
+    {
+        if (!m_currentUserConfig.getUser().isAdmin()) {
+            showNoAuthorizationWarningDialog();
+            return;
+        }
+
+        if (m_currentUserConfig.getUser().getUsername().equals(m_selectedUser.getUsername())){
+            m_resources.showCustomWarningDialog("Hesap Silme İşlemi Aktif Yönetici Tarafından Gerçekleştirilemez!");
+            return;
+        }
+
+        if (showEnsureDeleteUserWarningDialog() == JOptionPane.YES_OPTION) {
+            m_applicationService.deleteUser(m_selectedUser);
+            m_resources.showCustomInfoDialog("Kullanıcı Kaydı Silindi");
+            m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
+        }
+    }
+    public void clearFields(JPanel... jPanels)
+    {
+        Arrays.stream(jPanels).forEach(this::clearFields);
+    }
+    public void editUser(UserDTO userDTO)
+    {
+        m_applicationService.updateUser(userDTO);
+        m_resources.showCustomInfoDialog("Kayıt Güncellendi");
+        m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
     }
 }

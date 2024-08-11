@@ -109,7 +109,7 @@ public final class TableInitializer {
         initializeActiveUserTableClickListeners();
 
     }
-    private void initializeActiveUsersTable()
+    public void initializeActiveUsersTable()
     {
         try {
             m_tablePairsList.get(5).getSecond().getDataVector().clear();
@@ -123,6 +123,7 @@ public final class TableInitializer {
     }
     private void initializeActiveUserTableClickListeners()
     {
+        m_tablePairsList.get(5).getFirst().setComponentPopupMenu((JPopupMenu) m_applicationContext.getBean("bean.table.users.popup.click.right"));
         m_tablePairsList.get(5).getFirst().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

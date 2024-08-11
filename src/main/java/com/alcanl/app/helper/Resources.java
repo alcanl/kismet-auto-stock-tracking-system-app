@@ -41,20 +41,17 @@ public final class Resources {
     @Value("${kismet.auto.stock.tracking.system.warning.title}")
     private String m_warningTitle;
 
-    @Value("${kismet.auto.stock.tracking.system.error.message.unsupported.format}")
-    private String m_errorUnsupportedFormat;
-
     @Value("${kismet.auto.stock.tracking.system.warning.message.empty.search.list}")
     private String m_warningEmptySearchList;
 
     @Value("${kismet.auto.stock.tracking.system.error.message.empty.name}")
     private String m_errorMessageEmptyEntry;
 
-    @Value("${kismet.auto.stock.tracking.system.warning.message.no.selected.item}")
-    private String m_warningNoSelectedItemText;
-
     @Value("${kismet.auto.stock.tracking.system.warning.message.delete.item}")
     private String m_warningDeleteItemText;
+
+    @Value("${kismet.auto.stock.tracking.system.warning.message.delete.user}")
+    private String m_warningDeleteUserText;
 
     @Value("${kismet.auto.stock.tracking.system.info.title}")
     private String m_infoMessageTitle;
@@ -115,11 +112,6 @@ public final class Resources {
             log.error("Resources::initializeLogo: {}", ex.getMessage());
         }
     }
-    public void showUnsupportedFormatWarningMessageDialog()
-    {
-        JOptionPane.showMessageDialog(null, m_errorUnsupportedFormat, m_errorMessageTitle,
-                JOptionPane.ERROR_MESSAGE);
-    }
     public void showEmptyListWarningMessageDialog()
     {
         JOptionPane.showMessageDialog(null, m_warningEmptySearchList, m_warningTitle,
@@ -129,6 +121,11 @@ public final class Resources {
     public int showEnsureWarningMessageDialog()
     {
         return JOptionPane.showConfirmDialog(null, m_warningDeleteItemText, m_warningTitle,
+                JOptionPane.YES_NO_OPTION);
+    }
+    public int showEnsureWarningDeleteUserMessageDialog()
+    {
+        return JOptionPane.showConfirmDialog(null, m_warningDeleteUserText, m_warningTitle,
                 JOptionPane.YES_NO_OPTION);
     }
     public int showEnsureExitMessageDialog()
@@ -152,11 +149,6 @@ public final class Resources {
                 m_errorMessageTitle, JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showNoSelectedProductMessage()
-    {
-        JOptionPane.showMessageDialog(null, m_warningNoSelectedItemText, m_warningTitle,
-                JOptionPane.WARNING_MESSAGE);
-    }
     public void showCustomWarningDialog(String message)
     {
         JOptionPane.showMessageDialog(null, message, m_warningTitle, JOptionPane.WARNING_MESSAGE);
@@ -189,6 +181,18 @@ public final class Resources {
             else {
                 component.setEnabled(false);
                 component.setFocusable(false);
+            }
+    }
+    public void enableComponents(JComponent jComponent)
+    {
+        for (var component : jComponent.getComponents())
+            if (component instanceof JPanel panel)
+                enableComponents(panel);
+            else if (component instanceof JScrollPane jScrollPane)
+                Arrays.stream(jScrollPane.getViewport().getComponents()).forEach(c -> enableComponents((JComponent)c));
+            else {
+                component.setEnabled(true);
+                component.setFocusable(true);
             }
     }
     public boolean isValidEmail(String eMail)

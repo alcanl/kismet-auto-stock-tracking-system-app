@@ -40,6 +40,10 @@ public class ApplicationService {
     {
         return m_userService.updateUser(userDTO);
     }
+    public void deleteUser(UserDTO userDTO)
+    {
+        m_userService.deleteUser(userDTO);
+    }
     public boolean isUserExist(String username)
     {
         return m_userService.isUserExist(username);

@@ -12,7 +12,7 @@ import static com.alcanl.app.helper.popup.PopUpHelper.*;
 
 @Component("bean.table.popup.click.right")
 @Scope("prototype")
-public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionListener {
+public class StockTableItemRightClickPopUpMenu extends JPopupMenu implements ActionListener {
     private final JMenuItem addStockSelectedRow;
     private final JMenuItem releaseStockSelectedRow;
     private final JMenuItem editSelectedRow;
@@ -20,7 +20,7 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
     private final JMenuItem getProductCard;
     private final PopUpHelper m_popUpHelper;
 
-    public TableItemRightClickPopUpMenu(PopUpHelper popUpHelper)
+    public StockTableItemRightClickPopUpMenu(PopUpHelper popUpHelper)
     {
         m_popUpHelper = popUpHelper;
         addStockSelectedRow = new JMenuItem(FAST_STOCK_ADD_TEXT);

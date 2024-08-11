@@ -1,7 +1,7 @@
 package com.alcanl.app.application.ui.controller;
 
 import com.alcanl.app.application.ui.event.DisposeEvent;
-import com.alcanl.app.application.ui.event.ShowFormEvent;
+import com.alcanl.app.application.ui.event.ShowLoginFormEvent;
 import com.alcanl.app.application.ui.event.UserLoginEvent;
 import com.alcanl.app.application.ui.view.form.LoginForm;
 import static com.alcanl.app.helper.Resources.*;
@@ -12,6 +12,7 @@ import com.alcanl.app.service.ApplicationService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.EventListener;
@@ -41,19 +42,19 @@ public class LoginController extends JFrame {
     private final ExecutorService m_threadPool;
     private final ApplicationService m_applicationService;
     private final ApplicationEventPublisher m_applicationEventPublisher;
-    private final MainFrameController m_mainFrameController;
+    private final ApplicationContext m_applicationContext;
     private final CurrentUserConfig m_currentUserConfig;
 
     public LoginController(ExecutorService threadPool, ApplicationService applicationService,
-                           LoginForm loginForm, MainFrameController mainFrameController, CurrentUserConfig currentUserConfig,
+                           LoginForm loginForm, CurrentUserConfig currentUserConfig, ApplicationContext applicationContext,
                            DialogHelper dialogHelper, ApplicationEventPublisher applicationEventPublisher)
     {
         m_loginForm = loginForm;
         m_threadPool = threadPool;
         m_dialogHelper = dialogHelper;
+        m_applicationContext = applicationContext;
         m_applicationEventPublisher = applicationEventPublisher;
         m_applicationService = applicationService;
-        m_mainFrameController = mainFrameController;
         m_currentUserConfig = currentUserConfig;
     }
 
@@ -109,10 +110,12 @@ public class LoginController extends JFrame {
             }
             else {
                 clearEditTexts();
-                this.setVisible(false);
+                setVisible(false);
                 m_currentUserConfig.setUser(userDtoOpt.get());
+                m_applicationContext.getBean("bean.frame.controller.main", MainFrameController.class)
+                                .setVisible(true);
                 m_applicationEventPublisher.publishEvent(new UserLoginEvent(this));
-                m_mainFrameController.setVisible(true);
+
             }
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
             log.error(ex.getMessage());
@@ -152,7 +155,7 @@ public class LoginController extends JFrame {
 
     @EventListener
     @Async
-    public void onApplicationShowFormEvent(ShowFormEvent ignoredEvent)
+    public void onApplicationShowFormEvent(ShowLoginFormEvent ignoredEvent)
     {
         m_currentUserConfig.setUser(null);
         setVisible(true);

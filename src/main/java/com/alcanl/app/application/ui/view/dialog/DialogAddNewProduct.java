@@ -13,10 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -69,32 +65,11 @@ public class DialogAddNewProduct extends JDialog {
                 m_applicationContext.getBean("bean.image.icon.dialog.add.new.product", ImageIcon.class));
         initializeButtons();
         registerKeys();
-        initializeTextArea();
+        m_dialogHelper.disableTextAreaGrowthBehaviour(textFieldDescription);
         dispose();
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 dispose();
-            }
-        });
-    }
-    private void initializeTextArea()
-    {
-        textFieldDescription.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
-        textFieldDescription.setFocusTraversalKeys (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
-
-        textFieldDescription.setLineWrap(true);
-        textFieldDescription.setWrapStyleWord(true);
-        textFieldDescription.setDocument(new PlainDocument() {
-            @Override
-            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-                if (str == null || textFieldDescription.getText().length() >= 255)
-                    return;
-
-                super.insertString(offs, str, a);
             }
         });
     }

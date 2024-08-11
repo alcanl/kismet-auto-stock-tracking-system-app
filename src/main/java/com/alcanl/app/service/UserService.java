@@ -27,7 +27,20 @@ class UserService {
     public void saveUser(UserDTO userDTO)
     {
         try {
+            userDTO.setPassword(m_passwordEncoder.encode(userDTO.getPassword()));
             m_repositoryDataHelper.saveUser(m_userMapper.userDTOToUser(userDTO));
+        } catch (RepositoryException ex) {
+            log.error(ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public void deleteUser(UserDTO userDTO)
+    {
+        try {
+            var user = m_repositoryDataHelper.findUserByUsername(userDTO.getUsername());
+            user.ifPresent(m_repositoryDataHelper::deleteUser);
         } catch (RepositoryException ex) {
             log.error(ex.getMessage());
             throw new ServiceException(ex.getMessage());

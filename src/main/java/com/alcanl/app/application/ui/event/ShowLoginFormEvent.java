@@ -2,9 +2,9 @@ package com.alcanl.app.application.ui.event;
 
 import org.springframework.context.ApplicationEvent;
 
-public class ShowFormEvent extends ApplicationEvent {
+public class ShowLoginFormEvent extends ApplicationEvent {
 
-    public ShowFormEvent(Object source)
+    public ShowLoginFormEvent(Object source)
     {
         super(source);
     }

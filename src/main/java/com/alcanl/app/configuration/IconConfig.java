@@ -162,5 +162,16 @@ public class IconConfig {
             throw new RuntimeException(e);
         }
     }
+    @Lazy
+    @Bean(name = "bean.image.icon.dialog.edit.user")
+    public ImageIcon createEditUserDialogIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/icon_edit_user.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

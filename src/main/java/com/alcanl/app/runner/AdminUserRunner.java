@@ -7,7 +7,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Order(1)
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class AdminUserRunner implements ApplicationRunner {
 
     private final ApplicationService m_applicationService;
-    private final PasswordEncoder m_passwordEncoder;
 
     @Value("${kismet.auto.stock.tracking.system.admin.username}")
     private String adminUserName;
@@ -31,10 +29,9 @@ public class AdminUserRunner implements ApplicationRunner {
     @Value("${kismet.auto.stock.tracking.system.admin.description}")
     private String adminDescription;
 
-    public AdminUserRunner(ApplicationService applicationService, PasswordEncoder passwordEncoder)
+    public AdminUserRunner(ApplicationService applicationService)
     {
         m_applicationService = applicationService;
-        m_passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,7 +43,7 @@ public class AdminUserRunner implements ApplicationRunner {
             userDTO.setDescription(adminDescription);
             userDTO.setAdmin(true);
             userDTO.setEMail(adminEmail);
-            userDTO.setPassword(m_passwordEncoder.encode(adminPassword));
+            userDTO.setPassword(adminPassword);
             userDTO.setUsername(adminUserName);
             m_applicationService.saveUser(userDTO);
         }

@@ -20,6 +20,7 @@ public final class PopUpHelper {
     public static final String GET_PRODUCT_CART_TEXT = "Ürün Kartını Getir";
     public static final String NEW_PRODUCT_TEXT = "Yeni Ürün";
     public static final String EDIT_USER_TEXT = "Kullanıcı Düzenle";
+    public static final String DELETE_USER_TEXT = "Kullanıcıyı Sil";
     public static final String EXIT_TEXT = "Çıkış";
     public static final String NEW_STOCK_INPUT_TEXT = "Stok Girişi";
     public static final String NEW_STOCK_OUTPUT_TEXT = "Stok Çıkışı";
@@ -87,4 +88,6 @@ public final class PopUpHelper {
     {
         m_dialogHelper.showEditProductDialogWithProduct();
     }
+    public void editSelectedUser() { m_dialogHelper.showNewEditUserDialog(); }
+    public void deleteSelectedUser() { m_dialogHelper.deleteUser(); }
 }
