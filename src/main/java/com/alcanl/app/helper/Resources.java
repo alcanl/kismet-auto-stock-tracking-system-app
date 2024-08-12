@@ -170,6 +170,11 @@ public final class Resources {
         var form = m_applicationContext.getBean("bean.form.main", MainForm.class);
         setTextFont(font, form.getPanelMain());
         form.getLabelCount().setFont(new Font("calibri", Font.BOLD, 14));
+        form.getLabelPrintableName().setFont(new Font("default", Font.BOLD, 24));
+        form.getLabelPrintableOriginalCode().setFont(new Font("default", Font.PLAIN, 24));
+        form.getLabelPrintableStockCode().setFont(new Font("default", Font.BOLD, 24));
+        form.getLabelProductCardDescription().setFont(new Font("default", Font.PLAIN, 8));
+        form.getLabelStockOperationDescription().setFont(new Font("default", Font.PLAIN, 8));
     }
     public void disableComponents(JComponent jComponent)
     {

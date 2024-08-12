@@ -353,11 +353,11 @@ public final class DialogHelper {
         }
 
         try {
-            if (showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION)
-                if (m_currentUserConfig.getUser().isAdmin())
-                    m_applicationService.deleteProduct(m_selectedProduct);
-                else
-                    showNoAuthorizationWarningDialog();
+            if (showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION) {
+                m_applicationService.deleteProduct(m_selectedProduct);
+                m_resources.showCustomInfoDialog("Ürün Silindi.");
+                m_selectedProduct = null;
+            }
 
         } catch (ServiceException ex) {
             showUnknownErrorMessageDialog("Ürün Silinirken Bir Hata ile karşılaşıldı : %s".formatted(ex.getMessage()));
@@ -426,6 +426,7 @@ public final class DialogHelper {
             m_applicationService.deleteUser(m_selectedUser);
             m_resources.showCustomInfoDialog("Kullanıcı Kaydı Silindi");
             m_applicationEventPublisher.publishEvent(new UpdateTablesEvent(this));
+            m_selectedUser = null;
         }
     }
     public void clearFields(JPanel... jPanels)
