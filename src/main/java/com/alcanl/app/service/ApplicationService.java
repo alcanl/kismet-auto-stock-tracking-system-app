@@ -171,6 +171,10 @@ public class ApplicationService {
     {
         return m_threadPool.submit(m_stockMovementService::findAllStockMovements).get();
     }
+    public List<StockMovementDTO> findLastStockMovementRecords() throws ExecutionException, InterruptedException
+    {
+        return m_threadPool.submit(m_stockMovementService::findLastTwentyRecords).get();
+    }
     public List<UserDTO> findAllUsers() throws ExecutionException, InterruptedException
     {
         return m_threadPool.submit(m_userService::findAllUsers).get();

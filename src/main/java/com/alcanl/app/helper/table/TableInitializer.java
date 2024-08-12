@@ -9,6 +9,7 @@ import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.StockMovementDTO;
 import com.alcanl.app.service.dto.UserDTO;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.util.Pair;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutorService;
 @Component
 @Getter
 @Slf4j
+@RequiredArgsConstructor
 public final class TableInitializer {
 
     private final List<Pair<JTable, DefaultTableModel>> m_tablePairsList;
@@ -39,6 +41,7 @@ public final class TableInitializer {
     private final ExecutorService m_threadPool;
     private final PopUpHelper m_popUpHelper;
     private final DialogHelper m_dialogHelper;
+    private final DateTimeFormatter m_dateTimeFormatter;
 
     private static final String TABLE_HEADER_PRODUCT_NAME = "ÜRÜN ADI";
     private static final String TABLE_HEADER_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
@@ -56,18 +59,10 @@ public final class TableInitializer {
     private static final String TABLE_HEADER_USER_EMAIL = "EMAIL";
     private static final String TABLE_HEADER_USER_REGISTER_DATE = "KAYIT TARİHİ";
     private static final String TABLE_HEADER_USER_DESCRIPTION = "AÇIKLAMA";
+    private static final String TABLE_HEADER_STOCK_MOVEMENT_TYPE = "İŞLEM TÜRÜ";
 
     public static int criticalStockCount = 0;
-    public TableInitializer(ApplicationService applicationService, ExecutorService threadPool,
-                            ApplicationContext applicationContext, DialogHelper dialogHelper, PopUpHelper popUpHelper)
-    {
-        m_tablePairsList = new ArrayList<>();
-        m_applicationService = applicationService;
-        m_threadPool = threadPool;
-        m_dialogHelper = dialogHelper;
-        m_applicationContext = applicationContext;
-        m_popUpHelper = popUpHelper;
-    }
+
     public void doFilterForTableProducts(List<ProductDTO> products)
     {
         if (products == null)
@@ -105,6 +100,7 @@ public final class TableInitializer {
         initializeStockMovementTables(StockMovementSearchType.NONE);
         initializeProductListTable();
         initializeActiveUsersTable();
+        initializeLastTwentyStockMovesTable();
         m_tablePairsList.forEach(this::initializeTablesCallback);
         m_tablePairsList.stream().limit(5).forEach(this::initializeStockTablesClickListeners);
         initializeActiveUserTableClickListeners();
@@ -150,6 +146,18 @@ public final class TableInitializer {
             }
         });
     }
+    private void initializeLastTwentyStockMovesTableClickListeners()
+    {
+        m_tablePairsList.get(6).getFirst().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                var row = m_tablePairsList.get(6).getFirst().rowAtPoint(e.getPoint());
+                var col = m_tablePairsList.get(6).getFirst().columnAtPoint(e.getPoint());
+
+                m_tablePairsList.get(5).getFirst().setToolTipText(m_tablePairsList.get(6).getFirst().getValueAt(row, col).toString());
+            }
+        });
+    }
     private void initializeStockOutTables()
     {
         try {
@@ -176,13 +184,26 @@ public final class TableInitializer {
         fillProductListTable(list, m_tablePairsList.get(4).getSecond());
         setCellsAlignment(m_tablePairsList.get(4).getFirst());
     }
+    public void initializeLastTwentyStockMovesTable()
+    {
+        try {
+            initializeLastTwentyStockMovesTableModel(m_tablePairsList.get(6).getSecond());
+            fillLastTwentyStockMovesTable(m_applicationService.findLastStockMovementRecords(),
+                    m_tablePairsList.get(6).getSecond());
+            initializeLastTwentyStockMovesTableClickListeners();
+            setCellsAlignment(m_tablePairsList.get(6).getFirst());
+        } catch (ExecutionException | InterruptedException ex) {
+            log.error("TableInitializer::initializeLastTwentyStockMovesTable: {}", ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+        }
+    }
     public void initializeProductListTable()
     {
         try {
             initializeProductListTable(m_applicationService.findAllProducts());
         }
         catch (ExecutionException | InterruptedException ex) {
-            log.error("MainFrameController::initializeProductListTable: {}", ex.getMessage());
+            log.error("TableInitializer::initializeProductListTable: {}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
     }
@@ -333,6 +354,12 @@ public final class TableInitializer {
 
         model.setColumnIdentifiers(tableHeaders);
     }
+    private void initializeLastTwentyStockMovesTableModel(DefaultTableModel model)
+    {
+        Object[] tableHeaders = {TABLE_HEADER_STOCK_MOVEMENT_TYPE, TABLE_HEADER_USER_USERNAME, TABLE_HEADER_USER_REGISTER_DATE};
+
+        model.setColumnIdentifiers(tableHeaders);
+    }
     private void fillStockInputMovementsTable(List<StockMovementDTO> list, DefaultTableModel defaultTableModel)
     {
         list.stream().filter(stockMovementDTO -> stockMovementDTO.getStockMovementType() == StockMovementType.STOCK_INPUT
@@ -361,6 +388,10 @@ public final class TableInitializer {
     {
         list.forEach(userDTO -> fillUsersListTableCallback(userDTO, defaultTableModel));
     }
+    private void fillLastTwentyStockMovesTable(List<StockMovementDTO> list,DefaultTableModel defaultTableModel)
+    {
+        list.forEach(stockMovementDTO -> fillLastTwentyMovesTableCallback(stockMovementDTO, defaultTableModel));
+    }
     private void fillStockOutTableCallback(ProductDTO productDTO, DefaultTableModel defaultTableModel)
     {
         Object[] data = {productDTO.getOriginalCode(), productDTO.getProductName(),  productDTO.getStock().getAmount()};
@@ -374,8 +405,8 @@ public final class TableInitializer {
     private void fillStockMovementsTableCallback(StockMovementDTO stockMovementDTO, DefaultTableModel defaultTableModel)
     {
         Object[] data = {stockMovementDTO.getStock().getProduct().getOriginalCode(), stockMovementDTO.getStock().getProduct().getProductName(),
-                stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(), stockMovementDTO.getStock().getAmount(),
-                stockMovementDTO.getRecordDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(),
+                stockMovementDTO.getStock().getAmount(), m_dateTimeFormatter.format(stockMovementDTO.getRecordDate()),
                 stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
 
         defaultTableModel.addRow(data);
@@ -383,7 +414,7 @@ public final class TableInitializer {
     private void fillProductListTableCallback(ProductDTO productDTO,DefaultTableModel defaultTableModel)
     {
         Object[] data = {productDTO.getOriginalCode(), productDTO.getProductName(),
-                productDTO.getRegisterDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                m_dateTimeFormatter.format(productDTO.getRegisterDate()),
                 productDTO.getStockCode(), productDTO.getStock().getAmount(), productDTO.getStock().getThreshold()};
 
         defaultTableModel.addRow(data);
@@ -391,8 +422,14 @@ public final class TableInitializer {
     private void fillUsersListTableCallback(UserDTO userDTO, DefaultTableModel defaultTableModel)
     {
         Object[] data = {userDTO.getUsername(), userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEMail(),
-                userDTO.getDateOfRegister().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                userDTO.getDescription()};
+                m_dateTimeFormatter.format(userDTO.getDateOfRegister()), userDTO.getDescription()};
+
+        defaultTableModel.addRow(data);
+    }
+    private void fillLastTwentyMovesTableCallback(StockMovementDTO stockMovementDTO, DefaultTableModel defaultTableModel)
+    {
+        Object[] data = {stockMovementDTO.getStockMovementType().toString(), stockMovementDTO.getUser().getUsername(),
+                m_dateTimeFormatter.format(stockMovementDTO.getRecordDate())};
 
         defaultTableModel.addRow(data);
     }

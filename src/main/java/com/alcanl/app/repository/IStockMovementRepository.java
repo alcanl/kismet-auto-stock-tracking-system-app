@@ -21,6 +21,9 @@ public interface IStockMovementRepository extends CrudRepository<StockMovement, 
     @Query("FROM StockMovement sm WHERE sm.user.userId = :id")
     Iterable<StockMovement> findAllByUserId(long id);
 
+    @Query("FROM StockMovement ORDER BY stockMovementId DESC LIMIT 20")
+    Iterable<StockMovement> findLastTwentyRecords();
+
     Iterable<StockMovement> findAllByRecordDateBetween(LocalDate from, LocalDate to);
 
     Iterable<StockMovement> findAllByUserUserIdAndRecordDateBetween(long id, LocalDate from, LocalDate to);

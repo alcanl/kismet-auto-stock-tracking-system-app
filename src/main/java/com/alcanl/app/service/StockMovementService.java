@@ -102,6 +102,17 @@ class StockMovementService {
             throw new ServiceException(ex.getMessage());
         }
     }
+    public List<StockMovementDTO> findLastTwentyRecords()
+    {
+        try {
+            return StreamSupport.stream(m_repositoryDataHelper.findLastTwentyStockMovementRecord()
+                            .spliterator(), false).map(m_stockMovementMapper::stockMovementToStockMovementDTO)
+                    .toList();
+        } catch (RepositoryException ex) {
+            log.error("Error while finding last stock movement records {}", ex.getMessage());
+            throw new ServiceException(ex.getMessage());
+        }
+    }
     public List<StockMovementDTO> findAllByDateBetween(LocalDate startDate, LocalDate endDate)
     {
         try {

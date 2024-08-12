@@ -110,22 +110,28 @@ public class MainFrameController extends JFrame {
             }
         });
 
-        m_threadPool.execute(() -> addWheelListenerCallback(m_mainForm.getPanelMain()));
+        m_threadPool.execute(() -> addWheelListenerCallback(m_mainForm.getPaneMain()));
     }
     private void addWheelListenerCallback(JComponent jComponent)
     {
-        if (jComponent instanceof JTable || jComponent instanceof JComboBox)
+        if (jComponent instanceof JComboBox || jComponent instanceof JTable || jComponent == m_mainForm.getScrollPanelLesserThan()
+            || jComponent == m_mainForm.getScrollPaneStockOut() || jComponent == m_mainForm.getScrollPaneProductList()
+            || jComponent == m_mainForm.getScrollPaneLastMoves() || jComponent == m_mainForm.getScrollPaneStockOutput()
+            || jComponent == m_mainForm.getScrollPaneStockInput() || jComponent == m_mainForm.getScrollPaneActiveUsers()) {
             return;
+        }
 
         if (jComponent.getComponentCount() > 0)
             Arrays.stream(jComponent.getComponents()).forEach(component -> addWheelListenerCallback ((JComponent)component));
 
+
         jComponent.addMouseWheelListener(e -> {
-            if (e.isControlDown())
+            if (e.isControlDown()) {
                 if (e.getWheelRotation() < 0)
                     m_threadPool.execute(m_dialogHelper::setFontLarger);
                 else
                     m_threadPool.execute(m_dialogHelper::setFontSmaller);
+            }
         });
     }
 
@@ -331,13 +337,14 @@ public class MainFrameController extends JFrame {
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL_RECORDS);
         m_tableInitializer.initializeProductListTable();
         m_tableInitializer.initializeActiveUsersTable();
+        m_tableInitializer.initializeLastTwentyStockMovesTable();
     }
 
     private void initializeTables()
     {
         m_tableInitializer.setTables(m_mainForm.getTableStockOut(), m_mainForm.getTableLesserThanThreshold(),
                 m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput(), m_mainForm.getTableProductList(),
-                m_mainForm.getTableActiveUsers());
+                m_mainForm.getTableActiveUsers(), m_mainForm.getTableStockLastMoves());
         m_tableInitializer.initializeTables();
         m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
     }

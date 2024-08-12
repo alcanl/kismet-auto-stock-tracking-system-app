@@ -189,6 +189,15 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    public Iterable<StockMovement> findLastTwentyStockMovementRecord()
+    {
+        try {
+            return m_stockMovementRepository.findLastTwentyRecords();
+        } catch (Throwable ex) {
+            log.error("Error while finding last twenty stock move records: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
     public Optional<Stock> findStockById(long id)
     {
         try {

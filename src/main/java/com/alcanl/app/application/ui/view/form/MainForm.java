@@ -156,6 +156,12 @@ public class MainForm extends JFrame {
     private JButton buttonEditUser;
     private JButton buttonDeleteUser;
     private JPanel panelMid;
+    private JScrollPane scrollPanelLesserThan;
+    private JScrollPane scrollPaneStockOut;
+    private JScrollPane scrollPaneLastMoves;
+    private JScrollPane scrollPaneStockInput;
+    private JScrollPane scrollPaneStockOutput;
+    private JScrollPane scrollPaneActiveUsers;
 
     @PostConstruct
     private void postConstruct()
