@@ -20,6 +20,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -139,6 +140,15 @@ public final class TableInitializer {
                 }
             }
         });
+        m_tablePairsList.get(5).getFirst().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                var row = m_tablePairsList.get(5).getFirst().rowAtPoint(e.getPoint());
+                var col = m_tablePairsList.get(5).getFirst().columnAtPoint(e.getPoint());
+
+                m_tablePairsList.get(5).getFirst().setToolTipText(m_tablePairsList.get(5).getFirst().getValueAt(row, col).toString());
+            }
+        });
     }
     private void initializeStockOutTables()
     {
@@ -225,6 +235,15 @@ public final class TableInitializer {
         pair.getFirst().getTableHeader().setResizingAllowed(false);
         pair.getFirst().getTableHeader().setUpdateTableInRealTime(false);
         pair.getFirst().getTableHeader().setFont(new Font("calibri", Font.BOLD, 13));
+        pair.getFirst().getTableHeader().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                pair.getFirst().getTableHeader().setToolTipText(
+                        pair.getFirst().getTableHeader().getColumnModel().getColumn(
+                                pair.getFirst().getTableHeader().getColumnModel().getColumnIndexAtX(e.getX())
+                        ).getIdentifier().toString());
+            }
+        });
         pair.getFirst().setModel(pair.getSecond());
         setCellsAlignment(pair.getFirst());
     }
@@ -247,6 +266,15 @@ public final class TableInitializer {
                 } catch (IllegalArgumentException ignore) {
                     pair.getFirst().clearSelection();
                 }
+            }
+        });
+        pair.getFirst().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                var row = pair.getFirst().rowAtPoint(e.getPoint());
+                var col = pair.getFirst().columnAtPoint(e.getPoint());
+
+                pair.getFirst().setToolTipText(pair.getFirst().getValueAt(row, col).toString());
             }
         });
     }

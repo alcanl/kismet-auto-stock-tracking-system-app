@@ -32,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.print.PrinterException;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -90,6 +91,10 @@ public class MainFrameController extends JFrame {
         m_mainForm.getButtonClear().doClick();
         m_mainForm.getButtonClearFields().doClick();
         m_dialogHelper.clearFields(m_mainForm.getPanelEditUser(), m_mainForm.getPanelSaveNewUser());
+        m_mainForm.getIconEditUserOldPassword().setIcon(
+                m_applicationContext.getBean("bean.image.icon.password.field.hidden", ImageIcon.class));
+        m_mainForm.getIconEditUserNewPassword().setIcon(
+                m_applicationContext.getBean("bean.image.icon.password.field.hidden", ImageIcon.class));
         initializeUserOperationsTab();
         m_mainForm.getTabbedPaneMain().setSelectedIndex(0);
     }
@@ -246,6 +251,7 @@ public class MainFrameController extends JFrame {
     {
         setOnPanelButtonClickListener(m_mainForm.getButtonLogout(), event -> {
            if (m_dialogHelper.showEnsureLogoutMessageDialog(m_currentUserConfig.getUser().toString()) == JOptionPane.YES_OPTION) {
+               m_mainForm.getButtonLogout().setBackground(m_applicationContext.getBean("bean.color.default", Color.class));
                MainFrameController.this.dispose();
                m_applicationEventPublisher.publishEvent(new ShowLoginFormEvent(this));
            }
@@ -421,7 +427,22 @@ public class MainFrameController extends JFrame {
             m_mainForm.getTextFieldStockCode().setText(EMPTY_STRING);
             m_mainForm.getButtonStartDate().setText(EMPTY_STRING);
             m_mainForm.getButtonEndDate().setText(EMPTY_STRING);
+            m_mainForm.getCheckBoxByUser().setSelected(false);
+            m_mainForm.getCheckBoxByDate().setSelected(false);
+            m_mainForm.getCheckBoxByProduct().setSelected(false);
         });
+
+        m_mainForm.getButtonPrintStockInputList().addActionListener(e -> printTableCallback(m_mainForm.getTableStockInput()));
+        m_mainForm.getButtonPrintStockOutPutList().addActionListener(e -> printTableCallback(m_mainForm.getTableStockOutput()));
+    }
+    private void printTableCallback(JTable jTable)
+    {
+        try {
+            jTable.print();
+        } catch (PrinterException ex) {
+            log.error("MainFrameController::printCallback : {}", ex.getMessage());
+            m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
+        }
     }
     private void buttonSearchProductAndUserSelected()
     {
@@ -618,6 +639,8 @@ public class MainFrameController extends JFrame {
                         m_tableInitializer.doFilterForTableProducts(collectData());
                 }));
 
+        m_mainForm.getButtonPrintList().addActionListener(e -> printTableCallback(m_mainForm.getTableProductList()));
+
         m_mainForm.getButtonClear().addActionListener(e -> {
             m_mainForm.getTextFieldStockEquals().setText(EMPTY_STRING);
             m_mainForm.getTextFieldStockGreater().setText(EMPTY_STRING);
@@ -758,30 +781,6 @@ public class MainFrameController extends JFrame {
         m_mainForm.getComboBoxUserRole().addItem(UserType.ADMIN);
         m_mainForm.getComboBoxUserRole().addItem(UserType.USER);
 
-        m_mainForm.getIconEditUserNewPassword().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
-                        m_mainForm.getPasswordFieldEditUserNewPassword(), m_mainForm.getIconEditUserNewPassword()
-                );
-            }
-        });
-        m_mainForm.getIconEditUserOldPassword().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
-                        m_mainForm.getPasswordFieldEditUserOldPassword(), m_mainForm.getIconEditUserOldPassword()
-                );
-            }
-        });
-        m_mainForm.getIconNewUserHideOrShowPassword().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
-                        m_mainForm.getPasswordFieldNewUserPassword(), m_mainForm.getIconNewUserHideOrShowPassword()
-                );
-            }
-        });
         var currentUser = m_currentUserConfig.getUser();
 
         if (!currentUser.isAdmin()) {
@@ -797,8 +796,33 @@ public class MainFrameController extends JFrame {
             m_mainForm.getTextAreaNewUserDescription().setEnabled(true);
             m_mainForm.getTextAreaNewUserDescription().setEditable(true);
             m_mainForm.getTableActiveUsers().setEnabled(true);
+            m_mainForm.getIconNewUserHideOrShowPassword().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                            m_mainForm.getPasswordFieldNewUserPassword(), m_mainForm.getIconNewUserHideOrShowPassword()
+                    );
+                }
+            });
         }
-
+        if (m_mainForm.getIconEditUserNewPassword().getMouseListeners().length == 0)
+            m_mainForm.getIconEditUserNewPassword().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                            m_mainForm.getPasswordFieldEditUserNewPassword(), m_mainForm.getIconEditUserNewPassword()
+                    );
+                }
+            });
+        if (m_mainForm.getIconEditUserOldPassword().getMouseListeners().length == 0)
+            m_mainForm.getIconEditUserOldPassword().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    m_dialogHelper.setPasswordFieldVisibleOrInvisibleCallback(
+                            m_mainForm.getPasswordFieldEditUserOldPassword(), m_mainForm.getIconEditUserOldPassword()
+                    );
+                }
+            });
         m_mainForm.getTextFieldEditUserUserName().setText(currentUser.getUsername());
         m_mainForm.getTextFieldEditUserFirstName().setText(currentUser.getFirstName());
         m_mainForm.getTextFieldEditUserLastName().setText(currentUser.getLastName());

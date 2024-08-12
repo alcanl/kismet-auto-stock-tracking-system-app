@@ -47,13 +47,24 @@ public class MainForm extends JFrame {
     private JScrollPane paneMid;
     private JTabbedPane tabbedPaneMain;
     private JPanel panelStockOperations;
+    private JButton resimYükleButton;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JTextField textField3;
+    private JTextField textField4;
+    private JTextField textField5;
+    private JTextField textField6;
+    private JTextArea textArea1;
+    private JButton button1;
     private JPanel panelStockMoves;
     private JScrollPane paneQueryTables;
     private JPanel panelQueryTables;
     private JPanel panelStockInput;
     private JTable tableStockInput;
+    private JButton buttonPrintStockInputList;
     private JPanel panelStockOutput;
     private JTable tableStockOutput;
+    private JButton buttonPrintStockOutPutList;
     private JButton buttonGetAllStockMovementRecords;
     private JPanel panelStockMoveQuery;
     private JPanel panelByDate;
@@ -77,6 +88,7 @@ public class MainForm extends JFrame {
     private JPanel panelProducts;
     private JScrollPane scrollPaneProductList;
     private JButton buttonGetAllProducts;
+    private JButton buttonPrintList;
     private JTable tableProductList;
     private JButton buttonAddProduct;
     private JButton buttonDeleteProduct;
@@ -107,10 +119,10 @@ public class MainForm extends JFrame {
     private JTextField textFieldNewUserFirstName;
     private JTextField textFieldNewUserLastName;
     private JPasswordField passwordFieldNewUserPassword;
+    private JLabel iconNewUserHideOrShowPassword;
     private JTextArea textAreaNewUserDescription;
     private JComboBox<UserType> comboBoxUserRole;
     private JButton buttonNewUserSave;
-    private JLabel iconNewUserHideOrShowPassword;
     private JPanel panelEditUser;
     private JTextField textFieldEditUserUserName;
     private JTextField textFieldEditUserEMail;
@@ -123,10 +135,10 @@ public class MainForm extends JFrame {
     private JPasswordField passwordFieldEditUserNewPassword;
     private JLabel iconEditUserNewPassword;
     private JScrollPane paneUsersTable;
+    private JPanel panelActiveUsers;
     private JTable tableActiveUsers;
     private JButton buttonEditUser;
     private JButton buttonDeleteUser;
-    private JPanel panelActiveUsers;
 
     @PostConstruct
     private void postConstruct()
