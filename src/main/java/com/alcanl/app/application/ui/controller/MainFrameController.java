@@ -123,9 +123,9 @@ public class MainFrameController extends JFrame {
         jComponent.addMouseWheelListener(e -> {
             if (e.isControlDown())
                 if (e.getWheelRotation() < 0)
-                    m_threadPool.execute(() -> m_dialogHelper.setFontLarger(jComponent.getFont()));
+                    m_threadPool.execute(m_dialogHelper::setFontLarger);
                 else
-                    m_threadPool.execute(() -> m_dialogHelper.setFontSmaller(jComponent.getFont()));
+                    m_threadPool.execute(m_dialogHelper::setFontSmaller);
         });
     }
 
@@ -265,6 +265,7 @@ public class MainFrameController extends JFrame {
         m_mainForm.getTabbedPaneMain().setFont(new Font("calibri", Font.PLAIN, 18));
         m_mainForm.getCheckBoxIncludeContainsStock().setFont(new Font("calibri", Font.PLAIN, 10));
         m_mainForm.getCheckBoxIncludeContainsProduct().setFont(new Font("calibri", Font.PLAIN, 10));
+        m_dialogHelper.setStableFonts(m_mainForm);
     }
     private void initializeTopBar()
     {

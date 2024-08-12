@@ -155,6 +155,7 @@ public class MainForm extends JFrame {
     private JTable tableActiveUsers;
     private JButton buttonEditUser;
     private JButton buttonDeleteUser;
+    private JPanel panelMid;
 
     @PostConstruct
     private void postConstruct()

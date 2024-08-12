@@ -79,6 +79,7 @@ public final class Resources {
             else if (component instanceof JPanel || component instanceof JTabbedPane)
                 setTextFont(font, (JComponent)component);
     }
+
     public Resources(ApplicationContext applicationContext)
     {
         m_applicationContext = applicationContext;
@@ -91,6 +92,15 @@ public final class Resources {
         UIManager.put("OptionPane.cancelButtonText", "İptal");
         UIManager.put("OptionPane.yesButtonText", "Evet");
         UIManager.put("OptionPane.noButtonText", "Hayır");
+    }
+    public void setStableFonts(MainForm form)
+    {
+        form.getLabelCount().setFont(new Font("calibri", Font.BOLD, 14));
+        form.getLabelPrintableName().setFont(new Font("default", Font.BOLD, 24));
+        form.getLabelPrintableOriginalCode().setFont(new Font("default", Font.PLAIN, 24));
+        form.getLabelPrintableStockCode().setFont(new Font("default", Font.BOLD, 24));
+        form.getLabelProductCardDescription().setFont(new Font("default", Font.PLAIN, 8));
+        form.getLabelStockOperationDescription().setFont(new Font("default", Font.PLAIN, 8));
     }
 
     public void setLayout()
@@ -168,13 +178,8 @@ public final class Resources {
     public synchronized void setTextFont(Font font)
     {
         var form = m_applicationContext.getBean("bean.form.main", MainForm.class);
-        setTextFont(font, form.getPanelMain());
-        form.getLabelCount().setFont(new Font("calibri", Font.BOLD, 14));
-        form.getLabelPrintableName().setFont(new Font("default", Font.BOLD, 24));
-        form.getLabelPrintableOriginalCode().setFont(new Font("default", Font.PLAIN, 24));
-        form.getLabelPrintableStockCode().setFont(new Font("default", Font.BOLD, 24));
-        form.getLabelProductCardDescription().setFont(new Font("default", Font.PLAIN, 8));
-        form.getLabelStockOperationDescription().setFont(new Font("default", Font.PLAIN, 8));
+        setTextFont(font, form.getPanelMid());
+        setStableFonts(form);
     }
     public void disableComponents(JComponent jComponent)
     {

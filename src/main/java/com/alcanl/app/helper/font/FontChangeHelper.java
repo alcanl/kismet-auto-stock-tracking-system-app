@@ -13,20 +13,20 @@ public class FontChangeHelper {
     private static final int MAX_FONT_SIZE = 16;
     private static final int MIN_FONT_SIZE = 8;
 
-    public Font getLargerSize(Font font)
+    public Font getLargerSize()
     {
         if (m_index != MAX_FONT_SIZE)
             m_index += 2;
 
-        return new Font(font.getFontName(), font.getStyle(), m_index);
+        return new Font("default", Font.PLAIN, m_index);
     }
 
-    public Font getSmallerSize(Font font)
+    public Font getSmallerSize()
     {
         if (m_index != MIN_FONT_SIZE)
             m_index -= 2;
 
-        return new Font(font.getFontName(), font.getStyle(), m_index);
+        return new Font("default", Font.PLAIN, m_index);
     }
 
 }

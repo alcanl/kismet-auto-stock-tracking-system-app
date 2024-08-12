@@ -2,6 +2,7 @@ package com.alcanl.app.helper.dialog;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
 import com.alcanl.app.application.ui.view.dialog.*;
+import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.font.FontChangeHelper;
 import com.alcanl.app.helper.Resources;
@@ -364,13 +365,17 @@ public final class DialogHelper {
         }
 
     }
-    public void setFontLarger(Font font)
+    public void setStableFonts(MainForm form)
     {
-        m_resources.setTextFont(m_fontChangeHelper.getLargerSize(font));
+        m_resources.setStableFonts(form);
     }
-    public void setFontSmaller(Font font)
+    public void setFontLarger()
     {
-        m_resources.setTextFont(m_fontChangeHelper.getSmallerSize(font));
+        m_resources.setTextFont(m_fontChangeHelper.getLargerSize());
+    }
+    public void setFontSmaller()
+    {
+        m_resources.setTextFont(m_fontChangeHelper.getSmallerSize());
     }
     public void disableComponents(JPanel jPanel)
     {

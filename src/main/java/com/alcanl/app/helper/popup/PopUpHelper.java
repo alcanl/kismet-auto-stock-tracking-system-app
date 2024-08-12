@@ -73,7 +73,7 @@ public final class PopUpHelper {
     public void lightTheme()
     {
         FlatLightLaf.setup();
-        FlatDarkLaf.updateUI();
+        FlatLightLaf.updateUI();
     }
     public void darkTheme()
     {
