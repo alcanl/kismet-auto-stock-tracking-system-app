@@ -47,7 +47,8 @@ public class MainForm extends JFrame {
     private JScrollPane paneMid;
     private JTabbedPane tabbedPaneMain;
     private JPanel panelStockOperations;
-    private JButton resimYükleButton;
+    private JLabel iconProductImage;
+    private JButton buttonLoadImage;
     private JTextField textField1;
     private JTextField textField2;
     private JTextField textField3;
@@ -55,7 +56,8 @@ public class MainForm extends JFrame {
     private JTextField textField5;
     private JTextField textField6;
     private JTextArea textArea1;
-    private JButton button1;
+    private JButton buttonSaveProduct;
+    private JButton buttonPrintCard;
     private JPanel panelStockMoves;
     private JScrollPane paneQueryTables;
     private JPanel panelQueryTables;
