@@ -30,6 +30,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.Printable;
@@ -166,8 +167,9 @@ public final class DialogHelper {
         m_applicationContext.getBean("bean.dialog.card.product", DialogProductCard.class)
                 .setVisible(true);
     }
-    public void printLabel()
+    public void printLabel(ActionEvent ignore)
     {
+        //
         m_printerJob.setPrintable(m_applicationContext.getBean("bean.print.printable", Printable.class));
     }
     public void showNoSelectedProductMessage()
@@ -295,6 +297,18 @@ public final class DialogHelper {
     public void showEmptyFilteredListWarningDialog()
     {
         m_resources.showEmptyListWarningMessageDialog();
+    }
+    public void showNoSuchProductWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Ürün Bilgisi Bulunamadı.");
+    }
+    public void showUnsupportedTotalAmountWarningDialog()
+    {
+        m_resources.showCustomWarningDialog("Ürünün Mevcut Stok Miktarı Girilen Stok Çıkış Miktarını Karşılamamaktadır.");
+    }
+    public void showSaveStockMovementSuccessInfoDialog()
+    {
+        m_resources.showCustomInfoDialog("Stok İşlemi Kaydedildi.");
     }
     public int showEnsureDeleteItemWarningDialog()
     {

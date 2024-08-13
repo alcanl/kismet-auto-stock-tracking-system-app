@@ -174,4 +174,16 @@ public class IconConfig {
         }
     }
 
+    @Lazy
+    @Bean(name = "bean.image.icon.no.image")
+    public ImageIcon createNoImageIcon()
+    {
+        try {
+            return new ImageIcon(m_applicationContext.getResource("icons/no_image.png")
+                    .getContentAsByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

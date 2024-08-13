@@ -85,7 +85,7 @@ public class DialogProductCard extends JDialog {
     private void initializeButtons()
     {
         buttonOK.addActionListener(this::onOK);
-        buttonPrintCart.addActionListener(this::onPrintCart);
+        buttonPrintCart.addActionListener(m_dialogHelper::printLabel);
     }
 
     private void initializeTextViews() throws IOException
@@ -127,8 +127,4 @@ public class DialogProductCard extends JDialog {
         dispose();
     }
 
-    private void onPrintCart(ActionEvent e)
-    {
-        m_dialogHelper.printLabel();
-    }
 }

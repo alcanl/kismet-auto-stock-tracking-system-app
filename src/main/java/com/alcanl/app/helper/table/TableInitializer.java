@@ -104,6 +104,7 @@ public final class TableInitializer {
         m_tablePairsList.forEach(this::initializeTablesCallback);
         m_tablePairsList.stream().limit(5).forEach(this::initializeStockTablesClickListeners);
         initializeActiveUserTableClickListeners();
+        initializeLastTwentyStockMovesTableClickListeners();
 
     }
     public void initializeActiveUsersTable()
@@ -154,7 +155,7 @@ public final class TableInitializer {
                 var row = m_tablePairsList.get(6).getFirst().rowAtPoint(e.getPoint());
                 var col = m_tablePairsList.get(6).getFirst().columnAtPoint(e.getPoint());
 
-                m_tablePairsList.get(5).getFirst().setToolTipText(m_tablePairsList.get(6).getFirst().getValueAt(row, col).toString());
+                m_tablePairsList.get(6).getFirst().setToolTipText(m_tablePairsList.get(6).getFirst().getValueAt(row, col).toString());
             }
         });
     }
@@ -187,10 +188,10 @@ public final class TableInitializer {
     public void initializeLastTwentyStockMovesTable()
     {
         try {
+            m_tablePairsList.get(6).getSecond().getDataVector().clear();
             initializeLastTwentyStockMovesTableModel(m_tablePairsList.get(6).getSecond());
             fillLastTwentyStockMovesTable(m_applicationService.findLastStockMovementRecords(),
                     m_tablePairsList.get(6).getSecond());
-            initializeLastTwentyStockMovesTableClickListeners();
             setCellsAlignment(m_tablePairsList.get(6).getFirst());
         } catch (ExecutionException | InterruptedException ex) {
             log.error("TableInitializer::initializeLastTwentyStockMovesTable: {}", ex.getMessage());
@@ -375,7 +376,6 @@ public final class TableInitializer {
     {
         list.forEach(productDTO -> fillProductListTableCallback(productDTO, defaultTableModel));
     }
-
     private void fillStockOutTable(List<ProductDTO> list,DefaultTableModel defaultTableModel)
     {
         list.forEach(productDTO -> fillStockOutTableCallback(productDTO, defaultTableModel));

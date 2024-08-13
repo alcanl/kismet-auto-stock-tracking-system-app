@@ -11,6 +11,7 @@ import com.alcanl.app.helper.table.TableInitializer;
 import com.alcanl.app.helper.dialog.DialogHelper;
 import com.alcanl.app.configuration.CurrentUserConfig;
 import com.alcanl.app.helper.table.search.type.StockMovementSearchType;
+import com.alcanl.app.repository.entity.type.StockMovementType;
 import com.alcanl.app.repository.exception.EmailAlreadyInUseException;
 import com.alcanl.app.repository.exception.UsernameAlreadyInUseException;
 import com.alcanl.app.service.ApplicationService;
@@ -18,6 +19,7 @@ import com.alcanl.app.service.dto.ProductDTO;
 import com.alcanl.app.service.dto.UserDTO;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.github.lgooddatepicker.components.DatePicker;
+import com.google.common.io.Files;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +35,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.PrinterException;
+import java.io.File;
+import java.io.IOException;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -61,6 +66,8 @@ public class MainFrameController extends JFrame {
     private final TableInitializer m_tableInitializer;
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final DialogHelper m_dialogHelper;
+    private final JFileChooser m_fileChooser;
+    private File m_imageFile = null;
 
     @PostConstruct
     private void setFrameProperties()
@@ -70,6 +77,7 @@ public class MainFrameController extends JFrame {
         initializeBars();
         initializeStockMovementsTab();
         initializeProductListTab();
+        initializeStockOperationsTab();
         m_mainForm.getButtonNotification().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonAddStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
         m_mainForm.getButtonReleaseStock().putClientProperty( FlatClientProperties.STYLE, "arc: 10" );
@@ -933,5 +941,145 @@ public class MainFrameController extends JFrame {
             log.error("Error while saving new user :{}", ex.getMessage());
             m_dialogHelper.showUnknownErrorMessageDialog(ex.getMessage());
         }
+    }
+    private void initializeStockOperationsTab()
+    {
+        m_mainForm.getButtonLoadImage().addActionListener(this::buttonLoadImageClickedCallback);
+        m_mainForm.getButtonSaveProduct().addActionListener(this::buttonSaveProductClickedCallback);
+        m_mainForm.getButtonPrintCard().addActionListener(m_dialogHelper::printLabel);
+        m_mainForm.getButtonSaveStockInput().addActionListener(this::buttonSaveStockInputClickedCallback);
+        m_mainForm.getButtonSaveStockOutput().addActionListener(this::buttonSaveStockOutputClickedCallback);
+    }
+    private void buttonSaveStockOutputClickedCallback(ActionEvent event)
+    {
+        try {
+            var stockCode = m_mainForm.getTextFieldStockOutputStockCode().getText().trim();
+            var productCode = m_mainForm.getTextFieldStockOutputProductCode().getText().trim();
+            var amount = Integer.parseInt(m_mainForm.getTextFieldStockOutputAmount().getText().trim());
+            if (amount < 0) {
+                m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı O'dan Küçük Olamaz!");
+                return;
+            }
+            var productDtoOpt = findProductAccordingToFields(stockCode, productCode);
+
+            if (productDtoOpt.isPresent()) {
+                if (productDtoOpt.get().getStock().getAmount() - amount < 0) {
+                    m_dialogHelper.showUnsupportedTotalAmountWarningDialog();
+                    return;
+                }
+                productDtoOpt.get().getStock().setAmount(productDtoOpt.get().getStock().getAmount() - amount);
+                m_dialogHelper.saveNewStockMovement(productDtoOpt.get(), amount, StockMovementType.STOCK_OUTPUT);
+                m_dialogHelper.showSaveStockMovementSuccessInfoDialog();
+                reInitTables();
+                m_dialogHelper.clearFields(m_mainForm.getPanelNewStockOutput());
+            }
+            else
+                m_dialogHelper.showNoSuchProductWarningDialog();
+
+
+        } catch (NumberFormatException ex) {
+            m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı");
+        } catch (ExecutionException | InterruptedException ex) {
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
+        }
+    }
+    private Optional<ProductDTO> findProductAccordingToFields(String stockCode, String productCode)
+    {
+        if (stockCode.isEmpty() && productCode.isEmpty()) {
+            m_dialogHelper.showEmptyFieldsWarningDialog();
+            return Optional.empty();
+        }
+        else if (stockCode.isEmpty())
+            return m_applicationService.findProductById(productCode);
+        else
+            return m_applicationService.findProductByStockCode(stockCode);
+    }
+    private void buttonSaveStockInputClickedCallback(ActionEvent event)
+    {
+        try {
+            var stockCode = m_mainForm.getTextFieldStockInputStockCode().getText().trim();
+            var productCode = m_mainForm.getTextFieldStockInputProductCode().getText().trim();
+            var amount = Integer.parseInt(m_mainForm.getTextFieldStockInputAmount().getText().trim());
+            if (amount < 0) {
+                m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı O'dan Küçük Olamaz!");
+                return;
+            }
+
+            var productDtoOpt = findProductAccordingToFields(stockCode, productCode);
+
+            if (productDtoOpt.isPresent()) {
+                productDtoOpt.get().getStock().setAmount(productDtoOpt.get().getStock().getAmount() + amount);
+                m_dialogHelper.saveNewStockMovement(productDtoOpt.get(), amount, StockMovementType.STOCK_INPUT);
+                m_dialogHelper.showSaveStockMovementSuccessInfoDialog();
+                reInitTables();
+                m_dialogHelper.clearFields(m_mainForm.getPanelNewStockInput());
+            }
+            else
+                m_dialogHelper.showNoSuchProductWarningDialog();
+
+
+        } catch (NumberFormatException ex) {
+            m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı");
+        } catch (ExecutionException | InterruptedException ex) {
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
+        }
+    }
+    private void buttonLoadImageClickedCallback(ActionEvent event)
+    {
+        var returnVal = m_fileChooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+            m_imageFile = m_fileChooser.getSelectedFile();
+        try {
+            if (m_imageFile != null) {
+                var image = new ImageIcon(Files.toByteArray(m_imageFile)).getImage();
+                var imageScale = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                var scaledIcon = new ImageIcon(imageScale);
+                m_mainForm.getIconProductImage().setIcon(scaledIcon);
+            }
+        } catch (IOException ex) {
+            m_dialogHelper.showCustomErrorMessageDialog(ex.getMessage());
+        }
+    }
+    private void buttonSaveProductClickedCallback(ActionEvent event)
+    {
+        try {
+            var originalCode = m_mainForm.getTextFieldStockOptOriginalCode().getText().trim();
+            var productName = m_mainForm.getTextFieldStockOptProductName().getText().trim();
+            var stockCode = m_mainForm.getTextFieldStockOptStockCode().getText().trim();
+            var shelfNumber = m_mainForm.getTextFieldStockOptShelfNumber().getText().trim();
+            var amount = Integer.parseInt(m_mainForm.getTextFieldStockOptStockAmount().getText().trim());
+            var threshold = Integer.parseInt(m_mainForm.getTextFieldStockOptStockThreshold().getText().trim());
+            var desc = m_mainForm.getTextAreaStockOptDescription().getText().trim();
+
+            if (amount < 0 || threshold < 0) {
+                m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı: %d Stok Eşik Miktarı: %d".formatted(amount, threshold));
+                return;
+            }
+
+            if (!m_dialogHelper.areProductFieldsValid(originalCode, productName, stockCode, shelfNumber)) {
+                m_dialogHelper.showEmptyFieldsWarningDialog();
+                return;
+            }
+
+            m_dialogHelper.saveNewStockMovementWithProductCreate(
+                    amount, threshold, shelfNumber, originalCode, stockCode, productName, m_imageFile, desc);
+            m_dialogHelper.showProductSaveSuccess(originalCode);
+            fillCardLabels(originalCode, stockCode, productName);
+            reInitTables();
+            m_dialogHelper.clearFields(m_mainForm.getPanelProductSaveFields());
+            m_mainForm.getTextAreaStockOptDescription().setText(EMPTY_STRING);
+            m_mainForm.getIconProductImage().setIcon(m_applicationContext.getBean("bean.image.icon.no.image", ImageIcon.class));
+
+        } catch (NumberFormatException ex) {
+            m_dialogHelper.showUnSupportedFormatMessage("Stok Miktarı");
+        } catch (ExecutionException | InterruptedException ex) {
+            m_dialogHelper.showUnknownErrorMessageWhileSavingProduct();
+        }
+    }
+    private void fillCardLabels(String originalCode, String stockCode, String productName)
+    {
+        m_mainForm.getLabelPrintableOriginalCode().setText(originalCode.toUpperCase());
+        m_mainForm.getLabelPrintableName().setText(productName.toUpperCase());
+        m_mainForm.getLabelPrintableStockCode().setText(stockCode.toUpperCase());
     }
 }

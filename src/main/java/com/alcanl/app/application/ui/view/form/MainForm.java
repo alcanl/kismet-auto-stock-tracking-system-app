@@ -49,13 +49,13 @@ public class MainForm extends JFrame {
     private JPanel panelStockOperations;
     private JLabel iconProductImage;
     private JButton buttonLoadImage;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JTextField textField4;
-    private JTextField textField5;
-    private JTextField textField6;
-    private JTextArea textArea1;
+    private JTextField textFieldStockOptOriginalCode;
+    private JTextField textFieldStockOptProductName;
+    private JTextField textFieldStockOptStockCode;
+    private JTextField textFieldStockOptShelfNumber;
+    private JTextField textFieldStockOptStockAmount;
+    private JTextField textFieldStockOptStockThreshold;
+    private JTextArea textAreaStockOptDescription;
     private JButton buttonSaveProduct;
     private JLabel labelPrintableStockCode;
     private JLabel labelPrintableOriginalCode;
@@ -162,6 +162,10 @@ public class MainForm extends JFrame {
     private JScrollPane scrollPaneStockInput;
     private JScrollPane scrollPaneStockOutput;
     private JScrollPane scrollPaneActiveUsers;
+    private JPanel panelProductSaveDesc;
+    private JPanel panelProductSaveFields;
+    private JPanel panelNewStockInput;
+    private JPanel panelNewStockOutput;
 
     @PostConstruct
     private void postConstruct()
