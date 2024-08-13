@@ -1,6 +1,7 @@
 package com.alcanl.app.helper.dialog;
 
 import com.alcanl.app.application.ui.event.UpdateTablesEvent;
+import com.alcanl.app.application.ui.print.JLabelPrintable;
 import com.alcanl.app.application.ui.view.dialog.*;
 import com.alcanl.app.application.ui.view.form.MainForm;
 import com.alcanl.app.configuration.CurrentUserConfig;
@@ -33,7 +34,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.time.LocalDate;
@@ -169,8 +170,20 @@ public final class DialogHelper {
     }
     public void printLabel(ActionEvent ignore)
     {
-        //
-        m_printerJob.setPrintable(m_applicationContext.getBean("bean.print.printable", Printable.class));
+        var format = m_printerJob.defaultPage();
+        var printable = m_applicationContext.getBean("bean.print.label.printable", JLabelPrintable.class);
+        printable.setProductName(m_selectedProduct.getProductName());
+        printable.setProductOriginalCode(m_selectedProduct.getOriginalCode());
+        printable.setProductStockCode(m_selectedProduct.getStockCode());
+        m_printerJob.setPrintable(printable, JLabelPrintable.customizePageFormat(format));
+
+        if (m_printerJob.printDialog()) {
+            try {
+                m_printerJob.print();
+            } catch (PrinterException ex) {
+                showUnknownErrorMessageDialog(ex.getMessage());
+            }
+        }
     }
     public void showNoSelectedProductMessage()
     {

@@ -641,7 +641,7 @@ public class MainFrameController extends JFrame {
             }
             else if (component instanceof JTextField jTextField) {
                 if (!jTextField.getText().isBlank())
-                    m_componentMap.put(jTextField, jTextField.getText());
+                    m_componentMap.put(jTextField, jTextField.getText().trim());
             }
             else if (component instanceof JPanel jPanel)
                 collectTextsCallback(jPanel);
@@ -714,31 +714,31 @@ public class MainFrameController extends JFrame {
 
         if (m_componentMap.containsKey(m_mainForm.getTextFieldPaneProductOriginalCode()))
             list = m_mainForm.getCheckBoxIncludeContainsProduct().isSelected() ?
+                    list.stream().filter(dto -> dto.getOriginalCode().toUpperCase()
+                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneProductOriginalCode()).toUpperCase())).toList() :
                     list.stream().filter(dto -> dto.getOriginalCode()
-                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneProductOriginalCode()))).toList() :
-                    list.stream().filter(dto -> dto.getOriginalCode()
-                    .equals(m_componentMap.get(m_mainForm.getTextFieldPaneProductOriginalCode()))).toList();
+                    .equalsIgnoreCase(m_componentMap.get(m_mainForm.getTextFieldPaneProductOriginalCode()))).toList();
 
         if (m_componentMap.containsKey(m_mainForm.getTextFieldPaneProductName()))
             list = m_mainForm.getCheckBoxIncludeContainsProduct().isSelected() ?
+                    list.stream().filter(dto -> dto.getProductName().toUpperCase()
+                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneProductName()).toUpperCase())).toList() :
                     list.stream().filter(dto -> dto.getProductName()
-                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneProductName()))).toList() :
-                    list.stream().filter(dto -> dto.getProductName()
-                    .equals(m_componentMap.get(m_mainForm.getTextFieldPaneProductName()))).toList();
+                    .equalsIgnoreCase(m_componentMap.get(m_mainForm.getTextFieldPaneProductName()))).toList();
 
         if (m_componentMap.containsKey(m_mainForm.getTextFieldPaneStockCode()))
             list = m_mainForm.getCheckBoxIncludeContainsStock().isSelected() ?
+                    list.stream().filter(dto -> dto.getStockCode().toUpperCase()
+                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneStockCode()).toUpperCase())).toList() :
                     list.stream().filter(dto -> dto.getStockCode()
-                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneStockCode()))).toList() :
-                    list.stream().filter(dto -> dto.getStockCode()
-                            .equals(m_componentMap.get(m_mainForm.getTextFieldPaneStockCode()))).toList();
+                            .equalsIgnoreCase(m_componentMap.get(m_mainForm.getTextFieldPaneStockCode()).trim())).toList();
 
         if (m_componentMap.containsKey(m_mainForm.getTextFieldPaneShelfNumber()))
             list = m_mainForm.getCheckBoxIncludeContainsStock().isSelected() ?
+                    list.stream().filter(dto -> dto.getStock().getShelfNumber().toUpperCase()
+                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneShelfNumber()).toUpperCase())).toList() :
                     list.stream().filter(dto -> dto.getStock().getShelfNumber()
-                            .contains(m_componentMap.get(m_mainForm.getTextFieldPaneShelfNumber()).trim())).toList() :
-                    list.stream().filter(dto -> dto.getStock().getShelfNumber()
-                            .equals(m_componentMap.get(m_mainForm.getTextFieldPaneShelfNumber()))).toList();
+                            .equalsIgnoreCase(m_componentMap.get(m_mainForm.getTextFieldPaneShelfNumber()))).toList();
 
 
         if (m_componentMap.containsKey(m_mainForm.getDateRecordDateAfter()))
@@ -1064,6 +1064,7 @@ public class MainFrameController extends JFrame {
             m_dialogHelper.saveNewStockMovementWithProductCreate(
                     amount, threshold, shelfNumber, originalCode, stockCode, productName, m_imageFile, desc);
             m_dialogHelper.showProductSaveSuccess(originalCode);
+            m_dialogHelper.setSelectedProduct(m_applicationService.findProductById(originalCode).orElse(null));
             fillCardLabels(originalCode, stockCode, productName);
             reInitTables();
             m_dialogHelper.clearFields(m_mainForm.getPanelProductSaveFields());
