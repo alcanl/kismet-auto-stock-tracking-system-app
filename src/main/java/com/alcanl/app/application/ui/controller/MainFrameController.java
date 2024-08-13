@@ -57,6 +57,7 @@ public class MainFrameController extends JFrame {
     private int m_mainFrameStartDimensionX;
     @Value("${kismet.auto.stock.tracking.system.app.frame.main.dimension.y}")
     private int m_mainFrameStartDimensionY;
+    private File m_imageFile = null;
     private final HashMap<Component, String> m_componentMap;
     private final MainForm m_mainForm;
     private final ExecutorService m_threadPool;
@@ -67,7 +68,6 @@ public class MainFrameController extends JFrame {
     private final ApplicationEventPublisher m_applicationEventPublisher;
     private final DialogHelper m_dialogHelper;
     private final JFileChooser m_fileChooser;
-    private File m_imageFile = null;
 
     @PostConstruct
     private void setFrameProperties()
@@ -346,6 +346,7 @@ public class MainFrameController extends JFrame {
         m_tableInitializer.initializeProductListTable();
         m_tableInitializer.initializeActiveUsersTable();
         m_tableInitializer.initializeLastTwentyStockMovesTable();
+        m_tableInitializer.setTableColumnAlignments();
     }
 
     private void initializeTables()

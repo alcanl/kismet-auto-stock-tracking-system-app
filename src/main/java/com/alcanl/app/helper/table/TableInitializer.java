@@ -45,8 +45,8 @@ public final class TableInitializer {
 
     private static final String TABLE_HEADER_PRODUCT_NAME = "ÜRÜN ADI";
     private static final String TABLE_HEADER_PRODUCT_ORIGINAL_CODE = "ÜRÜN KODU";
-    private static final String TABLE_HEADER_STOCK = "AKTİF STOK";
-    private static final String TABLE_HEADER_PRODUCT_THRESHOLD = "EŞİK STOK";
+    private static final String TABLE_HEADER_STOCK = "STOK";
+    private static final String TABLE_HEADER_PRODUCT_THRESHOLD = "EŞİK";
     private static final String TABLE_HEADER_PRODUCT_STOCK_CODE = "STOK KODU";
     private static final String TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER = "RAF NUMARASI";
     private static final String TABLE_HEADER_PRODUCT_REGISTER_DATE = "ÜRÜN KAYIT TARİHİ";
@@ -63,6 +63,12 @@ public final class TableInitializer {
 
     public static int criticalStockCount = 0;
 
+    public void setTableColumnAlignments()
+    {
+        m_tablePairsList.getFirst().getFirst().getColumnModel().getColumn(2).setPreferredWidth(1);
+        m_tablePairsList.get(1).getFirst().getColumnModel().getColumn(2).setPreferredWidth(2);
+        m_tablePairsList.get(1).getFirst().getColumnModel().getColumn(3).setPreferredWidth(2);
+    }
     public void doFilterForTableProducts(List<ProductDTO> products)
     {
         if (products == null)
@@ -80,19 +86,14 @@ public final class TableInitializer {
     }
     public void reInitStockOutTables()
     {
-        try {
-            criticalStockCount = 0;
-            m_tablePairsList.getFirst().getSecond().getDataVector().clear();
-            m_tablePairsList.get(1).getSecond().getDataVector().clear();
-            initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
-            m_tablePairsList.forEach(pair -> {
-                pair.getFirst().setModel(pair.getSecond());
-                setCellsAlignment(pair.getFirst());
-            });
-
-        } catch (ExecutionException | InterruptedException ex) {
-            log.error("MainFrameController::reInitializeTables: {}", ex.getMessage());
-        }
+        criticalStockCount = 0;
+        m_tablePairsList.getFirst().getSecond().getDataVector().clear();
+        m_tablePairsList.get(1).getSecond().getDataVector().clear();
+        initializeStockOutTables();
+        m_tablePairsList.forEach(pair -> {
+            pair.getFirst().setModel(pair.getSecond());
+            setCellsAlignment(pair.getFirst());
+        });
     }
     public void initializeTables()
     {
@@ -105,7 +106,7 @@ public final class TableInitializer {
         m_tablePairsList.stream().limit(5).forEach(this::initializeStockTablesClickListeners);
         initializeActiveUserTableClickListeners();
         initializeLastTwentyStockMovesTableClickListeners();
-
+        setTableColumnAlignments();
     }
     public void initializeActiveUsersTable()
     {
@@ -163,7 +164,6 @@ public final class TableInitializer {
     {
         try {
             initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
-
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeTables: {}", ex.getMessage());
         }

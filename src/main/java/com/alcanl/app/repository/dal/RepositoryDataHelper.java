@@ -85,16 +85,6 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-    public Optional<Stock > findProductStock(Product product)
-    {
-        try {
-            return m_stockRepository.findByProduct(product);
-        } catch (Throwable ex) {
-            log.error("Error while finding product product: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-
     public Optional<User> findUserByUsername(String username)
     {
         try {
@@ -129,15 +119,6 @@ public class RepositoryDataHelper {
             return m_stockRepository.findAllStocks();
         } catch (Throwable ex) {
             log.error("Error while finding all product: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-    public Optional<Product> findProductByName(String productName)
-    {
-        try {
-            return m_productRepository.findByProductName(productName);
-        } catch (Throwable ex) {
-            log.error("Error while finding product by name: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -179,31 +160,12 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
-
-    public Iterable<Stock> findAllStockByGreaterThan(int greater)
-    {
-        try {
-            return m_stockRepository.findAllByGreaterThan(greater);
-        } catch (Throwable ex) {
-            log.error("Error while finding product by greater: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
     public Iterable<StockMovement> findLastTwentyStockMovementRecord()
     {
         try {
             return m_stockMovementRepository.findLastTwentyRecords();
         } catch (Throwable ex) {
             log.error("Error while finding last twenty stock move records: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-    public Optional<Stock> findStockById(long id)
-    {
-        try {
-            return m_stockRepository.findById(id);
-        } catch (Throwable ex) {
-            log.error("Error while finding stock by id: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }
@@ -228,15 +190,6 @@ public class RepositoryDataHelper {
             m_userRepository.delete(user);
         } catch (Throwable ex) {
             log.error("Error while deleting user: {}", ex.getMessage());
-            throw new RepositoryException(ex);
-        }
-    }
-    public Product saveProduct(Product product)
-    {
-        try {
-            return m_productRepository.save(product);
-        } catch (Throwable ex) {
-            log.error("Error while saving product: {}", ex.getMessage());
             throw new RepositoryException(ex);
         }
     }

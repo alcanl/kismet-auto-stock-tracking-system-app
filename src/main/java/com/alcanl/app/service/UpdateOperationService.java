@@ -6,8 +6,6 @@ import com.alcanl.app.repository.entity.type.UpdateOperationType;
 import com.alcanl.app.repository.exception.RepositoryException;
 import com.alcanl.app.service.dto.*;
 import com.alcanl.app.service.mapper.IProductMapper;
-import com.alcanl.app.service.mapper.IStockMapper;
-import com.alcanl.app.service.mapper.IStockMovementMapper;
 import com.alcanl.app.service.mapper.IUserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 class UpdateOperationService {
     private final RepositoryDataHelper m_repositoryDataHelper;
-    private final IStockMovementMapper m_stockMovementMapper;
     private final IProductMapper m_productMapper;
     private final IUserMapper m_userMapper;
-    private final IStockMapper m_stockMapper;
 
     @Transactional
     public UpdateOperation saveNewUpdateOperation(ProductDTO productDTO, UserDTO userDTO, UpdateOperationType updateOperationType)
