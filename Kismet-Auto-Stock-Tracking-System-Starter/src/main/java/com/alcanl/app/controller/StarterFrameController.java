@@ -1,24 +1,23 @@
 package com.alcanl.app.controller;
 
-import com.alcanl.app.form.StarterForm;
-
 import static com.google.common.io.Resources.getResource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @SwingContainer
 public class StarterFrameController extends JFrame {
     private final StarterForm m_starterForm;
-    private final ScheduledExecutorService m_threadPool;
+    private final ScheduledExecutorService m_scheduledThreadPool;
+    private final ExecutorService m_threadPool;
+    private Future<?> m_future;
     private final static String ms_title = "Kısmet Oto Stok Takip Sistemi";
     private final static String ms_warningTitle = "Uyarı";
     private final static String ms_warningMessage = "Alanlar Boş Bırakılamaz.";
     private final static String ms_errorTitle = "Hata";
+    private final static String ms_errorMessage = "Veritabanı Bağlantı Hatası\nKullanıcı Adı / Parola Hatalı ya da Veritabanı Sunucuları Kapatılmış Olabilir";
 
     private static void setOptionPaneButtonsTR()
     {
@@ -37,7 +36,8 @@ public class StarterFrameController extends JFrame {
     public StarterFrameController(StarterForm starterForm)
     {
         m_starterForm = starterForm;
-        m_threadPool = Executors.newScheduledThreadPool(2);
+        m_threadPool = Executors.newFixedThreadPool(2);
+        m_scheduledThreadPool = Executors.newSingleThreadScheduledExecutor();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(m_starterForm.getPanelMain());
         setTitle(ms_title);
@@ -47,11 +47,17 @@ public class StarterFrameController extends JFrame {
         m_starterForm.getButtonConnect().addActionListener(this::buttonConnectClickedListener);
         setOptionPaneButtonsTR();
         setVisible(true);
+        registerKeys();
 
+
+    }
+    private void registerKeys()
+    {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 m_threadPool.shutdownNow();
+                m_scheduledThreadPool.shutdownNow();
             }
         });
         addKeyListener(new KeyAdapter() {
@@ -61,10 +67,24 @@ public class StarterFrameController extends JFrame {
                     m_starterForm.getButtonConnect().doClick();
             }
         });
+        m_starterForm.getTextFieldDbUsername().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (KeyEvent.VK_ENTER == e.getKeyCode())
+                    m_starterForm.getButtonConnect().doClick();
+            }
+        });
+        m_starterForm.getTextFieldDbPassword().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (KeyEvent.VK_ENTER == e.getKeyCode())
+                    m_starterForm.getButtonConnect().doClick();
+            }
+        });
     }
     private boolean areFieldsValid()
     {
-        return !m_starterForm.getTextFieldDbPassword().getText().isBlank() && !m_starterForm.getTextFieldDbUsername().getText().isBlank();
+        return m_starterForm.getTextFieldDbPassword().getPassword().length != 0 && !m_starterForm.getTextFieldDbUsername().getText().isBlank();
     }
     private void startProcessListenerCallback(Process process)
     {
@@ -77,7 +97,13 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getButtonConnect().setEnabled(true);
                 SwingUtilities.invokeLater(() -> m_starterForm.getProgressBarLoading().setIndeterminate(false));
                 setVisible(true);
-                return;
+
+                if (!process.onExit().isDone()) {
+                    m_future.cancel(true);
+                    JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                break;
             }
         }
     }
@@ -87,12 +113,12 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getProgressBarLoading().setModel(new DefaultBoundedRangeModel());
                 m_starterForm.getProgressBarLoading().setIndeterminate(true);
                 var username = m_starterForm.getTextFieldDbUsername().getText().trim();
-                var password = m_starterForm.getTextFieldDbPassword().getText().trim();
+                var password = m_starterForm.getTextFieldDbPassword().getPassword();
                 var process = new ProcessBuilder("java", "-jar",
                         getResource("Kismet-Oto-Stock-Tracking-System-1.0.0.jar")
-                        .getPath().substring(1),
-                        "spring.datasource.username=%s".formatted(username),
-                        "spring.datasource.password=%s".formatted(password))
+                                .getPath().substring(1),
+                        "--spring.datasource.username=%s".formatted(username),
+                        "--spring.datasource.password=%s".formatted(String.valueOf(password)))
                         .inheritIO().start();
 
                 m_starterForm.getTextFieldDbUsername().setEditable(false);
@@ -101,7 +127,7 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getTextFieldDbUsername().setEnabled(false);
                 m_starterForm.getButtonConnect().setEnabled(false);
                 m_threadPool.execute(() -> startProcessListenerCallback(process));
-                m_threadPool.schedule(() -> setVisible(false), 20, TimeUnit.SECONDS);
+                m_future = m_scheduledThreadPool.schedule(() -> setVisible(false), 22, TimeUnit.SECONDS);
 
             } else
                 JOptionPane.showMessageDialog(null, ms_warningMessage, ms_warningTitle,
