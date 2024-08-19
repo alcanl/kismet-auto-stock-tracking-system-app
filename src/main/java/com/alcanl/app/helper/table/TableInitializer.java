@@ -65,7 +65,7 @@ public final class TableInitializer {
 
     public void setTableColumnAlignments()
     {
-        m_tablePairsList.getFirst().getFirst().getColumnModel().getColumn(2).setPreferredWidth(1);
+        m_tablePairsList.get(0).getFirst().getColumnModel().getColumn(2).setPreferredWidth(1);
         m_tablePairsList.get(1).getFirst().getColumnModel().getColumn(2).setPreferredWidth(2);
         m_tablePairsList.get(1).getFirst().getColumnModel().getColumn(3).setPreferredWidth(2);
     }
@@ -87,7 +87,7 @@ public final class TableInitializer {
     public void reInitStockOutTables()
     {
         criticalStockCount = 0;
-        m_tablePairsList.getFirst().getSecond().getDataVector().clear();
+        m_tablePairsList.get(0).getSecond().getDataVector().clear();
         m_tablePairsList.get(1).getSecond().getDataVector().clear();
         initializeStockOutTables();
         m_tablePairsList.forEach(pair -> {
@@ -163,7 +163,7 @@ public final class TableInitializer {
     private void initializeStockOutTables()
     {
         try {
-            initializeStockOutTables(m_tablePairsList.getFirst().getSecond(), m_tablePairsList.get(1).getSecond());
+            initializeStockOutTables(m_tablePairsList.get(0).getSecond(), m_tablePairsList.get(1).getSecond());
         } catch (ExecutionException | InterruptedException ex) {
             log.error("MainFrameController::initializeTables: {}", ex.getMessage());
         }

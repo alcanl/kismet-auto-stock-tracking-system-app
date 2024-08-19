@@ -2,6 +2,7 @@ package com.alcanl.app.service.dto;
 
 import com.alcanl.app.repository.entity.Product;
 import com.alcanl.app.repository.entity.StockMovement;
+import com.alcanl.app.repository.entity.UpdateOperation;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -30,6 +31,8 @@ public class StockDTO {
     private Product m_product;
 
     private Set<StockMovement> m_stockMovements;
+
+    private Set<UpdateOperation> m_updateOperations;
 
     @Override
     public String toString()

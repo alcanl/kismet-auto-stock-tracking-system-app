@@ -59,7 +59,7 @@ public final class Resources {
     @Value("${kismet.auto.stock.tracking.system.warning.message.wrong.username.or.password}")
     private String m_warningWrongUsernameOrPasswordText;
 
-    @Value("${email.pattern.regex}")
+    @Value("${email.pattern.regex.regexp}")
     private String m_eMailRegex;
 
     public static final String EMPTY_STRING = "";
