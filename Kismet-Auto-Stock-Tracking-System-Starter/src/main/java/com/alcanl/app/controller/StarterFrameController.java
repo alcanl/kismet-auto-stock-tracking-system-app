@@ -9,22 +9,22 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SwingContainer
 public class StarterFrameController extends JFrame {
+
+    private Process m_process;
     private final StarterForm m_starterForm;
     private final ExecutorService m_threadPool;
-    private Process m_process;
     private final static String ms_title = "Kısmet Oto Stok Takip Sistemi";
-    private final static String ms_successMessage = "Successfully_Started_Main_App";
     private final static String ms_warningTitle = "Uyarı";
     private final static String ms_warningMessage = "Alanlar Boş Bırakılamaz.";
     private final static String ms_errorTitle = "Hata";
-    private final static String ms_errorTitleEN = "ERROR";
+    private final static String ms_errorMessageFromChild = "ERROR";
+    private final static String ms_successMessageFromParent = "Successfully_Started_Main_App";
     private final static String ms_errorMessage = "Veritabanı Bağlantı Hatası\nKullanıcı Adı / Parola Hatalı ya da Veritabanı Sunucuları Kapatılmış Olabilir";
 
     private static void setOptionPaneButtonsTR()
@@ -41,138 +41,85 @@ public class StarterFrameController extends JFrame {
         frame.setLocation(x, y);
     }
 
-    private void handleForgetFields()
+    private void handleForgetFieldsCallback()
     {
         try {
-            var fileSystemView = FileSystemView.getFileSystemView();
-            var documentsFolder = fileSystemView.getDefaultDirectory();
-            var docDirectory = new File(documentsFolder, "KismetOto");
-            var fileUsername = new File(docDirectory, "kismet_db_props_un.dat");
-            var filePassword = new File(docDirectory, "kismet_db_props_p.dat");
+            var documentsFolder = FileSystemView.getFileSystemView().getDefaultDirectory();
+            var docFile = new File(documentsFolder, "KismetOto");
+            var usernameFile = new File(docFile, "kismet_db_prop_un_.dat");
+            var passwordFile = new File(docFile, "kismet_db_prop_p_.dat");
 
-            Files.deleteIfExists(fileUsername.getAbsoluteFile().toPath());
-            Files.deleteIfExists(filePassword.getAbsoluteFile().toPath());
-            Files.deleteIfExists(docDirectory.getAbsoluteFile().toPath());
+            Files.deleteIfExists(usernameFile.getAbsoluteFile().toPath());
+            Files.deleteIfExists(passwordFile.getAbsoluteFile().toPath());
+            Files.deleteIfExists(docFile.getAbsoluteFile().toPath());
 
         } catch (IOException ex) {
             Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    private void handleRememberFields(String username, String password)
+    private String[] getDatabaseProps()
     {
         try {
-            var userNameBytes = username.getBytes();
-            var passwordBytes = password.getBytes();
-            var fileSystemView = FileSystemView.getFileSystemView();
-            var documentsFolder = fileSystemView.getDefaultDirectory();
-            var docDirectory = new File(documentsFolder, "KismetOto");
+            var docFile = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), "KismetOto");
+            var usernameFile = new File(docFile, "kismet_db_prop_un_.dat");
+            var passwordFile = new File(docFile, "kismet_db_prop_p_.dat");
 
-            if (!docDirectory.exists())
-                Files.createDirectory(docDirectory.getAbsoluteFile().toPath());
-
-            var fileUsername = new File(docDirectory, "kismet_db_props_un.dat");
-            var filePassword = new File(docDirectory, "kismet_db_props_p.dat");
-
-            Files.deleteIfExists(fileUsername.getAbsoluteFile().toPath());
-            Files.deleteIfExists(filePassword.getAbsoluteFile().toPath());
-
-            try (var fos = new FileOutputStream(fileUsername)) {
-                fos.write(userNameBytes);
-            }
-            try (var fos = new FileOutputStream(filePassword)) {
-                fos.write(passwordBytes);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private String[] readDatabaseProps()
-    {
-        String[] props = new String[2];
-
-        try {
-            var fileSystemView = FileSystemView.getFileSystemView();
-            var documentsFolder = fileSystemView.getDefaultDirectory();
-            var docDirectory = new File(documentsFolder, "KismetOto");
-            if (!docDirectory.exists())
+            if (!docFile.exists() || !usernameFile.exists() || !passwordFile.exists())
                 return null;
 
-            var fileUsername = new File(docDirectory, "kismet_db_props_un.dat");
-            var filePassword = new File(docDirectory, "kismet_db_props_p.dat");
+            var fields = new String[2];
 
-            try (var fis = new FileInputStream(fileUsername)) {
-                props[0] = new String(fis.readAllBytes());
+            try(var fis = new FileInputStream(usernameFile)) {
+                fields[0] = new String(fis.readAllBytes());
             }
 
-            try (var fis = new FileInputStream(filePassword)) {
-                props[1] = new String(fis.readAllBytes());
+            try(var fis = new FileInputStream(passwordFile)) {
+                fields[1] = new String(fis.readAllBytes());
             }
 
-            return props;
+            return fields;
+
         } catch (IOException ex) {
-            Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StarterFrameController.class.getName()).log(Level.WARNING, ex.getMessage());
             return null;
         }
     }
-
-    private void listenMessageFromChildCallback(String username, String password)
+    private void handleRememberFieldsCallback(String username, String password)
     {
         try {
-            var reader = new BufferedReader(new InputStreamReader(m_process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                if (line.contains(ms_successMessage)) {
-                    setVisible(false);
-                    if (m_starterForm.getCheckBoxRememberFields().isSelected())
-                        m_threadPool.execute(() -> handleRememberFields(username, password));
-                    else
-                        m_threadPool.execute(this::handleForgetFields);
-                    return;
-                }
-                if (line.contains(ms_errorTitleEN)){
-                    JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
-                            JOptionPane.ERROR_MESSAGE);
-                    m_process.destroy();
-                    return;
-                }
+            var usernameBytes = username.getBytes();
+            var passwordBytes = password.getBytes();
+            var docFile = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), "KismetOto");
+
+            if (!docFile.exists())
+                Files.createDirectory(docFile.getAbsoluteFile().toPath());
+
+            var usernameFile = new File(docFile, "kismet_db_prop_un_.dat");
+            var passwordFile = new File(docFile, "kismet_db_prop_p_.dat");
+
+            Files.deleteIfExists(usernameFile.getAbsoluteFile().toPath());
+            Files.deleteIfExists(passwordFile.getAbsoluteFile().toPath());
+
+            try (var fos = new FileOutputStream(usernameFile)) {
+                fos.write(usernameBytes);
             }
-        } catch (Throwable ex) {
-            Logger.getAnonymousLogger().log(Level.WARNING, ex.getMessage());
-        }
-    }
+            try (var fos = new FileOutputStream(passwordFile)) {
+                fos.write(passwordBytes);
+            }
 
-    public StarterFrameController(StarterForm starterForm)
-    {
-        m_starterForm = starterForm;
-        m_threadPool = Executors.newFixedThreadPool(3);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setContentPane(m_starterForm.getPanelMain());
-        setTitle(ms_title);
-        setIconImage(new ImageIcon(getResource("default_logo.png").getPath()).getImage());
-        setResizable(false);
-        pack();
-        centerFrame(this);
-        m_starterForm.getButtonConnect().addActionListener(this::buttonConnectClickedListener);
-        setOptionPaneButtonsTR();
-        if (m_starterForm.getCheckBoxRememberFields().isSelected() && readDatabaseProps() != null) {
-            m_starterForm.getTextFieldDbUsername().setText(Objects.requireNonNull(readDatabaseProps())[0]);
-            m_starterForm.getTextFieldDbPassword().setText(Objects.requireNonNull(readDatabaseProps())[1]);
+        } catch (IOException ex) {
+            Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        setVisible(true);
-        registerKeys();
     }
+
     private void registerKeys()
     {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 m_threadPool.shutdownNow();
-
-                if (m_process!= null && m_process.isAlive())
+                if (m_process != null && m_process.isAlive())
                     m_process.destroy();
             }
         });
@@ -202,6 +149,34 @@ public class StarterFrameController extends JFrame {
     {
         return m_starterForm.getTextFieldDbPassword().getPassword().length != 0 && !m_starterForm.getTextFieldDbUsername().getText().isBlank();
     }
+    private void listenParentProcessMessageCallback(String username, String password)
+    {
+        try {
+            var reader = new BufferedReader(new InputStreamReader(m_process.getInputStream()));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println("Parent process received: " + line);
+                if (line.contains(ms_errorMessageFromChild)) {
+                    JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
+                            JOptionPane.ERROR_MESSAGE);
+                    m_process.destroy();
+                    break;
+                }
+
+                if (line.contains(ms_successMessageFromParent)) {
+                    setVisible(false);
+                    if (m_starterForm.getCheckBoxRememberFields().isSelected())
+                        m_threadPool.execute(() -> handleRememberFieldsCallback(username, password));
+                    else
+                        m_threadPool.execute(this::handleForgetFieldsCallback);
+                    break;
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, ex.getMessage());
+        }
+    }
     private void startProcessListenerCallback()
     {
         while (true) {
@@ -226,10 +201,9 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getProgressBarLoading().setIndeterminate(true);
                 var username = m_starterForm.getTextFieldDbUsername().getText().trim();
                 var password = m_starterForm.getTextFieldDbPassword().getPassword();
-
                 m_process = new ProcessBuilder("java", "-jar",
                         getResource("Kismet-Oto-Stock-Tracking-System-1.0.0.jar")
-                                .getPath().substring(1),
+                        .getPath().substring(1),
                         "--spring.datasource.username=%s".formatted(username),
                         "--spring.datasource.password=%s".formatted(String.valueOf(password)))
                         .redirectErrorStream(true).start();
@@ -240,9 +214,10 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getTextFieldDbUsername().setEnabled(false);
                 m_starterForm.getButtonConnect().setEnabled(false);
                 m_threadPool.execute(this::startProcessListenerCallback);
-                m_threadPool.execute(() -> listenMessageFromChildCallback(username, String.valueOf(password)));
+                m_threadPool.execute(() -> listenParentProcessMessageCallback(username, String.valueOf(password)));
 
-            } else
+            }
+            else
                 JOptionPane.showMessageDialog(null, ms_warningMessage, ms_warningTitle,
                         JOptionPane.WARNING_MESSAGE);
 
@@ -250,5 +225,27 @@ public class StarterFrameController extends JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage(), ms_errorTitle,
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+
+    public StarterFrameController(StarterForm starterForm)
+    {
+        m_starterForm = starterForm;
+        m_threadPool = Executors.newFixedThreadPool(3);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(m_starterForm.getPanelMain());
+        setTitle(ms_title);
+        setIconImage(new ImageIcon(getResource("default_logo.png").getPath()).getImage());
+        setResizable(false);
+        pack();
+        centerFrame(this);
+        m_starterForm.getButtonConnect().addActionListener(this::buttonConnectClickedListener);
+        if (m_starterForm.getCheckBoxRememberFields().isSelected() && getDatabaseProps() != null) {
+            m_starterForm.getTextFieldDbUsername().setText(getDatabaseProps()[0]);
+            m_starterForm.getTextFieldDbPassword().setText(getDatabaseProps()[1]);
+        }
+        setOptionPaneButtonsTR();
+        registerKeys();
+        setVisible(true);
     }
 }
