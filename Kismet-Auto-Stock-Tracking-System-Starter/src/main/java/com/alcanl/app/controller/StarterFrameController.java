@@ -2,13 +2,13 @@ package com.alcanl.app.controller;
 
 import com.alcanl.app.form.StarterForm;
 
-import static com.google.common.io.Resources.getResource;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,9 +23,11 @@ public class StarterFrameController extends JFrame {
     private final static String ms_warningTitle = "Uyarı";
     private final static String ms_warningMessage = "Alanlar Boş Bırakılamaz.";
     private final static String ms_errorTitle = "Hata";
-    private final static String ms_errorMessageFromChild = "ERROR";
+    private final static String ms_errorMessageFromChild = "Failed to initialize JPA EntityManagerFactory";
     private final static String ms_successMessageFromParent = "Successfully_Started_Main_App";
     private final static String ms_errorMessage = "Veritabanı Bağlantı Hatası\nKullanıcı Adı / Parola Hatalı ya da Veritabanı Sunucuları Kapatılmış Olabilir";
+    private final static String ms_mainJarPath = Paths.get(System.getenv("ProgramFiles(x86)")) + "\\Kısmet Oto\\bin\\Kismet-Oto-Stock-Tracking-System-1.0.0.jar";
+    private final static String ms_logoPath = Paths.get(System.getenv("ProgramFiles(x86)")) + "\\Kısmet Oto\\assets\\default_logo.png";
 
     private static void setOptionPaneButtonsTR()
     {
@@ -117,7 +119,7 @@ public class StarterFrameController extends JFrame {
     {
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 m_threadPool.shutdownNow();
                 if (m_process != null && m_process.isAlive())
                     m_process.destroy();
@@ -170,7 +172,6 @@ public class StarterFrameController extends JFrame {
                         m_threadPool.execute(() -> handleRememberFieldsCallback(username, password));
                     else
                         m_threadPool.execute(this::handleForgetFieldsCallback);
-                    break;
                 }
             }
         } catch (IOException ex) {
@@ -201,9 +202,7 @@ public class StarterFrameController extends JFrame {
                 m_starterForm.getProgressBarLoading().setIndeterminate(true);
                 var username = m_starterForm.getTextFieldDbUsername().getText().trim();
                 var password = m_starterForm.getTextFieldDbPassword().getPassword();
-                m_process = new ProcessBuilder("java", "-jar",
-                        getResource("Kismet-Oto-Stock-Tracking-System-1.0.0.jar")
-                        .getPath().substring(1),
+                m_process = new ProcessBuilder("java", "-jar", ms_mainJarPath,
                         "--spring.datasource.username=%s".formatted(username),
                         "--spring.datasource.password=%s".formatted(String.valueOf(password)))
                         .redirectErrorStream(true).start();
@@ -231,11 +230,11 @@ public class StarterFrameController extends JFrame {
     public StarterFrameController(StarterForm starterForm)
     {
         m_starterForm = starterForm;
-        m_threadPool = Executors.newFixedThreadPool(3);
+        m_threadPool = Executors.newFixedThreadPool(4);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(m_starterForm.getPanelMain());
         setTitle(ms_title);
-        setIconImage(new ImageIcon(getResource("default_logo.png").getPath()).getImage());
+        setIconImage(new ImageIcon(ms_logoPath).getImage());
         setResizable(false);
         pack();
         centerFrame(this);
