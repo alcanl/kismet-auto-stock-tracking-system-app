@@ -59,7 +59,10 @@ class UserService {
                 u.setPassword(m_passwordEncoder.encode(userDTO.getPassword()));
                 u.setDescription(userDTO.getDescription());
                 u.setEMail(userDTO.getEMail());
-                m_repositoryDataHelper.saveUser(u);
+                if (u.getEMail().equals(userDTO.getEMail()) && u.getUsername().equals(userDTO.getUsername()))
+                    m_repositoryDataHelper.updateUser(u);
+                else
+                    m_repositoryDataHelper.saveUser(u);
             });
 
             return m_userMapper.userToUserDTO(user.orElseThrow(() -> new ServiceException("User not found")));

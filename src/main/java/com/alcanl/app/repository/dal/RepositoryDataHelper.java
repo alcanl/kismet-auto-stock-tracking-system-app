@@ -169,6 +169,16 @@ public class RepositoryDataHelper {
             throw new RepositoryException(ex);
         }
     }
+    public void updateUser(User user)
+    {
+        try {
+            m_userRepository.save(user);
+
+        } catch (Throwable ex) {
+            log.error("Error while updating user: {}", ex.getMessage());
+            throw new RepositoryException(ex);
+        }
+    }
     public void saveUser(User user)
     {
         try {
