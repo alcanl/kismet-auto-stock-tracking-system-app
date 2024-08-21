@@ -22,9 +22,12 @@ public class StarterFrameController extends JFrame {
     private final static String ms_warningTitle = "Uyarı";
     private final static String ms_warningMessage = "Alanlar Boş Bırakılamaz.";
     private final static String ms_errorTitle = "Hata";
-    private final static String ms_errorMessageFromChild = "Failed to initialize JPA EntityManagerFactory";
-    private final static String ms_successMessageFromParent = "Successfully_Started_Main_App";
+    private final static String ms_successMessageFromDatabaseChild = "Database_Created_Successfully";
+    private final static String ms_errorMessageFromDatabaseChild = "Error_Occurred_On_Create_Database";
+    private final static String ms_errorMessageFromMainChild = "Failed to initialize JPA EntityManagerFactory";
+    private final static String ms_successMessageFromMainChild = "Successfully_Started_Main_App";
     private final static String ms_mainAppPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\bin\\Kismet-Oto-Stock-Tracking-System-1.0.0.jar";
+    private final static String ms_dbStarterAppPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\bin\\Kismet-Oto-Stock-Tracking-App-Database-Starter-1.0.0.jar";
     private final static String ms_logoPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\assets\\default_logo.png";
     private final static String ms_errorMessage = "Veritabanı Bağlantı Hatası\nKullanıcı Adı / Parola Hatalı ya da Veritabanı Sunucuları Kapatılmış Olabilir";
 
@@ -158,14 +161,14 @@ public class StarterFrameController extends JFrame {
 
             while ((line = reader.readLine()) != null) {
                 System.out.println("Parent process received: " + line);
-                if (line.contains(ms_errorMessageFromChild)) {
+                if (line.contains(ms_errorMessageFromMainChild)) {
                     JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
                             JOptionPane.ERROR_MESSAGE);
                     m_process.destroy();
                     break;
                 }
 
-                if (line.contains(ms_successMessageFromParent)) {
+                if (line.contains(ms_successMessageFromMainChild)) {
                     setVisible(false);
                     if (m_starterForm.getCheckBoxRememberFields().isSelected())
                         m_threadPool.execute(() -> handleRememberFieldsCallback(username, password));
