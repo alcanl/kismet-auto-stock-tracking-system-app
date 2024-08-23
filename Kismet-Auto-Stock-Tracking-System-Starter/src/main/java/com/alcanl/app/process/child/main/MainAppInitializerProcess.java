@@ -22,7 +22,7 @@ public class MainAppInitializerProcess {
     public void startProcess() throws IOException {
         m_mainProcess = new ProcessBuilder(ms_starterCommandJava, ms_starterCommandJar, ms_mainAppPath,
                 ms_starterDatabaseUsernamePropArgument.formatted(m_username),
-                ms_starterDatabasePasswordPropArgument.formatted(String.valueOf(m_password)))
+                ms_starterDatabasePasswordPropArgument.formatted(m_password))
                 .redirectErrorStream(true).start();
     }
 

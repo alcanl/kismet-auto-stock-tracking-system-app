@@ -24,7 +24,7 @@ public class DatabaseInitializerProcess {
     {
         m_databaseIntializerProcess = new ProcessBuilder(ms_starterCommandJava, ms_starterCommandJar, ms_dbStarterAppPath,
                 ms_starterDatabaseUsernamePropArgument.formatted(m_username),
-                ms_starterDatabasePasswordPropArgument.formatted(String.valueOf(m_password)))
+                ms_starterDatabasePasswordPropArgument.formatted(m_password))
                 .redirectErrorStream(true).start();
     }
 
@@ -36,9 +36,5 @@ public class DatabaseInitializerProcess {
     public void destroyProcess()
     {
         m_databaseIntializerProcess.destroy();
-    }
-    public void waitProcess() throws InterruptedException
-    {
-        m_databaseIntializerProcess.waitFor();
     }
 }
