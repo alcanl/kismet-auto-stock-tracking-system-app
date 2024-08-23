@@ -1,6 +1,8 @@
 package com.alcanl.app.controller;
 
 import com.alcanl.app.form.StarterForm;
+import com.alcanl.app.process.child.database.DatabaseInitializerProcess;
+import com.alcanl.app.process.child.main.MainAppInitializerProcess;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -12,24 +14,16 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.alcanl.app.process.child.Common.*;
+
 @SwingContainer
 public class StarterFrameController extends JFrame {
 
-    private Process m_process;
+    private DatabaseInitializerProcess m_databaseInitializerProcess;
+    private MainAppInitializerProcess m_mainAppInitializerProcess;
     private final StarterForm m_starterForm;
     private final ExecutorService m_threadPool;
-    private final static String ms_title = "Kısmet Oto Stok Takip Sistemi";
-    private final static String ms_warningTitle = "Uyarı";
-    private final static String ms_warningMessage = "Alanlar Boş Bırakılamaz.";
-    private final static String ms_errorTitle = "Hata";
-    private final static String ms_successMessageFromDatabaseChild = "Database_Created_Successfully";
-    private final static String ms_errorMessageFromDatabaseChild = "Error_Occurred_On_Create_Database";
-    private final static String ms_errorMessageFromMainChild = "Failed to initialize JPA EntityManagerFactory";
-    private final static String ms_successMessageFromMainChild = "Successfully_Started_Main_App";
-    private final static String ms_mainAppPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\bin\\Kismet-Oto-Stock-Tracking-System-1.0.0.jar";
-    private final static String ms_dbStarterAppPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\bin\\Kismet-Oto-Stock-Tracking-App-Database-Starter-1.0.0.jar";
-    private final static String ms_logoPath = System.getenv("ProgramFiles(x86)") + "\\Kısmet Oto\\assets\\default_logo.png";
-    private final static String ms_errorMessage = "Veritabanı Bağlantı Hatası\nKullanıcı Adı / Parola Hatalı ya da Veritabanı Sunucuları Kapatılmış Olabilir";
+
 
     private static void setOptionPaneButtonsTR()
     {
@@ -123,8 +117,11 @@ public class StarterFrameController extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 m_threadPool.shutdownNow();
-                if (m_process != null && m_process.isAlive())
-                    m_process.destroy();
+                if (m_databaseInitializerProcess.getDatabaseIntializerProcess() != null && m_databaseInitializerProcess.isProcessAlive())
+                    m_databaseInitializerProcess.destroyProcess();
+
+                if (m_mainAppInitializerProcess.getMainProcess() != null && m_mainAppInitializerProcess.isProcessAlive())
+                    m_mainAppInitializerProcess.destroyProcess();
             }
         });
         addKeyListener(new KeyAdapter() {
@@ -153,10 +150,11 @@ public class StarterFrameController extends JFrame {
     {
         return m_starterForm.getTextFieldDbPassword().getPassword().length != 0 && !m_starterForm.getTextFieldDbUsername().getText().isBlank();
     }
-    private void listenParentProcessMessageCallback(String username, String password)
+    private void listenMainAppProcessMessageCallback()
     {
         try {
-            var reader = new BufferedReader(new InputStreamReader(m_process.getInputStream()));
+            var reader = new BufferedReader(new InputStreamReader(
+                    m_mainAppInitializerProcess.getMainProcess().getInputStream()));
             String line;
 
             while ((line = reader.readLine()) != null) {
@@ -164,14 +162,15 @@ public class StarterFrameController extends JFrame {
                 if (line.contains(ms_errorMessageFromMainChild)) {
                     JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
                             JOptionPane.ERROR_MESSAGE);
-                    m_process.destroy();
+                    m_mainAppInitializerProcess.destroyProcess();
                     break;
                 }
 
                 if (line.contains(ms_successMessageFromMainChild)) {
                     setVisible(false);
                     if (m_starterForm.getCheckBoxRememberFields().isSelected())
-                        m_threadPool.execute(() -> handleRememberFieldsCallback(username, password));
+                        m_threadPool.execute(() -> handleRememberFieldsCallback(
+                                m_mainAppInitializerProcess.getUsername(), m_mainAppInitializerProcess.getPassword()));
                     else
                         m_threadPool.execute(this::handleForgetFieldsCallback);
                 }
@@ -180,61 +179,105 @@ public class StarterFrameController extends JFrame {
             Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
     }
-    private void startProcessListenerCallback()
+
+    private boolean listenDatabaseInitializerProcessMessageCallback()
+    {
+        try {
+            var reader = new BufferedReader(new InputStreamReader(
+                    m_databaseInitializerProcess.getDatabaseIntializerProcess().getInputStream()));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println("Parent process received: " + line);
+                if (line.contains(ms_errorMessageFromDatabaseChild)) {
+                    JOptionPane.showMessageDialog(null, ms_errorMessage, ms_errorTitle,
+                            JOptionPane.ERROR_MESSAGE);
+                    m_databaseInitializerProcess.destroyProcess();
+                    return false;
+                }
+
+                if (line.contains(ms_successMessageFromDatabaseChild) || line.contains(ms_successAlreadyMessageFromDatabaseChild)) {
+                    m_databaseInitializerProcess.destroyProcess();
+                    return true;
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, ex.getMessage());
+        }
+        return false;
+    }
+
+    private void startMainAppProcessListenerCallback()
     {
         while (true) {
-            if (!m_process.isAlive()) {
-                m_starterForm.getTextFieldDbUsername().setEditable(true);
-                m_starterForm.getTextFieldDbPassword().setEditable(true);
-                m_starterForm.getTextFieldDbPassword().setEnabled(true);
-                m_starterForm.getTextFieldDbUsername().setEnabled(true);
-                m_starterForm.getCheckBoxRememberFields().setEnabled(true);
-                m_starterForm.getButtonConnect().setEnabled(true);
-                SwingUtilities.invokeLater(() -> {
-                    m_starterForm.getProgressBarLoading().setIndeterminate(false);
-                    setVisible(true);
-                });
+            if (!m_mainAppInitializerProcess.isProcessAlive()) {
+                enableFields();
                 break;
             }
         }
     }
-    private void buttonConnectClickedListener(ActionEvent event) {
+    private void enableFields()
+    {
+        m_starterForm.getTextFieldDbUsername().setEditable(true);
+        m_starterForm.getTextFieldDbPassword().setEditable(true);
+        m_starterForm.getTextFieldDbPassword().setEnabled(true);
+        m_starterForm.getTextFieldDbUsername().setEnabled(true);
+        m_starterForm.getCheckBoxRememberFields().setEnabled(true);
+        m_starterForm.getButtonConnect().setEnabled(true);
+        SwingUtilities.invokeLater(() -> {
+            m_starterForm.getProgressBarLoading().setIndeterminate(false);
+            setVisible(true);
+        });
+    }
+
+    private void startProcesses()
+    {
         try {
-            if (areFieldsValid()) {
-                m_starterForm.getProgressBarLoading().setModel(new DefaultBoundedRangeModel());
-                m_starterForm.getProgressBarLoading().setIndeterminate(true);
-                var username = m_starterForm.getTextFieldDbUsername().getText().trim();
-                var password = m_starterForm.getTextFieldDbPassword().getPassword();
-                m_process = new ProcessBuilder("java", "-jar", ms_mainAppPath,
-                        "--spring.datasource.username=%s".formatted(username),
-                        "--spring.datasource.password=%s".formatted(String.valueOf(password)))
-                        .redirectErrorStream(true).start();
-
-                m_starterForm.getTextFieldDbUsername().setEditable(false);
-                m_starterForm.getTextFieldDbPassword().setEditable(false);
-                m_starterForm.getTextFieldDbPassword().setEnabled(false);
-                m_starterForm.getTextFieldDbUsername().setEnabled(false);
-                m_starterForm.getCheckBoxRememberFields().setEnabled(false);
-                m_starterForm.getButtonConnect().setEnabled(false);
-                m_threadPool.execute(this::startProcessListenerCallback);
-                m_threadPool.execute(() -> listenParentProcessMessageCallback(username, String.valueOf(password)));
-
+            m_databaseInitializerProcess.startProcess();
+            if (m_threadPool.submit(this::listenDatabaseInitializerProcessMessageCallback).get()) {
+                m_mainAppInitializerProcess.startProcess();
+                m_threadPool.execute(this::startMainAppProcessListenerCallback);
+                m_threadPool.execute(this::listenMainAppProcessMessageCallback);
             }
-            else
-                JOptionPane.showMessageDialog(null, ms_warningMessage, ms_warningTitle,
-                        JOptionPane.WARNING_MESSAGE);
+            else {
+                Logger.getLogger(StarterFrameController.class.getName()).log(Level.SEVERE, "Database initialization failed");
+                enableFields();
+            }
 
-        } catch (IOException ex) {
+        } catch (IOException | ExecutionException | InterruptedException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), ms_errorTitle,
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void buttonConnectClickedListener(ActionEvent event) {
+
+        if (areFieldsValid()) {
+            m_starterForm.getProgressBarLoading().setModel(new DefaultBoundedRangeModel());
+            m_starterForm.getProgressBarLoading().setIndeterminate(true);
+            var username = m_starterForm.getTextFieldDbUsername().getText().trim();
+            var password = String.valueOf(m_starterForm.getTextFieldDbPassword().getPassword());
+            m_databaseInitializerProcess = new DatabaseInitializerProcess(username, password);
+            m_mainAppInitializerProcess = new MainAppInitializerProcess(username, password);
+            m_threadPool.execute(this::startProcesses);
+
+            m_starterForm.getTextFieldDbUsername().setEditable(false);
+            m_starterForm.getTextFieldDbPassword().setEditable(false);
+            m_starterForm.getTextFieldDbPassword().setEnabled(false);
+            m_starterForm.getTextFieldDbUsername().setEnabled(false);
+            m_starterForm.getCheckBoxRememberFields().setEnabled(false);
+            m_starterForm.getButtonConnect().setEnabled(false);
+        }
+        else
+            JOptionPane.showMessageDialog(null, ms_warningMessage, ms_warningTitle,
+                    JOptionPane.WARNING_MESSAGE);
     }
 
 
     public StarterFrameController(StarterForm starterForm)
     {
         m_starterForm = starterForm;
-        m_threadPool = Executors.newFixedThreadPool(3);
+        m_threadPool = Executors.newCachedThreadPool();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(m_starterForm.getPanelMain());
         setTitle(ms_title);

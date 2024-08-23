@@ -14,13 +14,19 @@ import org.springframework.stereotype.Component;
 public class CreateDatabaseRunner implements ApplicationRunner {
 
     @Value("${kismet.auto.stock.tracking.system.database.starter.query}")
-    private String createQuery;
+    private String databaseExistQuery;
 
-    @Value("${kismet.auto.stock.tracking.system.database.starter.process.finished}")
-    private String processFinishedMessage;
+    @Value("${kismet.auto.stock.tracking.system.database.create.query}")
+    private String databaseCreateQuery;
+
+    @Value("${kismet.auto.stock.tracking.system.database.starter.process.create.success}")
+    private String processSuccessMessage;
 
     @Value("${kismet.auto.stock.tracking.system.database.starter.process.error}")
     private String processErrorMessage;
+
+    @Value("${kismet.auto.stock.tracking.system.database.starter.process.already.success}")
+    private String processAlreadySuccessMessage;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -28,8 +34,13 @@ public class CreateDatabaseRunner implements ApplicationRunner {
     public void run(ApplicationArguments args)
     {
         try {
-            jdbcTemplate.execute(createQuery);
-            System.out.println(processFinishedMessage);
+            var databaseExists = jdbcTemplate.queryForObject(databaseExistQuery, Integer.class);
+            if (databaseExists == null || databaseExists != 1) {
+                jdbcTemplate.execute(databaseCreateQuery);
+                log.info(processSuccessMessage);
+            } else
+                log.info(processAlreadySuccessMessage);
+
         } catch (Throwable ex) {
             log.error("Error occurred {} : {}", processErrorMessage, ex.getMessage());
         }
