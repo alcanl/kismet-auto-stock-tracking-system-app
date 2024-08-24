@@ -19,8 +19,8 @@ import static com.alcanl.app.process.child.Common.*;
 @SwingContainer
 public class StarterFrameController extends JFrame {
 
-    private DatabaseInitializerProcess m_databaseInitializerProcess;
-    private MainAppInitializerProcess m_mainAppInitializerProcess;
+    private final DatabaseInitializerProcess m_databaseInitializerProcess;
+    private final MainAppInitializerProcess m_mainAppInitializerProcess;
     private final StarterForm m_starterForm;
     private final ExecutorService m_threadPool;
 
@@ -257,8 +257,10 @@ public class StarterFrameController extends JFrame {
             m_starterForm.getProgressBarLoading().setIndeterminate(true);
             var username = m_starterForm.getTextFieldDbUsername().getText().trim();
             var password = String.valueOf(m_starterForm.getTextFieldDbPassword().getPassword());
-            m_databaseInitializerProcess = new DatabaseInitializerProcess(username, password);
-            m_mainAppInitializerProcess = new MainAppInitializerProcess(username, password);
+            m_databaseInitializerProcess.setUsername(username);
+            m_databaseInitializerProcess.setPassword(password);
+            m_mainAppInitializerProcess.setUsername(username);
+            m_mainAppInitializerProcess.setPassword(password);
             m_threadPool.execute(this::startProcesses);
 
             m_starterForm.getTextFieldDbUsername().setEditable(false);
@@ -278,6 +280,8 @@ public class StarterFrameController extends JFrame {
     {
         m_starterForm = starterForm;
         m_threadPool = Executors.newCachedThreadPool();
+        m_databaseInitializerProcess = new DatabaseInitializerProcess();
+        m_mainAppInitializerProcess = new MainAppInitializerProcess();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(m_starterForm.getPanelMain());
         setTitle(ms_title);
