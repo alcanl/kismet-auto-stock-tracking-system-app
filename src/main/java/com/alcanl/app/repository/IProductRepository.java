@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface IProductRepository extends CrudRepository<Product, String> {
-    Iterable<Product> findByProductNameContaining(String productName);
+    Iterable<Product> findByProductNameContainingIgnoreCase(String productName);
     Optional<Product> findByStockCode(String stockCode);
 }

@@ -56,6 +56,7 @@ public final class TableInitializer {
     private static final String TABLE_HEADER_USER_USERNAME = "KULLANICI ADI";
     private static final String TABLE_HEADER_USER_FIRST_NAME = "ADI";
     private static final String TABLE_HEADER_USER_LAST_NAME = "SOYADI";
+    private static final String TABLE_HEADER_USER_ROLE = "KULLANICI ROL";
     private static final String TABLE_HEADER_USER_EMAIL = "EMAIL";
     private static final String TABLE_HEADER_USER_REGISTER_DATE = "KAYIT TARİHİ";
     private static final String TABLE_HEADER_USER_DESCRIPTION = "AÇIKLAMA";
@@ -328,16 +329,14 @@ public final class TableInitializer {
     private void initializeStockInputMovementsTableModel(DefaultTableModel model)
     {
         Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_STOCK_CODE,
-            TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK,
-                TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
+            TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
 
         model.setColumnIdentifiers(tableHeaders);
     }
     private void initializeStockOutputMovementsTableModel(DefaultTableModel model)
     {
         Object[] tableHeaders = {TABLE_HEADER_PRODUCT_ORIGINAL_CODE, TABLE_HEADER_PRODUCT_NAME, TABLE_HEADER_PRODUCT_STOCK_CODE,
-                TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK,
-                TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
+                TABLE_HEADER_PRODUCT_STOCK_SHELF_NUMBER, TABLE_HEADER_STOCK_REGISTER_DATE, TABLE_HEADER_RECORD_AMOUNT, TABLE_HEADER_RECORD_OWNER};
 
         model.setColumnIdentifiers(tableHeaders);
     }
@@ -351,7 +350,7 @@ public final class TableInitializer {
     private void initializeUsersListTableModel(DefaultTableModel model)
     {
         Object[] tableHeaders = {TABLE_HEADER_USER_USERNAME, TABLE_HEADER_USER_FIRST_NAME, TABLE_HEADER_USER_LAST_NAME,
-                TABLE_HEADER_USER_EMAIL, TABLE_HEADER_USER_REGISTER_DATE, TABLE_HEADER_USER_DESCRIPTION};
+                TABLE_HEADER_USER_EMAIL, TABLE_HEADER_USER_REGISTER_DATE, TABLE_HEADER_USER_ROLE, TABLE_HEADER_USER_DESCRIPTION};
 
         model.setColumnIdentifiers(tableHeaders);
     }
@@ -406,8 +405,7 @@ public final class TableInitializer {
     {
         Object[] data = {stockMovementDTO.getStock().getProduct().getOriginalCode(), stockMovementDTO.getStock().getProduct().getProductName(),
                 stockMovementDTO.getStock().getProduct().getStockCode(), stockMovementDTO.getStock().getShelfNumber(),
-                stockMovementDTO.getStock().getAmount(), m_dateTimeFormatter.format(stockMovementDTO.getRecordDate()),
-                stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
+                m_dateTimeFormatter.format(stockMovementDTO.getRecordDate()), stockMovementDTO.getAmount(), stockMovementDTO.getUser().getUsername()};
 
         defaultTableModel.addRow(data);
     }
@@ -422,7 +420,7 @@ public final class TableInitializer {
     private void fillUsersListTableCallback(UserDTO userDTO, DefaultTableModel defaultTableModel)
     {
         Object[] data = {userDTO.getUsername(), userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEMail(),
-                m_dateTimeFormatter.format(userDTO.getDateOfRegister()), userDTO.getDescription()};
+                m_dateTimeFormatter.format(userDTO.getDateOfRegister()), userDTO.isAdmin() ? "Yönetici" : "Normal", userDTO.getDescription()};
 
         defaultTableModel.addRow(data);
     }

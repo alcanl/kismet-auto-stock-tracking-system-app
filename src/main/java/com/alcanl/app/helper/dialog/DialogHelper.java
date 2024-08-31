@@ -86,7 +86,7 @@ public final class DialogHelper {
     public boolean isThereAnyFieldEmpty(String... varargs)
     {
         return Arrays.stream(varargs).anyMatch(String::isEmpty)
-                && Arrays.stream(varargs).anyMatch(it -> it.contains(" "));
+                || Arrays.stream(varargs).anyMatch(it -> it.contains(" "));
     }
     public void disableTextAreaGrowthBehaviour(JTextArea jTextArea)
     {

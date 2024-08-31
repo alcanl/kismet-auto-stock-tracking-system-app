@@ -242,7 +242,7 @@ public class RepositoryDataHelper {
     public Iterable<Product> findAllProductsByContains(String productName)
     {
         try {
-            return m_productRepository.findByProductNameContaining(productName);
+            return m_productRepository.findByProductNameContainingIgnoreCase(productName);
         } catch (Throwable ex) {
             log.error("Error while finding product by contains {}", ex.getMessage());
             throw new RepositoryException(ex);

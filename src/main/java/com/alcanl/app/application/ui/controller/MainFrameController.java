@@ -341,12 +341,22 @@ public class MainFrameController extends JFrame {
     private void reInitTables()
     {
         m_tableInitializer.reInitStockOutTables();
-        m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
+        initNotification();
         m_tableInitializer.initializeStockMovementTables(StockMovementSearchType.ALL_RECORDS);
         m_tableInitializer.initializeProductListTable();
         m_tableInitializer.initializeActiveUsersTable();
         m_tableInitializer.initializeLastTwentyStockMovesTable();
         m_tableInitializer.setTableColumnAlignments();
+    }
+
+    private void initNotification()
+    {
+        m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
+
+        if (TableInitializer.criticalStockCount == 0)
+            m_mainForm.getLabelCount().setVisible(false);
+        else
+            m_mainForm.getLabelCount().setVisible(true);
     }
 
     private void initializeTables()
@@ -355,7 +365,7 @@ public class MainFrameController extends JFrame {
                 m_mainForm.getTableStockInput(), m_mainForm.getTableStockOutput(), m_mainForm.getTableProductList(),
                 m_mainForm.getTableActiveUsers(), m_mainForm.getTableStockLastMoves());
         m_tableInitializer.initializeTables();
-        m_mainForm.getLabelCount().setText("%d".formatted(TableInitializer.criticalStockCount));
+        initNotification();
     }
     private void initializeBottomBar()
     {
